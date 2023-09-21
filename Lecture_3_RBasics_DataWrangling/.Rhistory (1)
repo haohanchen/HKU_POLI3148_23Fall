@@ -1,0 +1,40 @@
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+list.files("data/raw_data/")
+d <- read_csv("data/raw_data/V-Dem-CY-Full+Others-v13.csv")
+d |>
+select(e_gdp)
+d |>
+select(e_gdp, e_gdppc)
+d |>
+select(v2x_polyarchy, e_gdp, e_gdppc)
+d |>
+select(country_name, country_id, year, v2x_polyarchy, e_gdp, e_gdppc)
+d_s <- d |>
+select(country_name, country_id, year, v2x_polyarchy, e_gdp, e_gdppc)
+dim(d)
+names(d)
+d_s <- d_s |>
+rename("v2x_polyarchy" = "Electral Democracy")
+d_s <- d_s |>
+rename("Electral_Democracy" = "v2x_polyarchy")
+d_s <- d |>
+select(country_name, country_id, year, v2x_polyarchy, e_gdp, e_gdppc)
+d_s |>
+rename("Electral_Democracy" = "v2x_polyarchy")
+d_s |>
+rename("Electral_Democracy" = "v2x_polyarchy",
+"GDP" = "e_gdp",
+"GDPpc" = "e_gdppc")
+d_s |>
+rename("electral_democracy_idx" = "v2x_polyarchy",
+"GDP" = "e_gdp",
+"GDPpc" = "e_gdppc")
+d_s |>
+rename("electral_democracy_idx" = "v2x_polyarchy",
+"GDP" = "gdp",
+"GDPpc" = "gdppc")
+d_s |>
+rename("electral_democracy_idx" = "v2x_polyarchy",
+"gdp" = "e_gdp",
+"gdppc" = "e_gdppc")

@@ -1,1 +1,1 @@
-# HKU_POLI3148_23Fall
+# POLI3148 2023 Fall In-class Demo

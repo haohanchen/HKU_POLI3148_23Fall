@@ -1,0 +1,57 @@
+---
+title: "Rmarkdown in-class demonstration"
+author: "Haohan Chen"
+date: "Sep 21, 2023"
+output:
+  html_document: default
+  word_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+## This is my level 1 heading
+
+### This is my level 2 heading
+
+#### This is my level 3 heading
+
+##### This is my level 4 heading
+
+This is my main text. POLI3148 is cool.
+
+## Add code to your document
+
+```{r}
+log(50)
+```
+
+```{r}
+1 + 1
+```
+
+## Output Figures
+
+```{r}
+plot(1:10, 1:10)
+```
+
+## Display Data
+
+```{r}
+cars
+```
+
+## In-line R code
+
+Scientific research shows that 12223 + 12111 = `r 12223 + 12111`.
+
+```{r}
+# install.packages("tinytex")
+# tinytex::install_tinytex()
+
+```

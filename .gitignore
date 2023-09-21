@@ -1,5 +1,13 @@
+large_do_not_push_to_github/
+
+.DS_Store
+*/.DS_Store
+*/*/.DS_Store
+*/*/*/.DS_Store
+
 # History files
-.Rhistory
+# .Rhistory
+.Rhistory*
 .Rapp.history
 
 # Session Data files
