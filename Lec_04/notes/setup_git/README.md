@@ -132,8 +132,25 @@ is successful when the repo is opened in R.
 
 ## Step 4: Setup your own “DaSPPA Portfolio” on GitHub
 
-<img src="images/Screenshot%202023-09-27%20at%205.08.29%20PM.png"
-width="301" />
+Your final step is to set up a directory to hold your DaSPPA portfolio.
+To create a new repository, click the green “New” button at the top left
+corner of your GitHub homepage.
 
-<img src="images/Screenshot%202023-09-27%20at%205.03.51%20PM-01.png"
-width="511" />
+<img src="images/Screenshot%202023-09-27%20at%205.08.29%20PM.png"
+width="264" />
+
+It will direct you to a page where you can specify some basic
+configuration of your GitHub repo. I assume most of the options are
+self-explanatory. Below are some explanation of a selection of options.
+
+-   Ticking “Add a README file” will add a file named `README.md` in the
+    root of your repository. You may use the `README.md` to document
+    important information of your repository.
+
+-   “Add `.gitignore`” adds a hidden file at the root of a repository
+    telling Git what files or folders you **DO NOT** wish to track
+    change or push online. These include large data files and temporary
+    files. As our repository will contain mostly R programs, please
+    choose “`R`” in the drop-down menu.
+
+![](images/Screenshot%202023-09-27%20at%205.09.36%20PM.png)
