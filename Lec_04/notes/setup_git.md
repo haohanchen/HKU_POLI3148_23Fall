@@ -1,6 +1,8 @@
-## Register Github
+## Step 1: Register Github
 
-## Setup Github Authentication in Rstudio
+Go to github.com to register an account on GitHub.
+
+## Step 2: Setup Github Authentication in Rstudio
 
 After you have registered on GitHub, the next thing you should do is to
 setup your local RStudio so that it can retrieve data from and upload
@@ -8,7 +10,7 @@ data to GitHub.
 
 Tools —&gt; Global Option —&gt; Git/SVN
 
-### Step 1: Make a SSH key
+### Step 2a: Make a SSH key
 
 *Reader further: [What is a SSH
 key?](https://www.ssh.com/academy/ssh-keys)*
@@ -20,7 +22,7 @@ Click “Create SSH Key…” Leave all settings as default. You may leave
 
 <img src="images/paste-B7F8DC6D.png" width="495" />
 
-### Step 2: Copy information of your SSH key
+### Step 2b: Copy information of your SSH key
 
 After you have successfully created your SSH key, click “View public
 key.” Copy ALL the text in the pop-up window to your clipboard.
@@ -29,9 +31,7 @@ key.” Copy ALL the text in the pop-up window to your clipboard.
 
 <img src="images/paste-14ED5A26.png" width="485" />
 
-### Step 3: Put information of your (public) SSH key in GitHub
-
-## Initiate a New Repo on Github
+### Step 2c: Put information of your (public) SSH key in GitHub
 
 Click on your profile picture at the top right corner.
 
@@ -66,6 +66,72 @@ width="523" />
 Click the green button “Add SSH key” and GitHub will direct you back to
 the “SSH Key” page. If your key is added successfully, you should be
 able to see its title and information in the “Authentication Keys”
-section. You may delete it when it becomes relevant. For your account
-security, if you discard a device, you would definitely want to delete
-the SSH key associated with it.
+section. You may delete it when it becomes relevant.
+
+*WARNING: For your account’s security, if you discard a device, you
+would definitely want to delete the SSH key associated with it.*
+
+## Step 3: Clone the in-class demo repo to your local device
+
+By now, you have set up GitHub and are ready to use it. In this step,
+you will *clone* a copy of the course’s GitHub Repo to your local
+device. We are doing this for two purposes. (1) You can stay up-to-date
+with the our teaching and learning materials. (2) You may follow the
+same steps to clone any GitHub repo to your local device.
+
+To start with, please go to File –&gt; New Project
+
+<img src="images/Screenshot%202023-09-27%20at%205.01.06%20PM.png"
+width="330" />
+
+In the pop-up window, choose “Version Control.”
+
+<img src="images/Screenshot%202023-09-27%20at%205.01.21%20PM.png"
+width="504" />
+
+Then, choose “Git.”
+
+<img src="images/Screenshot%202023-09-27%20at%205.01.31%20PM.png"
+width="500" />
+
+Up next, you will be asked to input (1) the information of the Git repo
+you would like to clone and (2) the local locations where you want to
+store the cloned repo.
+
+<img src="images/Screenshot%202023-09-27%20at%205.05.32%20PM.png"
+width="498" />
+
+You can obtain “Repository URL” from the webpage of your GitHub project.
+For the course’s GitHub repo, go to
+<https://github.com/haohanchen/HKU_POLI3148_23Fall> and click the green
+“Code” button. In the pop-up tab, choose “SSH,” then copy the whole
+address starting with `git@github.com` (using the button on the right).
+
+<img src="images/Screenshot%202023-09-27%20at%205.02.50%20PM.png"
+width="640" />
+
+Now, go back to RStudio. Paste the address in the “Repository URL”
+field. If the address is correct, the field “Project directory name”
+will be automatically filled with the name of your GitHub project. I
+would recommend that you keep the default name (i.e., not making any
+change to to auto-filled names). But it is fine if you want to change it
+to a different name for self-reference.
+
+In the field “Create project as subdirectory of,” please choose the
+location where you want the cloned repo to stay. It can be anywhere of
+your choice.
+
+<img src="images/Screenshot%202023-09-27%20at%205.03.51%20PM.png"
+width="540" />
+
+When all the above are done, click “Create Project.” If will take
+Rstudio and Git a while to download the project data. You will know it
+is successful when the repo is opened in R.
+
+## Step 4: Setup your own “DaSPPA Portfolio” on GitHub
+
+<img src="images/Screenshot%202023-09-27%20at%205.08.29%20PM.png"
+width="301" />
+
+<img src="images/Screenshot%202023-09-27%20at%205.03.51%20PM-01.png"
+width="511" />
