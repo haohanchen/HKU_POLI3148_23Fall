@@ -55,7 +55,8 @@ for (i in seq_along(Years_batch)){
     d_batch <- d |> 
       select(vnames_ls[["id"]], vnames_ls[[var_batch]]) |>
       filter(year %in% Years_batch[[i]])
-    write_csv(d_batch, paste0("_DataPublic_/vdem/", year_range, "/",
-                              "vdem_", year_range, "_", var_batch, ".csv"))    
+    path_file_csv <- paste0("_DataPublic_/vdem/", year_range, "/",
+                        "vdem_", year_range, "_", var_batch, ".csv")
+    write_csv(d_batch, path_file_csv)
   }
 }

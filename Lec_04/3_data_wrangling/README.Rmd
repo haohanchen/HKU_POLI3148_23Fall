@@ -1,0 +1,72 @@
+---
+title: "Data Wrangling (Basics)"
+author: "Haohan Chen"
+date: "Last update: `r format(Sys.Date(), '%B %d, %Y')`"
+output: 
+  html_document: default
+  pdf_document: default
+  md_document: default
+knit: (function(inputFile, encoding){rmarkdown::render(inputFile, encoding = encoding, output_format = "all") })
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Load packages
+
+This section loads the packages we need in this lecture.
+
+```{r}
+library(tidyverse)
+```
+
+## Load data
+
+This section loads the VDEM dataset and describe its basic information
+
+```{r}
+d <- read_csv("_DataPublic_/vdem/1984_2022/vdem_1984_2022_external.csv")
+```
+
+## Check Basic Information of the Dataset
+
+```{r}
+dim(d)
+```
+
+## Select Variables (Columns) of Interest
+
+```{r}
+d_s <- d |>
+  select(country_name, country_id, year, e_fh_cl, e_gdp, e_gdppc)
+
+d_s
+```
+
+## Rename Variables of Interest
+
+```{r}
+d_s <- d_s |>
+  rename("FH Civil Liberty" = "e_fh_cl",
+         "GDP" = "e_gdp", 
+         "GDP per capita" = "e_gdppc")
+
+# Check out functions that can allow you to rename variables in batch
+```
+
+## Filter Observations (Rows) of Interest
+
+For our analysis, we want to focus on data points from 2010 to 2020
+
+```{r}
+d_s_2010_2020 <- d_s |> filter(year >= 2000 & year <= 2020)
+```
+
+```{r}
+d_s |>
+  ggplot(aes(x = `year`, y = `GDP per capita`, group = year)) +
+  geom_boxplot()
+```
