@@ -8,6 +8,8 @@ date: "2023-09-23"
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+# How to Setup Git for Version Control
+
 ## Step 1: Register Github
 
 Go to github.com to register an account on GitHub.

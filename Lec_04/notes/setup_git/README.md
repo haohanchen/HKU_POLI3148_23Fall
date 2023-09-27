@@ -1,3 +1,5 @@
+# How to Setup Git for Version Control
+
 ## Step 1: Register Github
 
 Go to github.com to register an account on GitHub.
