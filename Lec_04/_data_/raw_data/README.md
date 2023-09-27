@@ -1,0 +1,1 @@
+The raw V-Dem data was download by Haohan Chen from https://www.v-dem.net/data/the-v-dem-dataset/ on September 12, 2023.
