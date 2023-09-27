@@ -1,12 +1,11 @@
 ---
 title: "How to Setup Git for Version Control"
 output: 
-  md_document: default
   html_document: default
-date: "2023-09-23"
-knit: (function(inputFile, encoding){
-  rmarkdown::render(inputFile, encoding = encoding,
-  output_format = "all") })
+  md_document: default
+author: "Haohan Chen"
+date: "Last update: `r Sys.Date()`"
+knit: (function(inputFile, encoding){rmarkdown::render(inputFile, encoding = encoding, output_format = "all") })
 ---
 
 ```{r setup, include=FALSE}
