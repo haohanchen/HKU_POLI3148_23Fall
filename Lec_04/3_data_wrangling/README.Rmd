@@ -6,7 +6,7 @@ output:
   html_document: default
   pdf_document: default
   md_document: default
-knit: (function(inputFile, encoding){rmarkdown::render(inputFile, encoding = encoding, output_format = "all") })
+knit: (function(inputFile, encoding){rmarkdown::render(inputFile, encoding = encoding, output_format = "all", knit_root_dir = getwd()) })
 editor_options: 
   chunk_output_type: console
 ---

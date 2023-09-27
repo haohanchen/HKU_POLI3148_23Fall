@@ -6,7 +6,7 @@ output:
   md_document: default
 author: "Haohan Chen"
 date: "Last update: `r format(Sys.Date(), '%B %d, %Y')`"
-knit: (function(inputFile, encoding){rmarkdown::render(inputFile, encoding = encoding, output_format = "all") })
+knit: (function(inputFile, encoding){rmarkdown::render(inputFile, encoding = encoding, output_format = "all", knit_root_dir = getwd()) })
 ---
 
 ```{r setup, include=FALSE}
