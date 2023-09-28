@@ -1,0 +1,48 @@
+---
+title: "How to synchronize your GitHub repo"
+author: "Haohan Chen"
+date: "Last update: `r format(Sys.Date(), '%B %d, %Y')`"
+output: 
+  html_document: default
+  pdf_document: default
+  md_document: default
+knit: (function(inputFile, encoding){rmarkdown::render(inputFile, encoding = encoding, output_format = "all", knit_root_dir = getwd())})
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+After you have set up a *Version Control* R project following instructions in [1_setup_git](https://github.com/haohanchen/HKU_POLI3148_23Fall/tree/main/Lec_04/1_setup_git), you can then use Rstudio to synchronize your local repository with your online repositories on GitHub. You can perform these operations using the "Git" panel that by default shows up at the top-left area of your Rstudio interface. See below a screenshot of the panel.
+
+![](images/paste-66854D08.png){width="289"}
+
+In this note, I will introduce how you may retrieve updates from an online GitHub repo and upload local updates to your online GitHub repo.
+
+## Retrieve Updates from an Online Repo
+
+To retrieve update from an online GitHub repo, simply click the blue downward arrow. Clicking the button will render a pop-up window. When the update is done, a line of text "Already up to date" will show up in the pop-up window. And you will need to manually close it by clicking "Close."
+
+![](images/paste-E9E18EB3.png){width="273"}
+
+![](images/paste-554B2B2A.png){width="387"}
+
+**Note:** a small drop-down menu you to the right of the "Pull" button gives you an option to "Pull with Rebase." This is a function you should use with extreme caution. If you choose to pull with rebase, then, the update will **OVERWITE ALL YOUR LOCAL CHANGES**. If you are working with a project folder that you are updating locally, doing it will cause loss of all recent updates!
+
+## Upload Local Updates to an Online Repo
+
+Updating your folder takes two steps: commit and push ---- I assume the two-step process to be less intuitive for new Git users and requires some elaboration.
+
+### Commit
+
+First, to upload your local changes, you need "commit" your changes --- I take this step as an intermediate step where you can (1) examine what exact changes have been made, (2) select a subset of changes you want to upload (but for most of the time I'd go with ALL to avoid confusion, and (3) add a note describing the nature of your changes.
+
+Operationally, click the "Commit" button in the Git panel (see the screenshot below).
+
+![](images/paste-55181BD2.png){width="314"}
+
+The click will render with render a pop-up window.
+
+### "Push"
