@@ -43,6 +43,28 @@ Operationally, click the "Commit" button in the Git panel (see the screenshot be
 
 ![](images/paste-55181BD2.png){width="314"}
 
-The click will render with render a pop-up window.
+The click will render with render a pop-up window that looks like the following.
+
+![](images/paste-6DDB6565.png){width="580"}
+
+The top-left panel list all the changes you have made since the latest synchronization. The first operation I'd do is to select ("stage") all by clicking the checkboxes under the "staged" column. To safe time, instead of clicking on the checkboxes, I'd select-all using Control+A or Cmd+A and press SPACE or ENTER to check all the boxes. After you do so, the interface will change into something that looks like the screenshot below.
+
+![](images/paste-BE1DE137.png){width="556"}
+
+You may observe two things. First, the list of files at the top-left panel gets longer. That is because before after checking the checkboxes, it shows each changed files individually (as oppose to showing folder names prior checking).
+
+Second and more importantly, you will start to see content in the bottom panel. This shows the exact changes you have made to your files. Text with a GREEN background means addition. Text with a RED background means deletion. You can click on the paths of different files to track changes in individual files (but don't click on the checkboxes because that will "unstage" them).
+
+Here comes the final step. After you have examined your changes and are satisfied with them, use the top-right panel "Commit message" to briefly summarize the nature of your update. Keep it brief and do not use any special character in this message. For example, I type "update lecture 4 notes" for this one.
+
+After adding your "Commit message," you may click the "Commit" button. It will render a pop-up window that shows the progress (see the screenshot below for an example). When it stops moving, click the "Close" button.
+
+![](images/paste-056A97B1.png){width="491"}
 
 ### "Push"
+
+After taking the time to review and confirm your changes in the "Commit" step, you are ready to "push" the update online. This step is much more straightforward. Simply click the "Push" button at the top-right corner (see the screenshot below).
+
+![](images/paste-BE1DE137_2.png){width="544"}
+
+**Note:** If this is a collaborative project (i.e., others may be simultaneously updating the GitHub repo), then after "Commit," you should first "Pull" updates in the online folder before you "Push." In this case, after you "Commit," first click "Pull" to retrieve the latest updates and then click "Push" to upload your local updates.
