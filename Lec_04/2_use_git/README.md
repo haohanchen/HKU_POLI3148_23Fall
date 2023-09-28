@@ -126,3 +126,26 @@ functionality. I encourage you to use this page to verify your student
 identity and get access: <https://education.github.com/pack/join>.
 
 <img src="images/paste-08E34EDB.png" width="550" />
+
+## One More Thing
+
+GitHub is meant to use for storing large data. <u>**You will encounter
+technical problems when you try to push an individual data file that is
+over 100M**</u>. And it is generally not a good practice to keep a lot
+of big data files in a GitHub repo. For GitHub repository we work on in
+this course, we will include some fairly large data files for
+instructional purposes — this can help us share data and code in one
+place without any additional complication. In addition, the data we are
+working with for now are not prohibitively large for GitHub to store and
+synchronize. But I would like to bring to your attention that in real
+data science projects, data are rarely stored in GitHub repositories as
+we do it here.
+
+For your final project, you may encounter problem with data storage,
+especially when it comes to sharing your Replication Dossier with me in
+the end of the semester. Feel free to chat with me to find a way. In
+general, if your data are smaller than 100M per file, then just put them
+in the GitHub repository. If not, we can look for ways to split or
+compress them so that individual files do not exceed the limit. If that
+is not possible, we can explore alternative data storage and sharing
+solutions.
