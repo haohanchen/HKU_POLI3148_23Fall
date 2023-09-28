@@ -1,5 +1,3 @@
-# How to Setup Git for Version Control
-
 ## Step 1: Register Github
 
 Go to github.com to register an account on GitHub.
@@ -20,18 +18,18 @@ key?](https://www.ssh.com/academy/ssh-keys)*
 Click “Create SSH Key…” Leave all settings as default. You may leave
 “Passphrase (optional)” and “Confirm” empty.
 
-<img src="images/paste-EEDE0385.png" width="493" />
+<img src="images/paste-EEDE0385.png" width="406" />
 
-<img src="images/paste-B7F8DC6D.png" width="495" />
+<img src="images/paste-B7F8DC6D.png" width="406" />
 
 ### Step 2b: Copy information of your SSH key
 
 After you have successfully created your SSH key, click “View public
 key.” Copy ALL the text in the pop-up window to your clipboard.
 
-<img src="images/paste-74577312.png" width="483" />
+<img src="images/paste-74577312.png" width="426" />
 
-<img src="images/paste-14ED5A26.png" width="485" />
+<img src="images/paste-14ED5A26.png" width="428" />
 
 ### Step 2c: Put information of your (public) SSH key in GitHub
 
@@ -43,19 +41,19 @@ width="201" />
 In the pop-up menu, click “Settings”
 
 <img src="images/Screenshot%202023-09-27%20at%203.10.19%20PM.png"
-width="268" />
+width="221" />
 
 In the navigation bar located in the column in the left, click ““SSH and
 GPG keys.”
 
 <img src="images/Screenshot%202023-09-27%20at%203.10.43%20PM.png"
-width="278" />
+width="219" />
 
 It will open a page that lists all your existing SSH keys. Click the
 button “New SSH key”
 
 <img src="images/Screenshot%202023-09-27%20at%203.11.07%20PM.png"
-width="545" />
+width="482" />
 
 It will open a page titled “Add new SSH Keys.” In the “Title” field, you
 may input any name of your choice (preferably one that tells you which
@@ -63,7 +61,7 @@ machine this key is stored). In the “Key” field, input the text you have
 copied in RStudio in **Step 2**.
 
 <img src="images/Screenshot%202023-09-27%20at%203.11.51%20PM.png"
-width="523" />
+width="391" />
 
 Click the green button “Add SSH key” and GitHub will direct you back to
 the “SSH Key” page. If your key is added successfully, you should be
@@ -84,24 +82,24 @@ same steps to clone any GitHub repo to your local device.
 To start with, please go to File –&gt; New Project
 
 <img src="images/Screenshot%202023-09-27%20at%205.01.06%20PM.png"
-width="330" />
+width="266" />
 
 In the pop-up window, choose “Version Control.”
 
 <img src="images/Screenshot%202023-09-27%20at%205.01.21%20PM.png"
-width="504" />
+width="406" />
 
 Then, choose “Git.”
 
 <img src="images/Screenshot%202023-09-27%20at%205.01.31%20PM.png"
-width="500" />
+width="407" />
 
 Up next, you will be asked to input (1) the information of the Git repo
 you would like to clone and (2) the local locations where you want to
 store the cloned repo.
 
 <img src="images/Screenshot%202023-09-27%20at%205.05.32%20PM.png"
-width="498" />
+width="415" />
 
 You can obtain “Repository URL” from the webpage of your GitHub project.
 For the course’s GitHub repo, go to
@@ -124,7 +122,7 @@ location where you want the cloned repo to stay. It can be anywhere of
 your choice.
 
 <img src="images/Screenshot%202023-09-27%20at%205.03.51%20PM.png"
-width="540" />
+width="465" />
 
 When all the above are done, click “Create Project.” If will take
 Rstudio and Git a while to download the project data. You will know it
@@ -137,7 +135,7 @@ To create a new repository, click the green “New” button at the top left
 corner of your GitHub homepage.
 
 <img src="images/Screenshot%202023-09-27%20at%205.08.29%20PM.png"
-width="264" />
+width="235" />
 
 It will direct you to a page where you can specify some basic
 configuration of your GitHub repo. I assume most of the options are
@@ -153,4 +151,5 @@ self-explanatory. Below are some explanation of a selection of options.
     files. As our repository will contain mostly R programs, please
     choose “`R`” in the drop-down menu.
 
-![](images/Screenshot%202023-09-27%20at%205.09.36%20PM.png)
+<img src="images/Screenshot%202023-09-27%20at%205.09.36%20PM.png"
+width="551" />
