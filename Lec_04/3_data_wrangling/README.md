@@ -27,7 +27,7 @@ we will focus on functions…
 
 9.  to summarize the data: `group_by`, `summarise`, `ungroup`
 
-## Case Study
+## Outline of In-Class Demo
 
 To demonstrate the above functionality, we will use real-world political
 data from [V-Dem](https://v-dem.net/). Specifically, we will use the
@@ -68,7 +68,7 @@ mappings with the above tools).
 
     2.  Magnitude of growth from 1984 to 2022.
 
-## In-class Exercise
+## In-Class Exercise
 
 The quality of education has a decisive effect on a country’s future
 development. Applying the data wrangling tools we introduce in this
@@ -90,10 +90,10 @@ lecture, perform the following task:
     2.  Rename the columns of education quality to make them
         informative.
 3.  **Subset by rows**
-    1.  List 10 countries-years that have the highest education level
+    1.  List 5 countries-years that have the highest education level
         among its population.
 
-    2.  List 10 countries-years that suffer from the most severe
+    2.  List 5 countries-years that suffer from the most severe
         inequality in education.
 4.  **Summarize the data**
     1.  Check data availability: For which countries and years are the
@@ -102,19 +102,26 @@ lecture, perform the following task:
     2.  Create two types of country-level indicators of education
         quality
 
-        1.  Average level of education quality since 1984
+        1.  Average level of education quality from 1984 to 2022
 
-        2.  Change of education quality since 1984
+        2.  Change of education quality from 1984 to 2022
 
-    3.  Examine the data and discuss: Which countries perform the best
-        and the worst in terms of education quality in the past four
-        decades?
+    3.  Examine the data and *briefly* discuss: Which countries perform
+        the best and the worst in terms of education quality in the past
+        four decades?
+
+**Submission requirement:** You will submit your outputs through Moodle.
+In your submission:
+
+1.  Attach a PDF document rendered by Rmarkdown
+2.  In the text field of your submission, include the link to the
+    corresponding Rmarkdown file in your *DaSPPA portfolio* GitHub repo.
+
+**Due:** October 4, 2023
 
 *Note:* *Please* *only use the functions we cover in this lecture for
-this exercise (if you choose, you may also use other functions in the
-`dplyr` documentation). There is <u>absolutely no need</u> to perform
-any data visualization for this exercise… We will get there in later
-lectures.*
+this exercise. There is <u>absolutely no need</u> to perform any data
+visualization for this exercise… We will get there in later lectures.*
 
 ## Further reading
 
