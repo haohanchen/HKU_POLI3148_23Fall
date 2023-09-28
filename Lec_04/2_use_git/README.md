@@ -129,11 +129,11 @@ identity and get access: <https://education.github.com/pack/join>.
 
 ## One More Thing
 
-GitHub is meant to use for storing large data. <u>**You will encounter
-technical problems when you try to push an individual data file that is
-over 100M**</u>. And it is generally not a good practice to keep a lot
-of big data files in a GitHub repo. For GitHub repository we work on in
-this course, we will include some fairly large data files for
+GitHub is NOT meant to use for storing and sharing large data. <u>**You
+will encounter technical problems when you try to push an individual
+file that is over 100M**</u>. And it is generally not a good practice to
+keep a lot of big data files in a GitHub repo. For GitHub repository we
+work on in this course, we will include some fairly large data files for
 instructional purposes — this can help us share data and code in one
 place without any additional complication. In addition, the data we are
 working with for now are not prohibitively large for GitHub to store and
