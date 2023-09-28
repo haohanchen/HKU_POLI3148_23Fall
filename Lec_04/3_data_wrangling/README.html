@@ -503,12 +503,12 @@ later lectures.</em></p>
 <h3>0. Load the <code>tidyverse</code> Packages</h3>
 <p>This section loads the packages we need in this lecture.</p>
 <pre class="r"><code>library(tidyverse)</code></pre>
-<pre><code>## ── Attaching packages ─────────────────────────────────────── tidyverse 1.3.2 ──
-## ✔ ggplot2 3.3.6      ✔ purrr   0.3.5 
-## ✔ tibble  3.1.8      ✔ dplyr   1.0.10
-## ✔ tidyr   1.2.1      ✔ stringr 1.4.1 
-## ✔ readr   2.1.3      ✔ forcats 0.5.2 
-## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+<pre><code>## ── Attaching packages ─────────────────────────────────────── tidyverse 1.3.1 ──</code></pre>
+<pre><code>## ✔ ggplot2 3.3.6     ✔ purrr   1.0.1
+## ✔ tibble  3.2.1     ✔ dplyr   1.1.1
+## ✔ tidyr   1.3.0     ✔ stringr 1.5.0
+## ✔ readr   2.1.2     ✔ forcats 0.5.1</code></pre>
+<pre><code>## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
 ## ✖ dplyr::filter() masks stats::filter()
 ## ✖ dplyr::lag()    masks stats::lag()</code></pre>
 </div>
@@ -526,6 +526,718 @@ information</p>
 ## 
 ## ℹ Use `spec()` to retrieve the full column specification for this data.
 ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+</div>
+<div id="select-economic-development-indicators" class="section level3">
+<h3>2. Select economic development indicators</h3>
+<p>We start by examining the dataset. <code>name()</code> is almost
+always the first function I apply to a dataset. It gives us the names of
+all the columns</p>
+<pre class="r"><code>names(d)</code></pre>
+<pre><code>##   [1] &quot;country_name&quot;                &quot;country_text_id&quot;            
+##   [3] &quot;country_id&quot;                  &quot;year&quot;                       
+##   [5] &quot;historical_date&quot;             &quot;project&quot;                    
+##   [7] &quot;historical&quot;                  &quot;histname&quot;                   
+##   [9] &quot;codingstart&quot;                 &quot;codingend&quot;                  
+##  [11] &quot;codingstart_contemp&quot;         &quot;codingend_contemp&quot;          
+##  [13] &quot;codingstart_hist&quot;            &quot;codingend_hist&quot;             
+##  [15] &quot;gapstart1&quot;                   &quot;gapstart2&quot;                  
+##  [17] &quot;gapstart3&quot;                   &quot;gapend1&quot;                    
+##  [19] &quot;gapend2&quot;                     &quot;gapend3&quot;                    
+##  [21] &quot;gap_index&quot;                   &quot;COWcode&quot;                    
+##  [23] &quot;e_v2x_api_3C&quot;                &quot;e_v2x_api_4C&quot;               
+##  [25] &quot;e_v2x_api_5C&quot;                &quot;e_v2x_civlib_3C&quot;            
+##  [27] &quot;e_v2x_civlib_4C&quot;             &quot;e_v2x_civlib_5C&quot;            
+##  [29] &quot;e_v2x_clphy_3C&quot;              &quot;e_v2x_clphy_4C&quot;             
+##  [31] &quot;e_v2x_clphy_5C&quot;              &quot;e_v2x_clpol_3C&quot;             
+##  [33] &quot;e_v2x_clpol_4C&quot;              &quot;e_v2x_clpol_5C&quot;             
+##  [35] &quot;e_v2x_clpriv_3C&quot;             &quot;e_v2x_clpriv_4C&quot;            
+##  [37] &quot;e_v2x_clpriv_5C&quot;             &quot;e_v2x_corr_3C&quot;              
+##  [39] &quot;e_v2x_corr_4C&quot;               &quot;e_v2x_corr_5C&quot;              
+##  [41] &quot;e_v2x_cspart_3C&quot;             &quot;e_v2x_cspart_4C&quot;            
+##  [43] &quot;e_v2x_cspart_5C&quot;             &quot;e_v2x_delibdem_3C&quot;          
+##  [45] &quot;e_v2x_delibdem_4C&quot;           &quot;e_v2x_delibdem_5C&quot;          
+##  [47] &quot;e_v2x_EDcomp_thick_3C&quot;       &quot;e_v2x_EDcomp_thick_4C&quot;      
+##  [49] &quot;e_v2x_EDcomp_thick_5C&quot;       &quot;e_v2x_egal_3C&quot;              
+##  [51] &quot;e_v2x_egal_4C&quot;               &quot;e_v2x_egal_5C&quot;              
+##  [53] &quot;e_v2x_egaldem_3C&quot;            &quot;e_v2x_egaldem_4C&quot;           
+##  [55] &quot;e_v2x_egaldem_5C&quot;            &quot;e_v2x_elecoff_3C&quot;           
+##  [57] &quot;e_v2x_elecoff_4C&quot;            &quot;e_v2x_elecoff_5C&quot;           
+##  [59] &quot;e_v2x_execorr_3C&quot;            &quot;e_v2x_execorr_4C&quot;           
+##  [61] &quot;e_v2x_execorr_5C&quot;            &quot;e_v2x_feduni_3C&quot;            
+##  [63] &quot;e_v2x_feduni_4C&quot;             &quot;e_v2x_feduni_5C&quot;            
+##  [65] &quot;e_v2x_frassoc_thick_3C&quot;      &quot;e_v2x_frassoc_thick_4C&quot;     
+##  [67] &quot;e_v2x_frassoc_thick_5C&quot;      &quot;e_v2x_freexp_3C&quot;            
+##  [69] &quot;e_v2x_freexp_4C&quot;             &quot;e_v2x_freexp_5C&quot;            
+##  [71] &quot;e_v2x_freexp_altinf_3C&quot;      &quot;e_v2x_freexp_altinf_4C&quot;     
+##  [73] &quot;e_v2x_freexp_altinf_5C&quot;      &quot;e_v2x_gencl_3C&quot;             
+##  [75] &quot;e_v2x_gencl_4C&quot;              &quot;e_v2x_gencl_5C&quot;             
+##  [77] &quot;e_v2x_gencs_3C&quot;              &quot;e_v2x_gencs_4C&quot;             
+##  [79] &quot;e_v2x_gencs_5C&quot;              &quot;e_v2x_gender_3C&quot;            
+##  [81] &quot;e_v2x_gender_4C&quot;             &quot;e_v2x_gender_5C&quot;            
+##  [83] &quot;e_v2x_genpp_3C&quot;              &quot;e_v2x_genpp_4C&quot;             
+##  [85] &quot;e_v2x_genpp_5C&quot;              &quot;e_v2x_jucon_3C&quot;             
+##  [87] &quot;e_v2x_jucon_4C&quot;              &quot;e_v2x_jucon_5C&quot;             
+##  [89] &quot;e_v2x_libdem_3C&quot;             &quot;e_v2x_libdem_4C&quot;            
+##  [91] &quot;e_v2x_libdem_5C&quot;             &quot;e_v2x_liberal_3C&quot;           
+##  [93] &quot;e_v2x_liberal_4C&quot;            &quot;e_v2x_liberal_5C&quot;           
+##  [95] &quot;e_v2x_mpi_3C&quot;                &quot;e_v2x_mpi_4C&quot;               
+##  [97] &quot;e_v2x_mpi_5C&quot;                &quot;e_v2x_partip_3C&quot;            
+##  [99] &quot;e_v2x_partip_4C&quot;             &quot;e_v2x_partip_5C&quot;            
+## [101] &quot;e_v2x_partipdem_3C&quot;          &quot;e_v2x_partipdem_4C&quot;         
+## [103] &quot;e_v2x_partipdem_5C&quot;          &quot;e_v2x_polyarchy_3C&quot;         
+## [105] &quot;e_v2x_polyarchy_4C&quot;          &quot;e_v2x_polyarchy_5C&quot;         
+## [107] &quot;e_v2x_pubcorr_3C&quot;            &quot;e_v2x_pubcorr_4C&quot;           
+## [109] &quot;e_v2x_pubcorr_5C&quot;            &quot;e_v2x_suffr_3C&quot;             
+## [111] &quot;e_v2x_suffr_4C&quot;              &quot;e_v2x_suffr_5C&quot;             
+## [113] &quot;e_v2xcl_rol_3C&quot;              &quot;e_v2xcl_rol_4C&quot;             
+## [115] &quot;e_v2xcl_rol_5C&quot;              &quot;e_v2xcs_ccsi_3C&quot;            
+## [117] &quot;e_v2xcs_ccsi_4C&quot;             &quot;e_v2xcs_ccsi_5C&quot;            
+## [119] &quot;e_v2xdd_dd_3C&quot;               &quot;e_v2xdd_dd_4C&quot;              
+## [121] &quot;e_v2xdd_dd_5C&quot;               &quot;e_v2xdl_delib_3C&quot;           
+## [123] &quot;e_v2xdl_delib_4C&quot;            &quot;e_v2xdl_delib_5C&quot;           
+## [125] &quot;e_v2xeg_eqdr_3C&quot;             &quot;e_v2xeg_eqdr_4C&quot;            
+## [127] &quot;e_v2xeg_eqdr_5C&quot;             &quot;e_v2xeg_eqprotec_3C&quot;        
+## [129] &quot;e_v2xeg_eqprotec_4C&quot;         &quot;e_v2xeg_eqprotec_5C&quot;        
+## [131] &quot;e_v2xel_frefair_3C&quot;          &quot;e_v2xel_frefair_4C&quot;         
+## [133] &quot;e_v2xel_frefair_5C&quot;          &quot;e_v2xel_locelec_3C&quot;         
+## [135] &quot;e_v2xel_locelec_4C&quot;          &quot;e_v2xel_locelec_5C&quot;         
+## [137] &quot;e_v2xel_regelec_3C&quot;          &quot;e_v2xel_regelec_4C&quot;         
+## [139] &quot;e_v2xel_regelec_5C&quot;          &quot;e_v2xlg_legcon_3C&quot;          
+## [141] &quot;e_v2xlg_legcon_4C&quot;           &quot;e_v2xlg_legcon_5C&quot;          
+## [143] &quot;e_v2xme_altinf_3C&quot;           &quot;e_v2xme_altinf_4C&quot;          
+## [145] &quot;e_v2xme_altinf_5C&quot;           &quot;e_v2xps_party_3C&quot;           
+## [147] &quot;e_v2xps_party_4C&quot;            &quot;e_v2xps_party_5C&quot;           
+## [149] &quot;e_boix_regime&quot;               &quot;e_democracy_breakdowns&quot;     
+## [151] &quot;e_democracy_omitteddata&quot;     &quot;e_democracy_trans&quot;          
+## [153] &quot;e_fh_cl&quot;                     &quot;e_fh_pr&quot;                    
+## [155] &quot;e_fh_rol&quot;                    &quot;e_fh_status&quot;                
+## [157] &quot;e_wbgi_cce&quot;                  &quot;e_wbgi_gee&quot;                 
+## [159] &quot;e_wbgi_pve&quot;                  &quot;e_wbgi_rle&quot;                 
+## [161] &quot;e_wbgi_rqe&quot;                  &quot;e_wbgi_vae&quot;                 
+## [163] &quot;e_lexical_index&quot;             &quot;e_uds_median&quot;               
+## [165] &quot;e_uds_mean&quot;                  &quot;e_uds_pct025&quot;               
+## [167] &quot;e_uds_pct975&quot;                &quot;e_coups&quot;                    
+## [169] &quot;e_legparty&quot;                  &quot;e_autoc&quot;                    
+## [171] &quot;e_democ&quot;                     &quot;e_p_polity&quot;                 
+## [173] &quot;e_polcomp&quot;                   &quot;e_polity2&quot;                  
+## [175] &quot;e_bnr_dem&quot;                   &quot;e_chga_demo&quot;                
+## [177] &quot;e_ti_cpi&quot;                    &quot;e_vanhanen&quot;                 
+## [179] &quot;e_peaveduc&quot;                  &quot;e_peedgini&quot;                 
+## [181] &quot;e_area&quot;                      &quot;e_regiongeo&quot;                
+## [183] &quot;e_regionpol&quot;                 &quot;e_regionpol_6C&quot;             
+## [185] &quot;e_cow_exports&quot;               &quot;e_cow_imports&quot;              
+## [187] &quot;e_gdp&quot;                       &quot;e_gdp_sd&quot;                   
+## [189] &quot;e_gdppc&quot;                     &quot;e_gdppc_sd&quot;                 
+## [191] &quot;e_miinflat&quot;                  &quot;e_pop&quot;                      
+## [193] &quot;e_pop_sd&quot;                    &quot;e_total_fuel_income_pc&quot;     
+## [195] &quot;e_total_oil_income_pc&quot;       &quot;e_total_resources_income_pc&quot;
+## [197] &quot;e_radio_n&quot;                   &quot;e_miferrat&quot;                 
+## [199] &quot;e_mipopula&quot;                  &quot;e_miurbani&quot;                 
+## [201] &quot;e_miurbpop&quot;                  &quot;e_pefeliex&quot;                 
+## [203] &quot;e_peinfmor&quot;                  &quot;e_pelifeex&quot;                 
+## [205] &quot;e_pematmor&quot;                  &quot;e_wb_pop&quot;                   
+## [207] &quot;e_civil_war&quot;                 &quot;e_miinteco&quot;                 
+## [209] &quot;e_miinterc&quot;                  &quot;e_pt_coup&quot;                  
+## [211] &quot;e_pt_coup_attempts&quot;</code></pre>
+<p>We may use some alternative functions that provides information about
+the dataset. The <code>str()</code> provides not only variable names,
+but also their data types and a few example data points.</p>
+<pre class="r"><code>str(d)</code></pre>
+<pre><code>## spc_tbl_ [6,789 × 211] (S3: spec_tbl_df/tbl_df/tbl/data.frame)
+##  $ country_name               : chr [1:6789] &quot;Mexico&quot; &quot;Mexico&quot; &quot;Mexico&quot; &quot;Mexico&quot; ...
+##  $ country_text_id            : chr [1:6789] &quot;MEX&quot; &quot;MEX&quot; &quot;MEX&quot; &quot;MEX&quot; ...
+##  $ country_id                 : num [1:6789] 3 3 3 3 3 3 3 3 3 3 ...
+##  $ year                       : num [1:6789] 1984 1985 1986 1987 1988 ...
+##  $ historical_date            : Date[1:6789], format: &quot;1984-12-31&quot; &quot;1985-12-31&quot; ...
+##  $ project                    : num [1:6789] 0 0 0 0 0 0 0 0 0 0 ...
+##  $ historical                 : num [1:6789] 1 1 1 1 1 1 1 1 1 1 ...
+##  $ histname                   : chr [1:6789] &quot;United Mexican States&quot; &quot;United Mexican States&quot; &quot;United Mexican States&quot; &quot;United Mexican States&quot; ...
+##  $ codingstart                : num [1:6789] 1789 1789 1789 1789 1789 ...
+##  $ codingend                  : num [1:6789] 2022 2022 2022 2022 2022 ...
+##  $ codingstart_contemp        : num [1:6789] 1900 1900 1900 1900 1900 1900 1900 1900 1900 1900 ...
+##  $ codingend_contemp          : num [1:6789] 2022 2022 2022 2022 2022 ...
+##  $ codingstart_hist           : num [1:6789] 1789 1789 1789 1789 1789 ...
+##  $ codingend_hist             : num [1:6789] 1920 1920 1920 1920 1920 1920 1920 1920 1920 1920 ...
+##  $ gapstart1                  : num [1:6789] NA NA NA NA NA NA NA NA NA NA ...
+##  $ gapstart2                  : num [1:6789] NA NA NA NA NA NA NA NA NA NA ...
+##  $ gapstart3                  : num [1:6789] NA NA NA NA NA NA NA NA NA NA ...
+##  $ gapend1                    : num [1:6789] NA NA NA NA NA NA NA NA NA NA ...
+##  $ gapend2                    : num [1:6789] NA NA NA NA NA NA NA NA NA NA ...
+##  $ gapend3                    : num [1:6789] NA NA NA NA NA NA NA NA NA NA ...
+##  $ gap_index                  : num [1:6789] 1 1 1 1 1 1 1 1 1 1 ...
+##  $ COWcode                    : num [1:6789] 70 70 70 70 70 70 70 70 70 70 ...
+##  $ e_v2x_api_3C               : num [1:6789] NA NA NA NA 0.5 0.5 0.5 0.5 0.5 0.5 ...
+##  $ e_v2x_api_4C               : num [1:6789] 0.667 0.667 0.667 0.667 0.667 0.667 0.667 0.667 0.667 0.667 ...
+##  $ e_v2x_api_5C               : num [1:6789] 0.5 0.5 0.5 0.5 0.75 0.75 0.75 0.75 0.75 0.75 ...
+##  $ e_v2x_civlib_3C            : num [1:6789] 1 1 1 1 1 1 1 1 1 1 ...
+##  $ e_v2x_civlib_4C            : num [1:6789] 0.667 0.667 0.667 0.667 0.667 0.667 0.667 0.667 0.667 0.667 ...
+##  $ e_v2x_civlib_5C            : num [1:6789] 0.5 0.5 0.5 0.5 0.5 0.75 0.75 0.75 0.75 0.75 ...
+##  $ e_v2x_clphy_3C             : num [1:6789] 0.5 0.5 0.5 0.5 0.5 0.5 0.5 1 1 1 ...
+##  $ e_v2x_clphy_4C             : num [1:6789] 0.333 0.333 0.333 0.333 0.333 0.333 0.333 0.667 0.667 0.667 ...
+##  $ e_v2x_clphy_5C             : num [1:6789] 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 ...
+##  $ e_v2x_clpol_3C             : num [1:6789] 1 1 1 1 1 1 1 1 1 1 ...
+##  $ e_v2x_clpol_4C             : num [1:6789] 0.667 0.667 0.667 0.667 0.667 0.667 0.667 0.667 0.667 0.667 ...
+##  $ e_v2x_clpol_5C             : num [1:6789] 0.75 0.75 0.75 0.75 0.75 0.75 0.75 0.75 0.75 0.75 ...
+##  $ e_v2x_clpriv_3C            : num [1:6789] 1 1 1 1 1 1 1 1 1 1 ...
+##  $ e_v2x_clpriv_4C            : num [1:6789] 0.667 0.667 0.667 0.667 0.667 0.667 0.667 0.667 0.667 1 ...
+##  $ e_v2x_clpriv_5C            : num [1:6789] 0.75 0.75 0.75 0.75 0.75 0.75 0.75 0.75 0.75 0.75 ...
+##  $ e_v2x_corr_3C              : num [1:6789] 1 1 1 1 1 1 1 1 1 1 ...
+##  $ e_v2x_corr_4C              : num [1:6789] 1 1 1 1 1 1 1 1 1 1 ...
+##  $ e_v2x_corr_5C              : num [1:6789] 0.75 0.75 0.75 0.75 0.75 0.75 0.75 0.75 0.75 0.75 ...
+##  $ e_v2x_cspart_3C            : num [1:6789] 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 ...
+##  $ e_v2x_cspart_4C            : num [1:6789] 0.333 0.333 0.333 0.333 0.333 0.333 0.333 0.333 0.333 0.333 ...
+##  $ e_v2x_cspart_5C            : num [1:6789] 0.25 0.25 0.25 0.25 0.25 0.5 0.25 0.25 0.25 0.25 ...
+##  $ e_v2x_delibdem_3C          : num [1:6789] 0 0 0 0 0 0.5 0.5 0.5 0.5 0.5 ...
+##  $ e_v2x_delibdem_4C          : num [1:6789] 0 0 0 0 0 0.333 0.333 0.333 0.333 0.333 ...
+##  $ e_v2x_delibdem_5C          : num [1:6789] 0 0 0 0.25 0.25 0.25 0.25 0.25 0.25 0.25 ...
+##  $ e_v2x_EDcomp_thick_3C      : num [1:6789] 0 0 0 0 0.5 0.5 0.5 0.5 0.5 0.5 ...
+##  $ e_v2x_EDcomp_thick_4C      : num [1:6789] 0 0 0 0 0.333 0.333 0.333 0.667 0.667 0.667 ...
+##  $ e_v2x_EDcomp_thick_5C      : num [1:6789] 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 ...
+##  $ e_v2x_egal_3C              : num [1:6789] 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 ...
+##  $ e_v2x_egal_4C              : num [1:6789] 0.333 0.333 0.333 0.333 0.333 0.333 0.333 0.333 0.333 0.333 ...
+##  $ e_v2x_egal_5C              : num [1:6789] 0.25 0.25 0.25 0.25 0.25 0.25 0.25 0.25 0.25 0.25 ...
+##  $ e_v2x_egaldem_3C           : num [1:6789] 0 0 0 0 0 0 0 0 0 0 ...
+##  $ e_v2x_egaldem_4C           : num [1:6789] 0 0 0 0 0 0 0 0 0 0 ...
+##  $ e_v2x_egaldem_5C           : num [1:6789] 0 0 0 0 0 0 0 0.25 0.25 0.25 ...
+##  $ e_v2x_elecoff_3C           : num [1:6789] 1 1 1 1 1 1 1 1 1 1 ...
+##  $ e_v2x_elecoff_4C           : num [1:6789] 1 1 1 1 1 1 1 1 1 1 ...
+##  $ e_v2x_elecoff_5C           : num [1:6789] 1 1 1 1 1 1 1 1 1 1 ...
+##  $ e_v2x_execorr_3C           : num [1:6789] 1 1 1 1 1 1 1 1 1 1 ...
+##  $ e_v2x_execorr_4C           : num [1:6789] 0.667 0.667 0.667 0.667 0.667 0.667 0.667 0.667 0.667 0.667 ...
+##  $ e_v2x_execorr_5C           : num [1:6789] 0.75 0.75 0.75 0.75 0.75 0.75 0.75 0.75 0.75 0.75 ...
+##  $ e_v2x_feduni_3C            : num [1:6789] 1 1 1 1 1 1 1 1 1 1 ...
+##  $ e_v2x_feduni_4C            : num [1:6789] 1 1 1 1 1 1 1 1 1 1 ...
+##  $ e_v2x_feduni_5C            : num [1:6789] 1 1 1 1 1 1 1 1 1 1 ...
+##  $ e_v2x_frassoc_thick_3C     : num [1:6789] 1 1 1 1 1 1 1 1 1 1 ...
+##  $ e_v2x_frassoc_thick_4C     : num [1:6789] 0.667 0.667 0.667 0.667 0.667 0.667 0.667 0.667 0.667 0.667 ...
+##  $ e_v2x_frassoc_thick_5C     : num [1:6789] 0.5 0.5 0.5 0.75 0.75 0.75 0.75 0.75 0.75 0.75 ...
+##  $ e_v2x_freexp_3C            : num [1:6789] 1 1 1 1 1 1 1 1 1 1 ...
+##  $ e_v2x_freexp_4C            : num [1:6789] 0.667 0.667 0.667 0.667 0.667 0.667 0.667 0.667 0.667 0.667 ...
+##  $ e_v2x_freexp_5C            : num [1:6789] 0.75 0.75 0.75 0.75 0.75 0.75 0.75 0.75 0.75 0.75 ...
+##  $ e_v2x_freexp_altinf_3C     : num [1:6789] 1 1 1 1 1 1 1 1 1 1 ...
+##  $ e_v2x_freexp_altinf_4C     : num [1:6789] 0.667 0.667 0.667 0.667 0.667 0.667 0.667 0.667 0.667 0.667 ...
+##  $ e_v2x_freexp_altinf_5C     : num [1:6789] 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.75 0.75 0.75 ...
+##  $ e_v2x_gencl_3C             : num [1:6789] 1 1 1 1 1 1 1 1 1 1 ...
+##  $ e_v2x_gencl_4C             : num [1:6789] 0.667 0.667 0.667 0.667 0.667 0.667 0.667 0.667 0.667 0.667 ...
+##  $ e_v2x_gencl_5C             : num [1:6789] 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 ...
+##  $ e_v2x_gencs_3C             : num [1:6789] 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 1 ...
+##  $ e_v2x_gencs_4C             : num [1:6789] 0.333 0.333 0.333 0.333 0.333 0.333 0.333 0.333 0.333 0.667 ...
+##  $ e_v2x_gencs_5C             : num [1:6789] 0.25 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 ...
+##  $ e_v2x_gender_3C            : num [1:6789] 1 1 1 1 1 1 1 1 1 1 ...
+##  $ e_v2x_gender_4C            : num [1:6789] 0.667 0.667 0.667 0.667 0.667 0.667 0.667 0.667 0.667 0.667 ...
+##  $ e_v2x_gender_5C            : num [1:6789] 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 ...
+##  $ e_v2x_genpp_3C             : num [1:6789] 1 1 1 1 1 1 1 1 1 1 ...
+##  $ e_v2x_genpp_4C             : num [1:6789] 0.667 0.667 0.667 0.667 0.667 0.667 0.667 0.667 0.667 0.667 ...
+##  $ e_v2x_genpp_5C             : num [1:6789] 0.75 0.75 0.75 0.75 0.75 0.75 0.75 0.5 0.5 0.5 ...
+##  $ e_v2x_jucon_3C             : num [1:6789] 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 ...
+##  $ e_v2x_jucon_4C             : num [1:6789] 0.333 0.333 0.333 0.333 0.333 0.333 0.333 0.333 0.333 0.333 ...
+##  $ e_v2x_jucon_5C             : num [1:6789] 0.25 0.25 0.25 0.25 0.25 0.25 0.25 0.25 0.25 0.25 ...
+##  $ e_v2x_libdem_3C            : num [1:6789] 0 0 0 0 0 0 0 0 0 0 ...
+##  $ e_v2x_libdem_4C            : num [1:6789] 0 0 0 0 0 0 0 0 0 0 ...
+##  $ e_v2x_libdem_5C            : num [1:6789] 0 0 0 0 0 0 0 0.25 0.25 0.25 ...
+##  $ e_v2x_liberal_3C           : num [1:6789] 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 ...
+##  $ e_v2x_liberal_4C           : num [1:6789] 0.333 0.333 0.333 0.333 0.333 0.333 0.333 0.333 0.333 0.333 ...
+##  $ e_v2x_liberal_5C           : num [1:6789] 0.25 0.25 0.25 0.25 0.25 0.25 0.25 0.25 0.25 0.25 ...
+##  $ e_v2x_mpi_3C               : num [1:6789] 0 0 0 0 0 0 0 0 0 0 ...
+##  $ e_v2x_mpi_4C               : num [1:6789] 0 0 0 0 0 0 0 0 0 0 ...
+##  $ e_v2x_mpi_5C               : num [1:6789] 0 0 0 0 0 0 0 0 0 0.25 ...
+##  $ e_v2x_partip_3C            : num [1:6789] 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 ...
+##  $ e_v2x_partip_4C            : num [1:6789] 0.333 0.333 0.333 0.333 0.333 0.333 0.333 0.333 0.333 0.333 ...
+##   [list output truncated]
+##  - attr(*, &quot;spec&quot;)=
+##   .. cols(
+##   ..   country_name = col_character(),
+##   ..   country_text_id = col_character(),
+##   ..   country_id = col_double(),
+##   ..   year = col_double(),
+##   ..   historical_date = col_date(format = &quot;&quot;),
+##   ..   project = col_double(),
+##   ..   historical = col_double(),
+##   ..   histname = col_character(),
+##   ..   codingstart = col_double(),
+##   ..   codingend = col_double(),
+##   ..   codingstart_contemp = col_double(),
+##   ..   codingend_contemp = col_double(),
+##   ..   codingstart_hist = col_double(),
+##   ..   codingend_hist = col_double(),
+##   ..   gapstart1 = col_double(),
+##   ..   gapstart2 = col_double(),
+##   ..   gapstart3 = col_double(),
+##   ..   gapend1 = col_double(),
+##   ..   gapend2 = col_double(),
+##   ..   gapend3 = col_double(),
+##   ..   gap_index = col_double(),
+##   ..   COWcode = col_double(),
+##   ..   e_v2x_api_3C = col_double(),
+##   ..   e_v2x_api_4C = col_double(),
+##   ..   e_v2x_api_5C = col_double(),
+##   ..   e_v2x_civlib_3C = col_double(),
+##   ..   e_v2x_civlib_4C = col_double(),
+##   ..   e_v2x_civlib_5C = col_double(),
+##   ..   e_v2x_clphy_3C = col_double(),
+##   ..   e_v2x_clphy_4C = col_double(),
+##   ..   e_v2x_clphy_5C = col_double(),
+##   ..   e_v2x_clpol_3C = col_double(),
+##   ..   e_v2x_clpol_4C = col_double(),
+##   ..   e_v2x_clpol_5C = col_double(),
+##   ..   e_v2x_clpriv_3C = col_double(),
+##   ..   e_v2x_clpriv_4C = col_double(),
+##   ..   e_v2x_clpriv_5C = col_double(),
+##   ..   e_v2x_corr_3C = col_double(),
+##   ..   e_v2x_corr_4C = col_double(),
+##   ..   e_v2x_corr_5C = col_double(),
+##   ..   e_v2x_cspart_3C = col_double(),
+##   ..   e_v2x_cspart_4C = col_double(),
+##   ..   e_v2x_cspart_5C = col_double(),
+##   ..   e_v2x_delibdem_3C = col_double(),
+##   ..   e_v2x_delibdem_4C = col_double(),
+##   ..   e_v2x_delibdem_5C = col_double(),
+##   ..   e_v2x_EDcomp_thick_3C = col_double(),
+##   ..   e_v2x_EDcomp_thick_4C = col_double(),
+##   ..   e_v2x_EDcomp_thick_5C = col_double(),
+##   ..   e_v2x_egal_3C = col_double(),
+##   ..   e_v2x_egal_4C = col_double(),
+##   ..   e_v2x_egal_5C = col_double(),
+##   ..   e_v2x_egaldem_3C = col_double(),
+##   ..   e_v2x_egaldem_4C = col_double(),
+##   ..   e_v2x_egaldem_5C = col_double(),
+##   ..   e_v2x_elecoff_3C = col_double(),
+##   ..   e_v2x_elecoff_4C = col_double(),
+##   ..   e_v2x_elecoff_5C = col_double(),
+##   ..   e_v2x_execorr_3C = col_double(),
+##   ..   e_v2x_execorr_4C = col_double(),
+##   ..   e_v2x_execorr_5C = col_double(),
+##   ..   e_v2x_feduni_3C = col_double(),
+##   ..   e_v2x_feduni_4C = col_double(),
+##   ..   e_v2x_feduni_5C = col_double(),
+##   ..   e_v2x_frassoc_thick_3C = col_double(),
+##   ..   e_v2x_frassoc_thick_4C = col_double(),
+##   ..   e_v2x_frassoc_thick_5C = col_double(),
+##   ..   e_v2x_freexp_3C = col_double(),
+##   ..   e_v2x_freexp_4C = col_double(),
+##   ..   e_v2x_freexp_5C = col_double(),
+##   ..   e_v2x_freexp_altinf_3C = col_double(),
+##   ..   e_v2x_freexp_altinf_4C = col_double(),
+##   ..   e_v2x_freexp_altinf_5C = col_double(),
+##   ..   e_v2x_gencl_3C = col_double(),
+##   ..   e_v2x_gencl_4C = col_double(),
+##   ..   e_v2x_gencl_5C = col_double(),
+##   ..   e_v2x_gencs_3C = col_double(),
+##   ..   e_v2x_gencs_4C = col_double(),
+##   ..   e_v2x_gencs_5C = col_double(),
+##   ..   e_v2x_gender_3C = col_double(),
+##   ..   e_v2x_gender_4C = col_double(),
+##   ..   e_v2x_gender_5C = col_double(),
+##   ..   e_v2x_genpp_3C = col_double(),
+##   ..   e_v2x_genpp_4C = col_double(),
+##   ..   e_v2x_genpp_5C = col_double(),
+##   ..   e_v2x_jucon_3C = col_double(),
+##   ..   e_v2x_jucon_4C = col_double(),
+##   ..   e_v2x_jucon_5C = col_double(),
+##   ..   e_v2x_libdem_3C = col_double(),
+##   ..   e_v2x_libdem_4C = col_double(),
+##   ..   e_v2x_libdem_5C = col_double(),
+##   ..   e_v2x_liberal_3C = col_double(),
+##   ..   e_v2x_liberal_4C = col_double(),
+##   ..   e_v2x_liberal_5C = col_double(),
+##   ..   e_v2x_mpi_3C = col_double(),
+##   ..   e_v2x_mpi_4C = col_double(),
+##   ..   e_v2x_mpi_5C = col_double(),
+##   ..   e_v2x_partip_3C = col_double(),
+##   ..   e_v2x_partip_4C = col_double(),
+##   ..   e_v2x_partip_5C = col_double(),
+##   ..   e_v2x_partipdem_3C = col_double(),
+##   ..   e_v2x_partipdem_4C = col_double(),
+##   ..   e_v2x_partipdem_5C = col_double(),
+##   ..   e_v2x_polyarchy_3C = col_double(),
+##   ..   e_v2x_polyarchy_4C = col_double(),
+##   ..   e_v2x_polyarchy_5C = col_double(),
+##   ..   e_v2x_pubcorr_3C = col_double(),
+##   ..   e_v2x_pubcorr_4C = col_double(),
+##   ..   e_v2x_pubcorr_5C = col_double(),
+##   ..   e_v2x_suffr_3C = col_double(),
+##   ..   e_v2x_suffr_4C = col_double(),
+##   ..   e_v2x_suffr_5C = col_double(),
+##   ..   e_v2xcl_rol_3C = col_double(),
+##   ..   e_v2xcl_rol_4C = col_double(),
+##   ..   e_v2xcl_rol_5C = col_double(),
+##   ..   e_v2xcs_ccsi_3C = col_double(),
+##   ..   e_v2xcs_ccsi_4C = col_double(),
+##   ..   e_v2xcs_ccsi_5C = col_double(),
+##   ..   e_v2xdd_dd_3C = col_double(),
+##   ..   e_v2xdd_dd_4C = col_double(),
+##   ..   e_v2xdd_dd_5C = col_double(),
+##   ..   e_v2xdl_delib_3C = col_double(),
+##   ..   e_v2xdl_delib_4C = col_double(),
+##   ..   e_v2xdl_delib_5C = col_double(),
+##   ..   e_v2xeg_eqdr_3C = col_double(),
+##   ..   e_v2xeg_eqdr_4C = col_double(),
+##   ..   e_v2xeg_eqdr_5C = col_double(),
+##   ..   e_v2xeg_eqprotec_3C = col_double(),
+##   ..   e_v2xeg_eqprotec_4C = col_double(),
+##   ..   e_v2xeg_eqprotec_5C = col_double(),
+##   ..   e_v2xel_frefair_3C = col_double(),
+##   ..   e_v2xel_frefair_4C = col_double(),
+##   ..   e_v2xel_frefair_5C = col_double(),
+##   ..   e_v2xel_locelec_3C = col_double(),
+##   ..   e_v2xel_locelec_4C = col_double(),
+##   ..   e_v2xel_locelec_5C = col_double(),
+##   ..   e_v2xel_regelec_3C = col_double(),
+##   ..   e_v2xel_regelec_4C = col_double(),
+##   ..   e_v2xel_regelec_5C = col_double(),
+##   ..   e_v2xlg_legcon_3C = col_double(),
+##   ..   e_v2xlg_legcon_4C = col_double(),
+##   ..   e_v2xlg_legcon_5C = col_double(),
+##   ..   e_v2xme_altinf_3C = col_double(),
+##   ..   e_v2xme_altinf_4C = col_double(),
+##   ..   e_v2xme_altinf_5C = col_double(),
+##   ..   e_v2xps_party_3C = col_double(),
+##   ..   e_v2xps_party_4C = col_double(),
+##   ..   e_v2xps_party_5C = col_double(),
+##   ..   e_boix_regime = col_double(),
+##   ..   e_democracy_breakdowns = col_double(),
+##   ..   e_democracy_omitteddata = col_double(),
+##   ..   e_democracy_trans = col_double(),
+##   ..   e_fh_cl = col_double(),
+##   ..   e_fh_pr = col_double(),
+##   ..   e_fh_rol = col_double(),
+##   ..   e_fh_status = col_double(),
+##   ..   e_wbgi_cce = col_double(),
+##   ..   e_wbgi_gee = col_double(),
+##   ..   e_wbgi_pve = col_double(),
+##   ..   e_wbgi_rle = col_double(),
+##   ..   e_wbgi_rqe = col_double(),
+##   ..   e_wbgi_vae = col_double(),
+##   ..   e_lexical_index = col_double(),
+##   ..   e_uds_median = col_double(),
+##   ..   e_uds_mean = col_double(),
+##   ..   e_uds_pct025 = col_double(),
+##   ..   e_uds_pct975 = col_double(),
+##   ..   e_coups = col_double(),
+##   ..   e_legparty = col_double(),
+##   ..   e_autoc = col_double(),
+##   ..   e_democ = col_double(),
+##   ..   e_p_polity = col_double(),
+##   ..   e_polcomp = col_double(),
+##   ..   e_polity2 = col_double(),
+##   ..   e_bnr_dem = col_double(),
+##   ..   e_chga_demo = col_double(),
+##   ..   e_ti_cpi = col_double(),
+##   ..   e_vanhanen = col_double(),
+##   ..   e_peaveduc = col_double(),
+##   ..   e_peedgini = col_double(),
+##   ..   e_area = col_double(),
+##   ..   e_regiongeo = col_double(),
+##   ..   e_regionpol = col_double(),
+##   ..   e_regionpol_6C = col_double(),
+##   ..   e_cow_exports = col_double(),
+##   ..   e_cow_imports = col_double(),
+##   ..   e_gdp = col_double(),
+##   ..   e_gdp_sd = col_double(),
+##   ..   e_gdppc = col_double(),
+##   ..   e_gdppc_sd = col_double(),
+##   ..   e_miinflat = col_double(),
+##   ..   e_pop = col_double(),
+##   ..   e_pop_sd = col_double(),
+##   ..   e_total_fuel_income_pc = col_double(),
+##   ..   e_total_oil_income_pc = col_double(),
+##   ..   e_total_resources_income_pc = col_double(),
+##   ..   e_radio_n = col_double(),
+##   ..   e_miferrat = col_double(),
+##   ..   e_mipopula = col_double(),
+##   ..   e_miurbani = col_double(),
+##   ..   e_miurbpop = col_double(),
+##   ..   e_pefeliex = col_double(),
+##   ..   e_peinfmor = col_double(),
+##   ..   e_pelifeex = col_double(),
+##   ..   e_pematmor = col_double(),
+##   ..   e_wb_pop = col_double(),
+##   ..   e_civil_war = col_double(),
+##   ..   e_miinteco = col_double(),
+##   ..   e_miinterc = col_double(),
+##   ..   e_pt_coup = col_double(),
+##   ..   e_pt_coup_attempts = col_double()
+##   .. )
+##  - attr(*, &quot;problems&quot;)=&lt;externalptr&gt;</code></pre>
+<p>Usually, the second step of my data inquiry is having an overview of
+the <em>identifiers</em> of data points. In our case, the identifiers
+are country names, country IDs, and years. Using the
+<code>distinct()</code> function can effectively identify the distinct
+levels of <em>identifiers</em></p>
+<pre class="r"><code>d |&gt; select(country_name, country_id, year) |&gt; distinct()</code></pre>
+<pre><code>## # A tibble: 6,789 × 3
+##    country_name country_id  year
+##    &lt;chr&gt;             &lt;dbl&gt; &lt;dbl&gt;
+##  1 Mexico                3  1984
+##  2 Mexico                3  1985
+##  3 Mexico                3  1986
+##  4 Mexico                3  1987
+##  5 Mexico                3  1988
+##  6 Mexico                3  1989
+##  7 Mexico                3  1990
+##  8 Mexico                3  1991
+##  9 Mexico                3  1992
+## 10 Mexico                3  1993
+## # ℹ 6,779 more rows</code></pre>
+<pre class="r"><code># Which countries are in this dataset
+d |&gt; select(country_name) |&gt; distinct()</code></pre>
+<pre><code>## # A tibble: 181 × 1
+##    country_name 
+##    &lt;chr&gt;        
+##  1 Mexico       
+##  2 Suriname     
+##  3 Sweden       
+##  4 Switzerland  
+##  5 Ghana        
+##  6 South Africa 
+##  7 Japan        
+##  8 Burma/Myanmar
+##  9 Russia       
+## 10 Albania      
+## # ℹ 171 more rows</code></pre>
+<pre class="r"><code>d |&gt; select(year) |&gt; distinct()</code></pre>
+<pre><code>## # A tibble: 39 × 1
+##     year
+##    &lt;dbl&gt;
+##  1  1984
+##  2  1985
+##  3  1986
+##  4  1987
+##  5  1988
+##  6  1989
+##  7  1990
+##  8  1991
+##  9  1992
+## 10  1993
+## # ℹ 29 more rows</code></pre>
+<p>Select both the country identifiers, GDP, and GDP per capita.</p>
+<pre class="r"><code>d_gdp &lt;- d |&gt; 
+  select(country_name, country_id, year, e_gdp, e_gdppc)
+
+d_gdp</code></pre>
+<pre><code>## # A tibble: 6,789 × 5
+##    country_name country_id  year   e_gdp e_gdppc
+##    &lt;chr&gt;             &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;
+##  1 Mexico                3  1984  93563.    11.7
+##  2 Mexico                3  1985  94259.    11.5
+##  3 Mexico                3  1986  92750.    11.1
+##  4 Mexico                3  1987  93220.    10.9
+##  5 Mexico                3  1988  94687.    10.8
+##  6 Mexico                3  1989  98145.    11.0
+##  7 Mexico                3  1990 103254.    11.4
+##  8 Mexico                3  1991 107374.    11.6
+##  9 Mexico                3  1992 111533.    11.9
+## 10 Mexico                3  1993 114611.    12.0
+## # ℹ 6,779 more rows</code></pre>
+</div>
+<div id="rename-columns-to-make-names-informative" class="section level3">
+<h3>3. Rename Columns to Make Names Informative</h3>
+<pre class="r"><code>d_gdp &lt;- d_gdp |&gt;
+  rename(&quot;GDP&quot; = &quot;e_gdp&quot;, &quot;GDP_per_capita&quot; = &quot;e_gdppc&quot;,
+         &quot;Country&quot; = &quot;country_name&quot;, &quot;ID&quot; = &quot;country_id&quot;,
+         &quot;Year&quot; = &quot;year&quot;)
+
+d_gdp</code></pre>
+<pre><code>## # A tibble: 6,789 × 5
+##    Country    ID  Year     GDP GDP_per_capita
+##    &lt;chr&gt;   &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;          &lt;dbl&gt;
+##  1 Mexico      3  1984  93563.           11.7
+##  2 Mexico      3  1985  94259.           11.5
+##  3 Mexico      3  1986  92750.           11.1
+##  4 Mexico      3  1987  93220.           10.9
+##  5 Mexico      3  1988  94687.           10.8
+##  6 Mexico      3  1989  98145.           11.0
+##  7 Mexico      3  1990 103254.           11.4
+##  8 Mexico      3  1991 107374.           11.6
+##  9 Mexico      3  1992 111533.           11.9
+## 10 Mexico      3  1993 114611.           12.0
+## # ℹ 6,779 more rows</code></pre>
+</div>
+<div id="subset-rows-of-the-data-using-slice_" class="section level3">
+<h3>4. Subset Rows of the Data Using <code>slice_</code></h3>
+<p>The set of <code>slice_</code> functions will become handy when you
+want to take a subset of rows based on some simple rules.</p>
+<p>If you would like to get 10 obervations (countries-years) with the
+maximum <code>GDP</code>, use <code>slice_max</code>:</p>
+<pre class="r"><code># Want countries-years with highest GDP
+d_gdp |&gt; 
+  slice_max(order_by = GDP, n = 10)</code></pre>
+<pre><code>## # A tibble: 10 × 5
+##    Country                     ID  Year      GDP GDP_per_capita
+##    &lt;chr&gt;                    &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;          &lt;dbl&gt;
+##  1 China                      110  2019 2279809.           15.4
+##  2 China                      110  2018 2205730.           14.9
+##  3 China                      110  2017 2136176.           14.5
+##  4 United States of America    20  2019 2118706.           60.6
+##  5 United States of America    20  2018 2077898.           59.6
+##  6 China                      110  2016 2039529.           13.9
+##  7 United States of America    20  2017 2023242.           58.5
+##  8 United States of America    20  2016 1980809.           57.6
+##  9 China                      110  2015 1953127.           13.3
+## 10 United States of America    20  2015 1942092.           56.7</code></pre>
+<p>Similiarily, if you want a subset of countries-years with mimnimal
+GDP, use <code>slice_min</code>:</p>
+<pre class="r"><code># Get countries-years with the lowest GDP
+d_gdp |&gt; slice_min(order_by = GDP, n = 10)</code></pre>
+<pre><code>## # A tibble: 10 × 5
+##    Country                  ID  Year   GDP GDP_per_capita
+##    &lt;chr&gt;                 &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;          &lt;dbl&gt;
+##  1 Sao Tome and Principe   196  1988  24.0           2.04
+##  2 Sao Tome and Principe   196  1987  24.0           2.08
+##  3 Sao Tome and Principe   196  1986  24.4           2.17
+##  4 Sao Tome and Principe   196  1984  24.7           2.29
+##  5 Sao Tome and Principe   196  1985  24.9           2.26
+##  6 Sao Tome and Principe   196  1989  25.0           2.06
+##  7 Sao Tome and Principe   196  1990  25.2           2.03
+##  8 Sao Tome and Principe   196  1992  25.2           1.95
+##  9 Sao Tome and Principe   196  1991  25.3           1.99
+## 10 Sao Tome and Principe   196  1993  25.5           1.93</code></pre>
+<p>Finally, if you wish to take a random sample of observations in the
+data, use <code>slice_sample</code>. Note that you may tell R the exact
+sample size you want:</p>
+<pre class="r"><code>set.seed(52)
+d_gdp |&gt; slice_sample(n = 10) # Sample 10 observations</code></pre>
+<pre><code>## # A tibble: 10 × 5
+##    Country        ID  Year      GDP GDP_per_capita
+##    &lt;chr&gt;       &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;          &lt;dbl&gt;
+##  1 Cape Verde     70  1988     76.5           2.18
+##  2 Oman          187  1991   2955.           14.7 
+##  3 Romania       190  2010  30202.           14.0 
+##  4 South Korea    42  2001 124701.           24.6 
+##  5 Mozambique     57  2012   3589.            1.41
+##  6 Bulgaria      152  1992   8739.            9.53
+##  7 Morocco        90  2001  15549.            5.03
+##  8 Vietnam        34  1990  10537.            1.47
+##  9 Canada         66  1985  83713.           30.4 
+## 10 Serbia        198  1987  17430.            7.64</code></pre>
+<p>Or you may define the sample size as a poroportion of the original
+data size:</p>
+<pre class="r"><code>set.seed(52)
+d_gdp |&gt; slice_sample(prop = 0.1)</code></pre>
+<pre><code>## # A tibble: 678 × 5
+##    Country        ID  Year      GDP GDP_per_capita
+##    &lt;chr&gt;       &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;          &lt;dbl&gt;
+##  1 Cape Verde     70  1988     76.5           2.18
+##  2 Oman          187  1991   2955.           14.7 
+##  3 Romania       190  2010  30202.           14.0 
+##  4 South Korea    42  2001 124701.           24.6 
+##  5 Mozambique     57  2012   3589.            1.41
+##  6 Bulgaria      152  1992   8739.            9.53
+##  7 Morocco        90  2001  15549.            5.03
+##  8 Vietnam        34  1990  10537.            1.47
+##  9 Canada         66  1985  83713.           30.4 
+## 10 Serbia        198  1987  17430.            7.64
+## # ℹ 668 more rows</code></pre>
+<p>The <code>set.seed</code> function specify a random seed with which
+the system uses to generate the “random sample.” Long story short,
+“random” stuff generated by a machine are never really random. Instead,
+the random outputs (in our case, a random subset of the data) are
+results of the computer input some “random seed” to some complicated
+formula. When you define a random seed, you can guarantee that you
+obtain the same random sample every time you run the program – this
+makes your data science research reproducible. As we have discussed,
+reproducibility is a desired feature of a data science project. So I
+would strongly recommend setting a random seed every time.</p>
+</div>
+<div id="subset-rows-of-the-data-using-filter" class="section level3">
+<h3>5. Subset Rows of the Data Using <code>filter</code></h3>
+<p>For example, we may take the observations whose <code>Year</code>
+variable ranges from 2000 to 2005.</p>
+<pre class="r"><code># Want: 2000-2005 data
+d_gdp |&gt; filter(Year &gt;= 2000 &amp; Year &lt;= 2005)</code></pre>
+<pre><code>## # A tibble: 1,062 × 5
+##    Country     ID  Year     GDP GDP_per_capita
+##    &lt;chr&gt;    &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;          &lt;dbl&gt;
+##  1 Mexico       3  2000 145206.          13.7 
+##  2 Mexico       3  2001 146993.          13.6 
+##  3 Mexico       3  2002 148549.          13.6 
+##  4 Mexico       3  2003 151035.          13.7 
+##  5 Mexico       3  2004 156578.          14.1 
+##  6 Mexico       3  2005 162094.          14.3 
+##  7 Suriname     4  2000    383.           7.67
+##  8 Suriname     4  2001    402.           7.93
+##  9 Suriname     4  2002    423.           8.25
+## 10 Suriname     4  2003    451.           8.67
+## # ℹ 1,052 more rows</code></pre>
+<p>We may subset observations whose <code>Country</code> variable, a
+<code>character</code> variable, equals to the text
+<code>&quot;China&quot;</code>.</p>
+<pre class="r"><code>d_gdp |&gt; filter(Country == &quot;China&quot;)</code></pre>
+<pre><code>## # A tibble: 39 × 5
+##    Country    ID  Year     GDP GDP_per_capita
+##    &lt;chr&gt;   &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;          &lt;dbl&gt;
+##  1 China     110  1984 243976.           2.21
+##  2 China     110  1985 265805.           2.36
+##  3 China     110  1986 285707.           2.50
+##  4 China     110  1987 308227.           2.65
+##  5 China     110  1988 322596.           2.73
+##  6 China     110  1989 327739.           2.74
+##  7 China     110  1990 315683.           2.63
+##  8 China     110  1991 329836.           2.71
+##  9 China     110  1992 359817.           2.90
+## 10 China     110  1993 393449.           3.15
+## # ℹ 29 more rows</code></pre>
+<p>We may also stack multiple <code>filter</code> functions. For
+example, you may do the following if you want to look at a subset of the
+data whose <code>Year</code> ranges from 2000 to 2005 and
+<code>Country</code> equals to <code>&quot;China&quot;</code>:</p>
+<pre class="r"><code># Want: 2000 - 2005 from China
+d_gdp |&gt; 
+  filter(Year &gt;= 2000 &amp; Year &lt;= 2005) |&gt; 
+  filter(Country == &quot;China&quot;)</code></pre>
+<pre><code>## # A tibble: 6 × 5
+##   Country    ID  Year     GDP GDP_per_capita
+##   &lt;chr&gt;   &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;          &lt;dbl&gt;
+## 1 China     110  2000 633740.           4.74
+## 2 China     110  2001 682141.           5.05
+## 3 China     110  2002 738393.           5.43
+## 4 China     110  2003 798702.           5.83
+## 5 China     110  2004 871314.           6.31
+## 6 China     110  2005 956102.           6.89</code></pre>
+</div>
+<div id="sort-the-data-based-on-values-of-rows-using-arrange" class="section level3">
+<h3>6. Sort the Data based on Values of Rows using
+<code>arrange</code></h3>
+<p>Now we will try to sort the dataset <code>d_gdp</code> by the value
+of GDP per capita using the <code>arrange</code>. We may have
+country-year with small values of <code>GDP_per_capita</code> appearing
+first and those with larger values of <code>GDP_per_capita</code> coming
+after them.</p>
+<pre class="r"><code># Want: sort the row by GDP per capita
+d_gdp |&gt; arrange(GDP_per_capita)</code></pre>
+<pre><code>## # A tibble: 6,789 × 5
+##    Country                             ID  Year    GDP GDP_per_capita
+##    &lt;chr&gt;                            &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;          &lt;dbl&gt;
+##  1 Liberia                             86  1995   62.3          0.286
+##  2 Liberia                             86  1994   65.5          0.307
+##  3 Liberia                             86  1996   70.6          0.309
+##  4 Liberia                             86  1993   81.5          0.383
+##  5 Liberia                             86  1997  107.           0.429
+##  6 Liberia                             86  1992  113.           0.53 
+##  7 Democratic Republic of the Congo   111  2002 2966.           0.538
+##  8 Democratic Republic of the Congo   111  2001 2890.           0.54 
+##  9 Liberia                             86  1998  147.           0.543
+## 10 Democratic Republic of the Congo   111  2003 3141.           0.552
+## # ℹ 6,779 more rows</code></pre>
+<p>Want the countries-years with larger values of
+<code>GDP_per_capita</code> appear first? Simply reverse the value using
+<code>-GDP_per_capita</code>. Alternatively, you may replace
+<code>desc(GDP_per_capita)</code>.</p>
+<pre class="r"><code>d_gdp |&gt; arrange(-GDP_per_capita)</code></pre>
+<pre><code>## # A tibble: 6,789 × 5
+##    Country                 ID  Year    GDP GDP_per_capita
+##    &lt;chr&gt;                &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;          &lt;dbl&gt;
+##  1 United Arab Emirates   207  1984 16817.          115. 
+##  2 United Arab Emirates   207  1985 15946.          103. 
+##  3 Qatar                   94  2012 23055.          101. 
+##  4 Qatar                   94  2011 21273.          100. 
+##  5 Qatar                   94  2013 24074.           98.9
+##  6 United Arab Emirates   207  1991 20567.           96.5
+##  7 United Arab Emirates   207  1992 21506.           95.7
+##  8 Qatar                   94  2014 24194.           95.3
+##  9 Qatar                   94  2010 18107.           94.4
+## 10 United Arab Emirates   207  2000 31871.           93.3
+## # ℹ 6,779 more rows</code></pre>
 </div>
 </div>
 
