@@ -1,12 +1,12 @@
 ---
-title: "Data Wrangling (Basics)"
+title: "Data Wrangling"
 author: "Haohan Chen"
 date: "Last update: `r format(Sys.Date(), '%B %d, %Y')`"
 output: 
   html_document: default
   pdf_document: default
   md_document: default
-knit: (function(inputFile, encoding){rmarkdown::render(inputFile, encoding = encoding, output_format = "all", knit_root_dir = getwd()) })
+knit: (function(inputFile, encoding){rmarkdown::render(inputFile, encoding = encoding, output_format = "all", knit_root_dir = getwd())})
 editor_options: 
   chunk_output_type: console
 ---
@@ -15,7 +15,57 @@ editor_options:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## Load packages
+## Objectives of this Lecture
+
+This lecture introduces data wrangling with R. Using V-Dem data as an example, we will learn how to use the wrangle data with a set of [`tidyverse`](https://www.tidyverse.org/) functionality. Specifically, we will focus on functions...
+
+1.  to import and export data: `read_csv` , `write_csv` (with a brief introduction to other data import/ export functions from [`readr`](https://readr.tidyverse.org/)).
+
+2.  to take a subset of *columns* in the existing data: `select`
+
+3.  to rename columns: `rename`
+
+4.  to take a subset of *rows* by some simple conditions: `slice_`
+
+5.  to take a subset of *rows* by some more complicated conditions: `filter`
+
+6.  to sort the rows based on the value of one or multiple columns: `arrange`
+
+7.  to perform (4) (5) (6) group by group: `group_by`, `ungroup`
+
+8.  to create new columns in the data: `group_by`, `mutate`, `ungroup`
+
+9.  to summarize the data: `group_by`, `summarize`, `ungroup`
+
+## Case Study
+
+To demonstrate the above functionality, we will use real-world political data from [V-Dem](https://v-dem.net/). Specifically, we will use the above function to explore the state of global economic development from 1984 to 2022. Our effort will take the following step (with one-on-one mappings with the above tools).
+
+1.  Read a part of pre-processed V-Dem data into R: 1984-2022 "external" data in the V-Dem dataset.
+2.  Consulting the dataset's [codebook](https://github.com/haohanchen/HKU_POLI3148_23Fall/blob/main/_DataPublic_/vdem/documentation/codebook_v13.pdf), take a subset of indicators of *economic development* (along with country-year identifiers).
+3.  Rename the column to name their names informative to readers.
+4.  Find the country-year with the *highest* and *lowest* level of economic development. In addition, create a dataset containing a random sample of country-year in the dataset.
+5.  Create a dataset focusing on the economic development of Asian countries and regions; Create a dataset that contains only countries/ regions whose development level pass certain threshold.
+6.  Create a dataset whose rows are sorted by the development level of country-year.
+7.  Create a dataset that contains the year of the higest development level for each country/ region respectively.
+8.  Add the following economic indicators to the data:
+    1.  Country-year development level with reference to that of 1984.
+
+    2.  Year-on-year economic growth.
+9.  Make a new dataset contains the following indicators:
+    1.  Average development level from 1984 to 2022.
+
+    2.  Magnitude of economic growth from 1984 to 2022.
+
+## In-class Exercise
+
+## Further reading
+
+-   R for Data Science (2e) Chapters 4, 5, 8: <https://r4ds.hadley.nz/>
+
+-   V-Dem documentation: <https://v-dem.net/>
+
+## Load the `tidyverse` Packages
 
 This section loads the packages we need in this lecture.
 
@@ -23,7 +73,7 @@ This section loads the packages we need in this lecture.
 library(tidyverse)
 ```
 
-## Load data
+## Read and Write Data
 
 This section loads the VDEM dataset and describe its basic information
 
@@ -35,6 +85,7 @@ d <- read_csv("_DataPublic_/vdem/1984_2022/vdem_1984_2022_external.csv")
 
 ```{r}
 dim(d)
+names(d)
 ```
 
 ## Select Variables (Columns) of Interest
@@ -58,15 +109,3 @@ d_s <- d_s |>
 ```
 
 ## Filter Observations (Rows) of Interest
-
-For our analysis, we want to focus on data points from 2010 to 2020
-
-```{r}
-d_s_2010_2020 <- d_s |> filter(year >= 2000 & year <= 2020)
-```
-
-```{r}
-d_s |>
-  ggplot(aes(x = `year`, y = `GDP per capita`, group = year)) +
-  geom_boxplot()
-```
