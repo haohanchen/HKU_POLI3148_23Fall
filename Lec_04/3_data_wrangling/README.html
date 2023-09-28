@@ -12,7 +12,7 @@
 <meta name="author" content="Haohan Chen" />
 
 
-<title>Data Wrangling</title>
+<title>Data Wrangling (1)</title>
 
 <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -349,7 +349,7 @@ display: none;
 
 
 
-<h1 class="title toc-ignore">Data Wrangling</h1>
+<h1 class="title toc-ignore">Data Wrangling (1)</h1>
 <h4 class="author">Haohan Chen</h4>
 <h4 class="date">Last update: September 28, 2023</h4>
 
@@ -379,7 +379,7 @@ conditions: <code>filter</code></p></li>
 <li><p>to create new columns in the data: <code>group_by</code>,
 <code>mutate</code>, <code>ungroup</code></p></li>
 <li><p>to summarize the data: <code>group_by</code>,
-<code>summarize</code>, <code>ungroup</code></p></li>
+<code>summarise</code>, <code>ungroup</code></p></li>
 </ol>
 </div>
 <div id="case-study" class="section level2">
@@ -392,9 +392,15 @@ following step (with one-on-one mappings with the above tools).</p>
 <ol style="list-style-type: decimal">
 <li>Read a part of pre-processed V-Dem data into R: 1984-2022 “external”
 data in the V-Dem dataset.</li>
-<li>Consulting the dataset’s <a href="https://github.com/haohanchen/HKU_POLI3148_23Fall/blob/main/_DataPublic_/vdem/documentation/codebook_v13.pdf">codebook</a>,
-take a subset of indicators of <em>economic development</em> (along with
-country-year identifiers).</li>
+<li>Consulting the dataset’s <a href="https://github.com/haohanchen/HKU_POLI3148_23Fall/blob/main/_DataPublic_/vdem/documentation/codebook_v13.pdf">codebook</a>
+and take a <strong>subset</strong> of indicators of <em>economic
+development</em> (along with country-year identifiers).
+<ul>
+<li><p><em>See a list of country-yer identifiers on p. 5 of the codebook
+(under “1.7 Identifier Variables in the V-Dem Datasets”).</em></p></li>
+<li><p><em>See a list of development indicators on p. 23 of the codebook
+(under “9. Background Factors”).</em></p></li>
+</ul></li>
 <li>Rename the column to name their names informative to readers.</li>
 <li>Find the country-year with the <em>highest</em> and <em>lowest</em>
 level of economic development. In addition, create a dataset containing
@@ -412,25 +418,81 @@ level for each country/ region respectively.</li>
 1984.</p></li>
 <li><p>Year-on-year economic growth.</p></li>
 </ol></li>
-<li>Make a new dataset contains the following indicators:
+<li>Perform a data availability/ integrity check. Then aggregate the
+data into a new country-level dataset which contains the following
+indicators:
 <ol style="list-style-type: decimal">
 <li><p>Average development level from 1984 to 2022.</p></li>
-<li><p>Magnitude of economic growth from 1984 to 2022.</p></li>
+<li><p>Magnitude of growth from 1984 to 2022.</p></li>
 </ol></li>
 </ol>
 </div>
 <div id="in-class-exercise" class="section level2">
 <h2>In-class Exercise</h2>
+<p>The quality of education has a decisive effect on a country’s future
+development. Applying the data wrangling tools we introduce in this
+lecture, perform the following task:</p>
+<ol style="list-style-type: decimal">
+<li><strong>Coodbook lookup</strong>. Look up the codebook, answer the
+following questions:
+<ol style="list-style-type: decimal">
+<li><p>What indicators regarding the quality of education are available
+in the V-Dem datasets?</p></li>
+<li><p>What are the data’s coverage (i.e., for which countries and years
+do we have data?)</p></li>
+<li><p>What are their sources? Provide the link to least 1
+source.</p></li>
+</ol></li>
+<li><strong>Subset by columns</strong>
+<ol style="list-style-type: decimal">
+<li><p>Create a dataset containing only the country-year identifiers and
+indicators of education quality.</p></li>
+<li><p>Rename the columns of education quality to make them
+informative.</p></li>
+</ol></li>
+<li><strong>Subset by rows</strong>
+<ol style="list-style-type: decimal">
+<li><p>List 10 countries-years that have the highest education level
+among its population.</p></li>
+<li><p>List 10 countries-years that suffer from the most severe
+inequality in education.</p></li>
+</ol></li>
+<li><strong>Summarize the data</strong>
+<ol style="list-style-type: decimal">
+<li><p>Check data availability: For which countries and years are the
+indicators of education quality available?</p></li>
+<li><p>Create two types of country-level indicators of education
+quality</p>
+<ol style="list-style-type: decimal">
+<li><p>Average level of education quality since 1984</p></li>
+<li><p>Change of education quality since 1984</p></li>
+</ol></li>
+<li><p>Examine the data and discuss: Which countries perform the best
+and the worst in terms of education quality in the past four
+decades?</p></li>
+</ol></li>
+</ol>
+<p><em>Note:</em> <em>Please</em> <em>only use the functions we cover in
+this lecture for this exercise (if you choose, you may also use other
+functions in the <code>dplyr</code> documentation). There is
+<u>absolutely no need</u> to perform any data visualization for this
+exercise… We will get there in later lectures.</em></p>
 </div>
 <div id="further-reading" class="section level2">
 <h2>Further reading</h2>
 <ul>
 <li><p>R for Data Science (2e) Chapters 4, 5, 8: <a href="https://r4ds.hadley.nz/" class="uri">https://r4ds.hadley.nz/</a></p></li>
+<li><p><code>readr</code> documentation (note: read the “cheatsheet”):
+<a href="https://readr.tidyverse.org/" class="uri">https://readr.tidyverse.org/</a></p></li>
+<li><p><code>dplyr</code> documentation (note: read the “cheatsheet”):
+<a href="https://dplyr.tidyverse.org/" class="uri">https://dplyr.tidyverse.org/</a></p></li>
 <li><p>V-Dem documentation: <a href="https://v-dem.net/" class="uri">https://v-dem.net/</a></p></li>
 </ul>
 </div>
-<div id="load-the-tidyverse-packages" class="section level2">
-<h2>Load the <code>tidyverse</code> Packages</h2>
+<div id="demo" class="section level2">
+<h2>Demo</h2>
+<div id="load-the-tidyverse-packages" class="section level3">
+<h3>0. Load the <code>tidyverse</code> Packages</h3>
 <p>This section loads the packages we need in this lecture.</p>
 <pre class="r"><code>library(tidyverse)</code></pre>
 <pre><code>## ── Attaching packages ─────────────────────────────────────── tidyverse 1.3.2 ──
@@ -442,8 +504,8 @@ level for each country/ region respectively.</li>
 ## ✖ dplyr::filter() masks stats::filter()
 ## ✖ dplyr::lag()    masks stats::lag()</code></pre>
 </div>
-<div id="read-and-write-data" class="section level2">
-<h2>Read and Write Data</h2>
+<div id="import-and-export-the-v-dem-data" class="section level3">
+<h3>1. Import and Export the V-Dem Data</h3>
 <p>This section loads the VDEM dataset and describe its basic
 information</p>
 <pre class="r"><code>d &lt;- read_csv(&quot;_DataPublic_/vdem/1984_2022/vdem_1984_2022_external.csv&quot;)</code></pre>
@@ -457,150 +519,6 @@ information</p>
 ## ℹ Use `spec()` to retrieve the full column specification for this data.
 ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
 </div>
-<div id="check-basic-information-of-the-dataset" class="section level2">
-<h2>Check Basic Information of the Dataset</h2>
-<pre class="r"><code>dim(d)</code></pre>
-<pre><code>## [1] 6789  211</code></pre>
-<pre class="r"><code>names(d)</code></pre>
-<pre><code>##   [1] &quot;country_name&quot;                &quot;country_text_id&quot;            
-##   [3] &quot;country_id&quot;                  &quot;year&quot;                       
-##   [5] &quot;historical_date&quot;             &quot;project&quot;                    
-##   [7] &quot;historical&quot;                  &quot;histname&quot;                   
-##   [9] &quot;codingstart&quot;                 &quot;codingend&quot;                  
-##  [11] &quot;codingstart_contemp&quot;         &quot;codingend_contemp&quot;          
-##  [13] &quot;codingstart_hist&quot;            &quot;codingend_hist&quot;             
-##  [15] &quot;gapstart1&quot;                   &quot;gapstart2&quot;                  
-##  [17] &quot;gapstart3&quot;                   &quot;gapend1&quot;                    
-##  [19] &quot;gapend2&quot;                     &quot;gapend3&quot;                    
-##  [21] &quot;gap_index&quot;                   &quot;COWcode&quot;                    
-##  [23] &quot;e_v2x_api_3C&quot;                &quot;e_v2x_api_4C&quot;               
-##  [25] &quot;e_v2x_api_5C&quot;                &quot;e_v2x_civlib_3C&quot;            
-##  [27] &quot;e_v2x_civlib_4C&quot;             &quot;e_v2x_civlib_5C&quot;            
-##  [29] &quot;e_v2x_clphy_3C&quot;              &quot;e_v2x_clphy_4C&quot;             
-##  [31] &quot;e_v2x_clphy_5C&quot;              &quot;e_v2x_clpol_3C&quot;             
-##  [33] &quot;e_v2x_clpol_4C&quot;              &quot;e_v2x_clpol_5C&quot;             
-##  [35] &quot;e_v2x_clpriv_3C&quot;             &quot;e_v2x_clpriv_4C&quot;            
-##  [37] &quot;e_v2x_clpriv_5C&quot;             &quot;e_v2x_corr_3C&quot;              
-##  [39] &quot;e_v2x_corr_4C&quot;               &quot;e_v2x_corr_5C&quot;              
-##  [41] &quot;e_v2x_cspart_3C&quot;             &quot;e_v2x_cspart_4C&quot;            
-##  [43] &quot;e_v2x_cspart_5C&quot;             &quot;e_v2x_delibdem_3C&quot;          
-##  [45] &quot;e_v2x_delibdem_4C&quot;           &quot;e_v2x_delibdem_5C&quot;          
-##  [47] &quot;e_v2x_EDcomp_thick_3C&quot;       &quot;e_v2x_EDcomp_thick_4C&quot;      
-##  [49] &quot;e_v2x_EDcomp_thick_5C&quot;       &quot;e_v2x_egal_3C&quot;              
-##  [51] &quot;e_v2x_egal_4C&quot;               &quot;e_v2x_egal_5C&quot;              
-##  [53] &quot;e_v2x_egaldem_3C&quot;            &quot;e_v2x_egaldem_4C&quot;           
-##  [55] &quot;e_v2x_egaldem_5C&quot;            &quot;e_v2x_elecoff_3C&quot;           
-##  [57] &quot;e_v2x_elecoff_4C&quot;            &quot;e_v2x_elecoff_5C&quot;           
-##  [59] &quot;e_v2x_execorr_3C&quot;            &quot;e_v2x_execorr_4C&quot;           
-##  [61] &quot;e_v2x_execorr_5C&quot;            &quot;e_v2x_feduni_3C&quot;            
-##  [63] &quot;e_v2x_feduni_4C&quot;             &quot;e_v2x_feduni_5C&quot;            
-##  [65] &quot;e_v2x_frassoc_thick_3C&quot;      &quot;e_v2x_frassoc_thick_4C&quot;     
-##  [67] &quot;e_v2x_frassoc_thick_5C&quot;      &quot;e_v2x_freexp_3C&quot;            
-##  [69] &quot;e_v2x_freexp_4C&quot;             &quot;e_v2x_freexp_5C&quot;            
-##  [71] &quot;e_v2x_freexp_altinf_3C&quot;      &quot;e_v2x_freexp_altinf_4C&quot;     
-##  [73] &quot;e_v2x_freexp_altinf_5C&quot;      &quot;e_v2x_gencl_3C&quot;             
-##  [75] &quot;e_v2x_gencl_4C&quot;              &quot;e_v2x_gencl_5C&quot;             
-##  [77] &quot;e_v2x_gencs_3C&quot;              &quot;e_v2x_gencs_4C&quot;             
-##  [79] &quot;e_v2x_gencs_5C&quot;              &quot;e_v2x_gender_3C&quot;            
-##  [81] &quot;e_v2x_gender_4C&quot;             &quot;e_v2x_gender_5C&quot;            
-##  [83] &quot;e_v2x_genpp_3C&quot;              &quot;e_v2x_genpp_4C&quot;             
-##  [85] &quot;e_v2x_genpp_5C&quot;              &quot;e_v2x_jucon_3C&quot;             
-##  [87] &quot;e_v2x_jucon_4C&quot;              &quot;e_v2x_jucon_5C&quot;             
-##  [89] &quot;e_v2x_libdem_3C&quot;             &quot;e_v2x_libdem_4C&quot;            
-##  [91] &quot;e_v2x_libdem_5C&quot;             &quot;e_v2x_liberal_3C&quot;           
-##  [93] &quot;e_v2x_liberal_4C&quot;            &quot;e_v2x_liberal_5C&quot;           
-##  [95] &quot;e_v2x_mpi_3C&quot;                &quot;e_v2x_mpi_4C&quot;               
-##  [97] &quot;e_v2x_mpi_5C&quot;                &quot;e_v2x_partip_3C&quot;            
-##  [99] &quot;e_v2x_partip_4C&quot;             &quot;e_v2x_partip_5C&quot;            
-## [101] &quot;e_v2x_partipdem_3C&quot;          &quot;e_v2x_partipdem_4C&quot;         
-## [103] &quot;e_v2x_partipdem_5C&quot;          &quot;e_v2x_polyarchy_3C&quot;         
-## [105] &quot;e_v2x_polyarchy_4C&quot;          &quot;e_v2x_polyarchy_5C&quot;         
-## [107] &quot;e_v2x_pubcorr_3C&quot;            &quot;e_v2x_pubcorr_4C&quot;           
-## [109] &quot;e_v2x_pubcorr_5C&quot;            &quot;e_v2x_suffr_3C&quot;             
-## [111] &quot;e_v2x_suffr_4C&quot;              &quot;e_v2x_suffr_5C&quot;             
-## [113] &quot;e_v2xcl_rol_3C&quot;              &quot;e_v2xcl_rol_4C&quot;             
-## [115] &quot;e_v2xcl_rol_5C&quot;              &quot;e_v2xcs_ccsi_3C&quot;            
-## [117] &quot;e_v2xcs_ccsi_4C&quot;             &quot;e_v2xcs_ccsi_5C&quot;            
-## [119] &quot;e_v2xdd_dd_3C&quot;               &quot;e_v2xdd_dd_4C&quot;              
-## [121] &quot;e_v2xdd_dd_5C&quot;               &quot;e_v2xdl_delib_3C&quot;           
-## [123] &quot;e_v2xdl_delib_4C&quot;            &quot;e_v2xdl_delib_5C&quot;           
-## [125] &quot;e_v2xeg_eqdr_3C&quot;             &quot;e_v2xeg_eqdr_4C&quot;            
-## [127] &quot;e_v2xeg_eqdr_5C&quot;             &quot;e_v2xeg_eqprotec_3C&quot;        
-## [129] &quot;e_v2xeg_eqprotec_4C&quot;         &quot;e_v2xeg_eqprotec_5C&quot;        
-## [131] &quot;e_v2xel_frefair_3C&quot;          &quot;e_v2xel_frefair_4C&quot;         
-## [133] &quot;e_v2xel_frefair_5C&quot;          &quot;e_v2xel_locelec_3C&quot;         
-## [135] &quot;e_v2xel_locelec_4C&quot;          &quot;e_v2xel_locelec_5C&quot;         
-## [137] &quot;e_v2xel_regelec_3C&quot;          &quot;e_v2xel_regelec_4C&quot;         
-## [139] &quot;e_v2xel_regelec_5C&quot;          &quot;e_v2xlg_legcon_3C&quot;          
-## [141] &quot;e_v2xlg_legcon_4C&quot;           &quot;e_v2xlg_legcon_5C&quot;          
-## [143] &quot;e_v2xme_altinf_3C&quot;           &quot;e_v2xme_altinf_4C&quot;          
-## [145] &quot;e_v2xme_altinf_5C&quot;           &quot;e_v2xps_party_3C&quot;           
-## [147] &quot;e_v2xps_party_4C&quot;            &quot;e_v2xps_party_5C&quot;           
-## [149] &quot;e_boix_regime&quot;               &quot;e_democracy_breakdowns&quot;     
-## [151] &quot;e_democracy_omitteddata&quot;     &quot;e_democracy_trans&quot;          
-## [153] &quot;e_fh_cl&quot;                     &quot;e_fh_pr&quot;                    
-## [155] &quot;e_fh_rol&quot;                    &quot;e_fh_status&quot;                
-## [157] &quot;e_wbgi_cce&quot;                  &quot;e_wbgi_gee&quot;                 
-## [159] &quot;e_wbgi_pve&quot;                  &quot;e_wbgi_rle&quot;                 
-## [161] &quot;e_wbgi_rqe&quot;                  &quot;e_wbgi_vae&quot;                 
-## [163] &quot;e_lexical_index&quot;             &quot;e_uds_median&quot;               
-## [165] &quot;e_uds_mean&quot;                  &quot;e_uds_pct025&quot;               
-## [167] &quot;e_uds_pct975&quot;                &quot;e_coups&quot;                    
-## [169] &quot;e_legparty&quot;                  &quot;e_autoc&quot;                    
-## [171] &quot;e_democ&quot;                     &quot;e_p_polity&quot;                 
-## [173] &quot;e_polcomp&quot;                   &quot;e_polity2&quot;                  
-## [175] &quot;e_bnr_dem&quot;                   &quot;e_chga_demo&quot;                
-## [177] &quot;e_ti_cpi&quot;                    &quot;e_vanhanen&quot;                 
-## [179] &quot;e_peaveduc&quot;                  &quot;e_peedgini&quot;                 
-## [181] &quot;e_area&quot;                      &quot;e_regiongeo&quot;                
-## [183] &quot;e_regionpol&quot;                 &quot;e_regionpol_6C&quot;             
-## [185] &quot;e_cow_exports&quot;               &quot;e_cow_imports&quot;              
-## [187] &quot;e_gdp&quot;                       &quot;e_gdp_sd&quot;                   
-## [189] &quot;e_gdppc&quot;                     &quot;e_gdppc_sd&quot;                 
-## [191] &quot;e_miinflat&quot;                  &quot;e_pop&quot;                      
-## [193] &quot;e_pop_sd&quot;                    &quot;e_total_fuel_income_pc&quot;     
-## [195] &quot;e_total_oil_income_pc&quot;       &quot;e_total_resources_income_pc&quot;
-## [197] &quot;e_radio_n&quot;                   &quot;e_miferrat&quot;                 
-## [199] &quot;e_mipopula&quot;                  &quot;e_miurbani&quot;                 
-## [201] &quot;e_miurbpop&quot;                  &quot;e_pefeliex&quot;                 
-## [203] &quot;e_peinfmor&quot;                  &quot;e_pelifeex&quot;                 
-## [205] &quot;e_pematmor&quot;                  &quot;e_wb_pop&quot;                   
-## [207] &quot;e_civil_war&quot;                 &quot;e_miinteco&quot;                 
-## [209] &quot;e_miinterc&quot;                  &quot;e_pt_coup&quot;                  
-## [211] &quot;e_pt_coup_attempts&quot;</code></pre>
-</div>
-<div id="select-variables-columns-of-interest" class="section level2">
-<h2>Select Variables (Columns) of Interest</h2>
-<pre class="r"><code>d_s &lt;- d |&gt;
-  select(country_name, country_id, year, e_fh_cl, e_gdp, e_gdppc)
-
-d_s</code></pre>
-<pre><code>## # A tibble: 6,789 × 6
-##    country_name country_id  year e_fh_cl   e_gdp e_gdppc
-##    &lt;chr&gt;             &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;
-##  1 Mexico                3  1984       4  93563.    11.7
-##  2 Mexico                3  1985       4  94259.    11.5
-##  3 Mexico                3  1986       4  92750.    11.1
-##  4 Mexico                3  1987       4  93220.    10.9
-##  5 Mexico                3  1988       4  94687.    10.8
-##  6 Mexico                3  1989       3  98145.    11.0
-##  7 Mexico                3  1990       4 103254.    11.4
-##  8 Mexico                3  1991       4 107374.    11.6
-##  9 Mexico                3  1992       3 111533.    11.9
-## 10 Mexico                3  1993       4 114611.    12.0
-## # … with 6,779 more rows</code></pre>
-</div>
-<div id="rename-variables-of-interest" class="section level2">
-<h2>Rename Variables of Interest</h2>
-<pre class="r"><code>d_s &lt;- d_s |&gt;
-  rename(&quot;FH Civil Liberty&quot; = &quot;e_fh_cl&quot;,
-         &quot;GDP&quot; = &quot;e_gdp&quot;, 
-         &quot;GDP per capita&quot; = &quot;e_gdppc&quot;)
-
-# Check out functions that can allow you to rename variables in batch</code></pre>
-</div>
-<div id="filter-observations-rows-of-interest" class="section level2">
-<h2>Filter Observations (Rows) of Interest</h2>
 </div>
 
 
