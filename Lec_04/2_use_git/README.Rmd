@@ -68,3 +68,15 @@ After taking the time to review and confirm your changes in the "Commit" step, y
 ![](images/paste-BE1DE137_2.png){width="544"}
 
 **Note:** If this is a collaborative project (i.e., others may be simultaneously updating the GitHub repo), then after "Commit," you should first "Pull" updates in the online folder before you "Push." In this case, after you "Commit," first click "Pull" to retrieve the latest updates and then click "Push" to upload your local updates.
+
+Clicking the "Push" button will render a pop-up window (see the screenshot below). When the process is completed, you should manually close it.
+
+![](images/paste-B71BACAA.png){width="489"}
+
+After this step, you should be able to see your local update reflected in your GitHub webpage.
+
+## Final Remarks
+
+Git is a powerful tool designed for collaboration. This note only covers some of its VERY BASIC function that can facilitate your effort to build a personal data science portfolio. We might be able to get to some of its more sophisticated functionality later in the course. [This page](https://docs.github.com/en/get-started/quickstart/git-and-github-learning-resources) lists some learning resources. You may take a look. In addition, GitHub provide students with free access to some of its advanced (paid) functionality. I encourage you to use this page to verify your student identity and get access: <https://education.github.com/pack/join>.
+
+![](images/paste-08E34EDB.png){width="550"}
