@@ -117,7 +117,7 @@ In your submission:
 2.  In the text field of your submission, include the link to the
     corresponding Rmarkdown file in your *DaSPPA portfolio* GitHub repo.
 
-**Due:** October 4, 2023
+**Due:** October 6, 2023
 
 *Note:* *Please* *only use the functions we cover in this lecture for
 this exercise. There is <u>absolutely no need</u> to perform any data
