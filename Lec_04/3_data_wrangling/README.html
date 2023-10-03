@@ -351,7 +351,7 @@ display: none;
 
 <h1 class="title toc-ignore">Data Wrangling (1)</h1>
 <h4 class="author">Haohan Chen</h4>
-<h4 class="date">Last update: September 28, 2023</h4>
+<h4 class="date">Last update: October 03, 2023</h4>
 
 </div>
 
@@ -480,7 +480,7 @@ through Moodle. In your submission:</p>
 corresponding Rmarkdown file in your <em>DaSPPA portfolio</em> GitHub
 repo.</li>
 </ol>
-<p><strong>Due:</strong> October 4, 2023</p>
+<p><strong>Due:</strong> October 6, 2023</p>
 <p><em>Note:</em> <em>Please</em> <em>only use the functions we cover in
 this lecture for this exercise. There is <u>absolutely no need</u> to
 perform any data visualization for this exercise… We will get there in
@@ -503,12 +503,12 @@ later lectures.</em></p>
 <h3>0. Load the <code>tidyverse</code> Packages</h3>
 <p>This section loads the packages we need in this lecture.</p>
 <pre class="r"><code>library(tidyverse)</code></pre>
-<pre><code>## ── Attaching packages ─────────────────────────────────────── tidyverse 1.3.1 ──</code></pre>
-<pre><code>## ✔ ggplot2 3.3.6     ✔ purrr   1.0.1
-## ✔ tibble  3.2.1     ✔ dplyr   1.1.1
-## ✔ tidyr   1.3.0     ✔ stringr 1.5.0
-## ✔ readr   2.1.2     ✔ forcats 0.5.1</code></pre>
-<pre><code>## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+<pre><code>## ── Attaching packages ─────────────────────────────────────── tidyverse 1.3.2 ──
+## ✔ ggplot2 3.3.6      ✔ purrr   0.3.5 
+## ✔ tibble  3.1.8      ✔ dplyr   1.0.10
+## ✔ tidyr   1.2.1      ✔ stringr 1.4.1 
+## ✔ readr   2.1.3      ✔ forcats 0.5.2 
+## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
 ## ✖ dplyr::filter() masks stats::filter()
 ## ✖ dplyr::lag()    masks stats::lag()</code></pre>
 </div>
@@ -642,7 +642,8 @@ all the columns</p>
 <p>We may use some alternative functions that provides information about
 the dataset. The <code>str()</code> provides not only variable names,
 but also their data types and a few example data points.</p>
-<pre class="r"><code>str(d)</code></pre>
+<pre class="r"><code># Warning: If you have many variables, the output of str() will be lengthy!
+str(d)</code></pre>
 <pre><code>## spc_tbl_ [6,789 × 211] (S3: spec_tbl_df/tbl_df/tbl/data.frame)
 ##  $ country_name               : chr [1:6789] &quot;Mexico&quot; &quot;Mexico&quot; &quot;Mexico&quot; &quot;Mexico&quot; ...
 ##  $ country_text_id            : chr [1:6789] &quot;MEX&quot; &quot;MEX&quot; &quot;MEX&quot; &quot;MEX&quot; ...
@@ -978,7 +979,7 @@ levels of <em>identifiers</em></p>
 ##  8 Mexico                3  1991
 ##  9 Mexico                3  1992
 ## 10 Mexico                3  1993
-## # ℹ 6,779 more rows</code></pre>
+## # … with 6,779 more rows</code></pre>
 <pre class="r"><code># Which countries are in this dataset
 d |&gt; select(country_name) |&gt; distinct()</code></pre>
 <pre><code>## # A tibble: 181 × 1
@@ -994,7 +995,7 @@ d |&gt; select(country_name) |&gt; distinct()</code></pre>
 ##  8 Burma/Myanmar
 ##  9 Russia       
 ## 10 Albania      
-## # ℹ 171 more rows</code></pre>
+## # … with 171 more rows</code></pre>
 <pre class="r"><code>d |&gt; select(year) |&gt; distinct()</code></pre>
 <pre><code>## # A tibble: 39 × 1
 ##     year
@@ -1009,7 +1010,7 @@ d |&gt; select(country_name) |&gt; distinct()</code></pre>
 ##  8  1991
 ##  9  1992
 ## 10  1993
-## # ℹ 29 more rows</code></pre>
+## # … with 29 more rows</code></pre>
 <p>Select both the country identifiers, GDP, and GDP per capita.</p>
 <pre class="r"><code>d_gdp &lt;- d |&gt; 
   select(country_name, country_id, year, e_gdp, e_gdppc)
@@ -1028,7 +1029,7 @@ d_gdp</code></pre>
 ##  8 Mexico                3  1991 107374.    11.6
 ##  9 Mexico                3  1992 111533.    11.9
 ## 10 Mexico                3  1993 114611.    12.0
-## # ℹ 6,779 more rows</code></pre>
+## # … with 6,779 more rows</code></pre>
 </div>
 <div id="rename-columns-to-make-names-informative" class="section level3">
 <h3>3. Rename Columns to Make Names Informative</h3>
@@ -1051,7 +1052,7 @@ d_gdp</code></pre>
 ##  8 Mexico      3  1991 107374.           11.6
 ##  9 Mexico      3  1992 111533.           11.9
 ## 10 Mexico      3  1993 114611.           12.0
-## # ℹ 6,779 more rows</code></pre>
+## # … with 6,779 more rows</code></pre>
 </div>
 <div id="subset-rows-of-the-data-using-slice_" class="section level3">
 <h3>4. Subset Rows of the Data Using <code>slice_</code></h3>
@@ -1060,8 +1061,7 @@ want to take a subset of rows based on some simple rules.</p>
 <p>If you would like to get 10 obervations (countries-years) with the
 maximum <code>GDP</code>, use <code>slice_max</code>:</p>
 <pre class="r"><code># Want countries-years with highest GDP
-d_gdp |&gt; 
-  slice_max(order_by = GDP, n = 10)</code></pre>
+d_gdp |&gt; slice_max(order_by = GDP, n = 10)</code></pre>
 <pre><code>## # A tibble: 10 × 5
 ##    Country                     ID  Year      GDP GDP_per_capita
 ##    &lt;chr&gt;                    &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;          &lt;dbl&gt;
@@ -1127,7 +1127,7 @@ d_gdp |&gt; slice_sample(prop = 0.1)</code></pre>
 ##  8 Vietnam        34  1990  10537.            1.47
 ##  9 Canada         66  1985  83713.           30.4 
 ## 10 Serbia        198  1987  17430.            7.64
-## # ℹ 668 more rows</code></pre>
+## # … with 668 more rows</code></pre>
 <p>The <code>set.seed</code> function specify a random seed with which
 the system uses to generate the “random sample.” Long story short,
 “random” stuff generated by a machine are never really random. Instead,
@@ -1158,7 +1158,7 @@ d_gdp |&gt; filter(Year &gt;= 2000 &amp; Year &lt;= 2005)</code></pre>
 ##  8 Suriname     4  2001    402.           7.93
 ##  9 Suriname     4  2002    423.           8.25
 ## 10 Suriname     4  2003    451.           8.67
-## # ℹ 1,052 more rows</code></pre>
+## # … with 1,052 more rows</code></pre>
 <p>We may subset observations whose <code>Country</code> variable, a
 <code>character</code> variable, equals to the text
 <code>&quot;China&quot;</code>.</p>
@@ -1176,7 +1176,7 @@ d_gdp |&gt; filter(Year &gt;= 2000 &amp; Year &lt;= 2005)</code></pre>
 ##  8 China     110  1991 329836.           2.71
 ##  9 China     110  1992 359817.           2.90
 ## 10 China     110  1993 393449.           3.15
-## # ℹ 29 more rows</code></pre>
+## # … with 29 more rows</code></pre>
 <p>We may also stack multiple <code>filter</code> functions. For
 example, you may do the following if you want to look at a subset of the
 data whose <code>Year</code> ranges from 2000 to 2005 and
@@ -1218,7 +1218,7 @@ d_gdp |&gt; arrange(GDP_per_capita)</code></pre>
 ##  8 Democratic Republic of the Congo   111  2001 2890.           0.54 
 ##  9 Liberia                             86  1998  147.           0.543
 ## 10 Democratic Republic of the Congo   111  2003 3141.           0.552
-## # ℹ 6,779 more rows</code></pre>
+## # … with 6,779 more rows</code></pre>
 <p>Want the countries-years with larger values of
 <code>GDP_per_capita</code> appear first? Simply reverse the value using
 <code>-GDP_per_capita</code>. Alternatively, you may replace
@@ -1237,7 +1237,7 @@ d_gdp |&gt; arrange(GDP_per_capita)</code></pre>
 ##  8 Qatar                   94  2014 24194.           95.3
 ##  9 Qatar                   94  2010 18107.           94.4
 ## 10 United Arab Emirates   207  2000 31871.           93.3
-## # ℹ 6,779 more rows</code></pre>
+## # … with 6,779 more rows</code></pre>
 </div>
 </div>
 

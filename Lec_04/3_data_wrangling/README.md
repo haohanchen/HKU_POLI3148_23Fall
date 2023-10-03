@@ -117,7 +117,7 @@ In your submission:
 2.  In the text field of your submission, include the link to the
     corresponding Rmarkdown file in your *DaSPPA portfolio* GitHub repo.
 
-**Due:** October 4, 2023
+**Due:** October 6, 2023
 
 *Note:* *Please* *only use the functions we cover in this lecture for
 this exercise. There is <u>absolutely no need</u> to perform any data
@@ -277,6 +277,7 @@ We may use some alternative functions that provides information about
 the dataset. The `str()` provides not only variable names, but also
 their data types and a few example data points.
 
+    # Warning: If you have many variables, the output of str() will be lengthy!
     str(d)
 
     ## spc_tbl_ [6,789 × 211] (S3: spec_tbl_df/tbl_df/tbl/data.frame)
@@ -616,7 +617,7 @@ effectively identify the distinct levels of *identifiers*
     ##  8 Mexico                3  1991
     ##  9 Mexico                3  1992
     ## 10 Mexico                3  1993
-    ## # ℹ 6,779 more rows
+    ## # … with 6,779 more rows
 
     # Which countries are in this dataset
     d |> select(country_name) |> distinct()
@@ -634,7 +635,7 @@ effectively identify the distinct levels of *identifiers*
     ##  8 Burma/Myanmar
     ##  9 Russia       
     ## 10 Albania      
-    ## # ℹ 171 more rows
+    ## # … with 171 more rows
 
     d |> select(year) |> distinct()
 
@@ -651,7 +652,7 @@ effectively identify the distinct levels of *identifiers*
     ##  8  1991
     ##  9  1992
     ## 10  1993
-    ## # ℹ 29 more rows
+    ## # … with 29 more rows
 
 Select both the country identifiers, GDP, and GDP per capita.
 
@@ -673,7 +674,7 @@ Select both the country identifiers, GDP, and GDP per capita.
     ##  8 Mexico                3  1991 107374.    11.6
     ##  9 Mexico                3  1992 111533.    11.9
     ## 10 Mexico                3  1993 114611.    12.0
-    ## # ℹ 6,779 more rows
+    ## # … with 6,779 more rows
 
 ### 3. Rename Columns to Make Names Informative
 
@@ -697,7 +698,7 @@ Select both the country identifiers, GDP, and GDP per capita.
     ##  8 Mexico      3  1991 107374.           11.6
     ##  9 Mexico      3  1992 111533.           11.9
     ## 10 Mexico      3  1993 114611.           12.0
-    ## # ℹ 6,779 more rows
+    ## # … with 6,779 more rows
 
 ### 4. Subset Rows of the Data Using `slice_`
 
@@ -708,8 +709,7 @@ If you would like to get 10 obervations (countries-years) with the
 maximum `GDP`, use `slice_max`:
 
     # Want countries-years with highest GDP
-    d_gdp |> 
-      slice_max(order_by = GDP, n = 10)
+    d_gdp |> slice_max(order_by = GDP, n = 10)
 
     ## # A tibble: 10 × 5
     ##    Country                     ID  Year      GDP GDP_per_capita
@@ -785,7 +785,7 @@ size:
     ##  8 Vietnam        34  1990  10537.            1.47
     ##  9 Canada         66  1985  83713.           30.4 
     ## 10 Serbia        198  1987  17430.            7.64
-    ## # ℹ 668 more rows
+    ## # … with 668 more rows
 
 The `set.seed` function specify a random seed with which the system uses
 to generate the “random sample.” Long story short, “random” stuff
@@ -819,7 +819,7 @@ from 2000 to 2005.
     ##  8 Suriname     4  2001    402.           7.93
     ##  9 Suriname     4  2002    423.           8.25
     ## 10 Suriname     4  2003    451.           8.67
-    ## # ℹ 1,052 more rows
+    ## # … with 1,052 more rows
 
 We may subset observations whose `Country` variable, a `character`
 variable, equals to the text `"China"`.
@@ -839,7 +839,7 @@ variable, equals to the text `"China"`.
     ##  8 China     110  1991 329836.           2.71
     ##  9 China     110  1992 359817.           2.90
     ## 10 China     110  1993 393449.           3.15
-    ## # ℹ 29 more rows
+    ## # … with 29 more rows
 
 We may also stack multiple `filter` functions. For example, you may do
 the following if you want to look at a subset of the data whose `Year`
@@ -883,7 +883,7 @@ of `GDP_per_capita` appearing first and those with larger values of
     ##  8 Democratic Republic of the Congo   111  2001 2890.           0.54 
     ##  9 Liberia                             86  1998  147.           0.543
     ## 10 Democratic Republic of the Congo   111  2003 3141.           0.552
-    ## # ℹ 6,779 more rows
+    ## # … with 6,779 more rows
 
 Want the countries-years with larger values of `GDP_per_capita` appear
 first? Simply reverse the value using `-GDP_per_capita`. Alternatively,
@@ -904,4 +904,4 @@ you may replace `desc(GDP_per_capita)`.
     ##  8 Qatar                   94  2014 24194.           95.3
     ##  9 Qatar                   94  2010 18107.           94.4
     ## 10 United Arab Emirates   207  2000 31871.           93.3
-    ## # ℹ 6,779 more rows
+    ## # … with 6,779 more rows

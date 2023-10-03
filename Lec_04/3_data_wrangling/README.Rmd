@@ -94,7 +94,7 @@ The quality of education has a decisive effect on a country's future development
 1.  Attach a PDF document rendered by Rmarkdown
 2.  In the text field of your submission, include the link to the corresponding Rmarkdown file in your *DaSPPA portfolio* GitHub repo.
 
-**Due:** October 4, 2023
+**Due:** October 6, 2023
 
 *Note:* *Please* *only use the functions we cover in this lecture for this exercise. There is [absolutely no need]{.underline} to perform any data visualization for this exercise... We will get there in later lectures.*
 
@@ -137,6 +137,7 @@ names(d)
 We may use some alternative functions that provides information about the dataset. The `str()` provides not only variable names, but also their data types and a few example data points.
 
 ```{r}
+# Warning: If you have many variables, the output of str() will be lengthy!
 str(d)
 ```
 
@@ -183,8 +184,7 @@ If you would like to get 10 obervations (countries-years) with the maximum `GDP`
 
 ```{r}
 # Want countries-years with highest GDP
-d_gdp |> 
-  slice_max(order_by = GDP, n = 10)
+d_gdp |> slice_max(order_by = GDP, n = 10)
 ```
 
 Similiarily, if you want a subset of countries-years with mimnimal GDP, use `slice_min`:
