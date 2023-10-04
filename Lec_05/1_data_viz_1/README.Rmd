@@ -1,0 +1,65 @@
+---
+title: "Data Visualization (1)"
+author: "Haohan Chen"
+date: "Last update: `r format(Sys.Date(), '%B %d, %Y')`"
+output: 
+  html_document: default
+  pdf_document: default
+  md_document: default
+knit: (function(inputFile, encoding){rmarkdown::render(inputFile, encoding = encoding, output_format = "all", knit_root_dir = getwd())})
+editor_options: 
+  chunk_output_type: console
+---
+
+## Overview
+
+In this lecture, we start our adventure in Data Visualization with R. Data Visualization is arguably (one of) R's most powerful and irreplaceable functionality.
+
+You can find the concepts and R functionality for data visualization in the following two books.
+
+-   [Kabacoff] Kabacoff, Rob. *Data Visualization with R*. 2020. E-book: [rkabacoff.github.io/datavis](rkabacoff.github.io/datavis)
+-   [Healy] Healy, Kieran. *Data visualization: a practical introduction*. Princeton University Press, 2018. E-book: [socviz.co](socviz.co)
+
+In this lecture, we will cover some basics of data visualization.
+
+## In-Class Exercise
+
+## `ggplot`
+
+## 
+
+```{r}
+library(tidyverse)
+```
+
+```{r}
+d <- read_csv("_DataPublic_/vdem/1984_2022/vdem_1984_2022_external.csv")
+```
+
+```{r}
+
+
+
+# Binary
+
+e_civil_war # civil war
+
+# categorical
+
+# V-Dem democracy index (categorized, 3 ways of cat): e_v2x_libdem
+
+
+# What is the lexical index of democracy in the country?
+d |> select(e_lexical_index)
+
+# e_fh_status # FH. Free, partically free, not free.
+d |> select(e_fh_status)
+
+# Region indicators: e_regiongeo; e_regionpol; e_regionpol_6C  
+
+# Political competition: e_polcomp 
+d |> select(e_polcomp)
+
+
+
+```

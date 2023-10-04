@@ -285,3 +285,13 @@ d_gdp |> arrange(-GDP_per_capita)
 ```{r}
 # INSERT CODE HERE
 ```
+
+
+## Final Notes
+
+### "Pipe"
+
+
+### To Create a New Object or Not
+
+### Style
