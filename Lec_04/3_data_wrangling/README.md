@@ -905,3 +905,45 @@ you may replace `desc(GDP_per_capita)`.
     ##  9 Qatar                   94  2010 18107.           94.4
     ## 10 United Arab Emirates   207  2000 31871.           93.3
     ## # ℹ 6,779 more rows
+
+### 7. Perform (4) (5) (6) group by group: `group_by`, `ungroup`
+
+**Task:** Create a dataset that contains the year of the higest
+development level for each country/ region respectively.
+
+1.  Perform a data availability/ integrity check. Then aggregate the
+    data into a new country-level dataset which contains the following
+    indicators:
+    1.  Average development level from 1984 to 2022.
+
+    2.  Magnitude of growth from 1984 to 2022.
+
+<!-- -->
+
+    # INSERT CODE HERE
+
+### 8. Create new columns in the data: `group_by`, `mutate`, `ungroup`
+
+**Task:** Add the following economic indicators to the data:
+
+1.  Country-year development level with reference to that of 1984.
+
+2.  Year-on-year economic growth.
+
+<!-- -->
+
+    # INSERT CODE HERE
+
+### 9. Summarize the data: `group_by`, `summarise`, `ungroup`
+
+**Task:** Perform a data availability/ integrity check. Then aggregate
+the data into a new country-level dataset which contains the following
+indicators:
+
+1.  Average development level from 1984 to 2022.
+
+2.  Magnitude of growth from 1984 to 2022.
+
+<!-- -->
+
+    # INSERT CODE HERE
