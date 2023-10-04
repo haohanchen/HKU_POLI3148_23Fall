@@ -277,6 +277,7 @@ We may use some alternative functions that provides information about
 the dataset. The `str()` provides not only variable names, but also
 their data types and a few example data points.
 
+    # Warning: If you have many variables, the output of str() will be lengthy!
     str(d)
 
     ## spc_tbl_ [6,789 × 211] (S3: spec_tbl_df/tbl_df/tbl/data.frame)
@@ -708,8 +709,7 @@ If you would like to get 10 obervations (countries-years) with the
 maximum `GDP`, use `slice_max`:
 
     # Want countries-years with highest GDP
-    d_gdp |> 
-      slice_max(order_by = GDP, n = 10)
+    d_gdp |> slice_max(order_by = GDP, n = 10)
 
     ## # A tibble: 10 × 5
     ##    Country                     ID  Year      GDP GDP_per_capita

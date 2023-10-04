@@ -137,6 +137,7 @@ names(d)
 We may use some alternative functions that provides information about the dataset. The `str()` provides not only variable names, but also their data types and a few example data points.
 
 ```{r}
+# Warning: If you have many variables, the output of str() will be lengthy!
 str(d)
 ```
 
@@ -183,8 +184,7 @@ If you would like to get 10 obervations (countries-years) with the maximum `GDP`
 
 ```{r}
 # Want countries-years with highest GDP
-d_gdp |> 
-  slice_max(order_by = GDP, n = 10)
+d_gdp |> slice_max(order_by = GDP, n = 10)
 ```
 
 Similiarily, if you want a subset of countries-years with mimnimal GDP, use `slice_min`:

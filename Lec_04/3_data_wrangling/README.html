@@ -642,7 +642,8 @@ all the columns</p>
 <p>We may use some alternative functions that provides information about
 the dataset. The <code>str()</code> provides not only variable names,
 but also their data types and a few example data points.</p>
-<pre class="r"><code>str(d)</code></pre>
+<pre class="r"><code># Warning: If you have many variables, the output of str() will be lengthy!
+str(d)</code></pre>
 <pre><code>## spc_tbl_ [6,789 × 211] (S3: spec_tbl_df/tbl_df/tbl/data.frame)
 ##  $ country_name               : chr [1:6789] &quot;Mexico&quot; &quot;Mexico&quot; &quot;Mexico&quot; &quot;Mexico&quot; ...
 ##  $ country_text_id            : chr [1:6789] &quot;MEX&quot; &quot;MEX&quot; &quot;MEX&quot; &quot;MEX&quot; ...
@@ -1060,8 +1061,7 @@ want to take a subset of rows based on some simple rules.</p>
 <p>If you would like to get 10 obervations (countries-years) with the
 maximum <code>GDP</code>, use <code>slice_max</code>:</p>
 <pre class="r"><code># Want countries-years with highest GDP
-d_gdp |&gt; 
-  slice_max(order_by = GDP, n = 10)</code></pre>
+d_gdp |&gt; slice_max(order_by = GDP, n = 10)</code></pre>
 <pre><code>## # A tibble: 10 × 5
 ##    Country                     ID  Year      GDP GDP_per_capita
 ##    &lt;chr&gt;                    &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;          &lt;dbl&gt;
