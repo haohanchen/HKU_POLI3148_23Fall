@@ -286,12 +286,90 @@ d_gdp |> arrange(-GDP_per_capita)
 # INSERT CODE HERE
 ```
 
-
 ## Final Notes
 
-### "Pipe"
+### Pipe `|>`
 
+#### What is a pipe?
+
+> R now provides a simple native forward pipe syntax `|>`. The simple form of the forward pipe [inserts the left-hand side as the first argument in the right-hand side call]{.underline}.
+
+Let's elaborate this definition
+
+```{r}
+# What we have used
+d_gdp |> filter(Country == "China")
+# is equivalent to...
+filter(d_gdp, Country == "China")
+# ... is equivalent to
+d_gdp |> filter(.data = _, Country == "China") 
+# Note: You may use "_" as a placeholder of the object passed down through the pipe. But it should be used as a *named argument*. Upon a lookup in the tidyvese documentation (using ?filter) ".data" is the name of the first argument. This is a more advanced feature of this command. Understanding is optional. 
+```
+
+#### Why piping?
+
+Pipe is useful when you are conducting a series of operation on your data but want to minimize the number of intermediate outputs produced. To
+
+```{r}
+# STEP 1: Subset variables
+d_gdp <- d |> select(country_name, country_id, year, e_gdp, e_gdppc)
+
+# STEP 2: Rename variables
+d_gdp_renamed <- d_gdp |>
+  rename("GDP" = "e_gdp", "GDP_per_capita" = "e_gdppc",
+         "Country" = "country_name", "ID" = "country_id",
+         "Year" = "year")
+
+# STEP 3: Filter down to China
+d_gdp_china <- d_gdp_renamed |> filter(Country == "China")
+
+# STEP 4: Filter down to 2000 - 2005
+d_gdp_china_2000_2005 <- d_gdp_china |> filter(Year >= 2000 & Year <= 2005)
+
+d_gdp_china_2000_2005
+```
+
+As programmers, we face trade-offs. We want to work things out step-by-step. In this way, our code will look organized and readable for ourselves and other readers. However, the cost of a a step-by-step approach often is the growing size of intermediate outputs --- to pass down results from our intermediate steps, we have to temporarily save intermediate outputs. Doing so consume system resources (as they take up your Memory), makes it hard to navigate through your Environment, and is error-prone.
+
+A pipe helps us maintain the step-by-step approach without creating many intermediate outputs. In our case, I can skip the intermediate outputs `d_gdp`, `d_gdp_renamed` and `d_gdp_china` with pipe.
+
+```{r}
+rm(d_gdp, d_gdp_renamed, d_gdp_china, d_gdp_china_2000_2005)
+
+d_gdp_china_2000_2005 <- d |>
+  # Subset variables
+  select(country_name, country_id, year, e_gdp, e_gdppc) |>
+  # Rename variables
+  rename("GDP" = "e_gdp", "GDP_per_capita" = "e_gdppc",
+         "Country" = "country_name", "ID" = "country_id",
+         "Year" = "year") |>
+  # Filter only observations from China
+  filter(Country == "China") |>
+  # Filter 2000 - 2005
+  filter(Year >= 2000 & Year <= 2005)
+
+d_gdp_china_2000_2005
+```
+
+#### `|>` v.s. `%>%`
+
+When you look up online resources, you may see pipe written in a different way: `%>%`. This is the pipe operator that data scientists (including myself) have been familiar with for years. You may use `|>` and `%>%` interchangeably for basic use cases (which is pretty much everything we are doing in this course). For more advanced use cases, `%>%` is more powerful.
+
+Read further: <https://www.tidyverse.org/blog/2023/04/base-vs-magrittr-pipe/>
 
 ### To Create a New Object or Not
 
+With pipe `|>`, we can maintain a step-by-step approach but skip some intermediate outputs. However, as our data processing task becomes more and more complicated, intermediate outputs are unavoidable. When do we want to create an intermediate output and when do we want to skip it? This is more arts than science. Here is my take:
+
+1.  If I keep repeating some data wrangling steps for many downstream tasks, I would create an intermediate output and use it for all these downstream tasks.
+2.  If I find some intermediate outputs no longer needed, I will remove them from my environment using `rm()` to keep my environment clean and to make space.
+3.  Although I'd plan my data wrangling before I start the work, unexpected things happen. Sometimes, I figure I can merge some data wrangling steps to reduce intermediate outputs. Sometime, I suddenly realize some intermediate outputs are essential. This is a trial-and-error process.
+4.  Perfectionism is unnecessary in data wrangling. Produce replicable code that you and readers can understand. But do not edit your code to make it "pretty" endlessly.
+
 ### Style
+
+Where should you add *a space*? Where should you add *a line break*? Where should you add *a comment*? Where should you add *a section break*? These are questions concerning the *style* of your R code. Like writing articles, maintaining a good style when you write code helps you better communicate information with your readers and your future self.
+
+Before talking about style, I should stress that the correctness of your syntax should always be prioritized over style. **One common mistake beginners make is to add spaces between functions and their arguments**. The typical error along this line is adding a space between a function and its arguments. For example, `filter(Year >= 2000 & Year <= 2005)` is correct, but `filter (Year >= 2000 & Year <= 2005)` is incorrect. The latter has a space between the function `filter` and its arguments `(Year >= 2000 & Year <= 2005)`. Take another example, `x[, 1]`, an expression that subset the first column of the data frame or matrix `x`, is correct. But `x [, 1]` is incorrect, because a space is added between the object `x` and the command that takes a subset from it `[, 1]`.
+
+As we heavily use `tidyverse`, we will use `tidyverse`'s style guide: <https://style.tidyverse.org/>. The style guide touches upon several advanced R functionality, for now, we will focus on Sections 1 (Files), 4 (Pipes), and 5(`ggplot2`).

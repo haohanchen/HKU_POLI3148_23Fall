@@ -617,7 +617,7 @@ effectively identify the distinct levels of *identifiers*
     ##  8 Mexico                3  1991
     ##  9 Mexico                3  1992
     ## 10 Mexico                3  1993
-    ## # ℹ 6,779 more rows
+    ## # … with 6,779 more rows
 
     # Which countries are in this dataset
     d |> select(country_name) |> distinct()
@@ -635,7 +635,7 @@ effectively identify the distinct levels of *identifiers*
     ##  8 Burma/Myanmar
     ##  9 Russia       
     ## 10 Albania      
-    ## # ℹ 171 more rows
+    ## # … with 171 more rows
 
     d |> select(year) |> distinct()
 
@@ -652,7 +652,7 @@ effectively identify the distinct levels of *identifiers*
     ##  8  1991
     ##  9  1992
     ## 10  1993
-    ## # ℹ 29 more rows
+    ## # … with 29 more rows
 
 Select both the country identifiers, GDP, and GDP per capita.
 
@@ -674,7 +674,7 @@ Select both the country identifiers, GDP, and GDP per capita.
     ##  8 Mexico                3  1991 107374.    11.6
     ##  9 Mexico                3  1992 111533.    11.9
     ## 10 Mexico                3  1993 114611.    12.0
-    ## # ℹ 6,779 more rows
+    ## # … with 6,779 more rows
 
 ### 3. Rename Columns to Make Names Informative
 
@@ -698,7 +698,7 @@ Select both the country identifiers, GDP, and GDP per capita.
     ##  8 Mexico      3  1991 107374.           11.6
     ##  9 Mexico      3  1992 111533.           11.9
     ## 10 Mexico      3  1993 114611.           12.0
-    ## # ℹ 6,779 more rows
+    ## # … with 6,779 more rows
 
 ### 4. Subset Rows of the Data Using `slice_`
 
@@ -785,7 +785,7 @@ size:
     ##  8 Vietnam        34  1990  10537.            1.47
     ##  9 Canada         66  1985  83713.           30.4 
     ## 10 Serbia        198  1987  17430.            7.64
-    ## # ℹ 668 more rows
+    ## # … with 668 more rows
 
 The `set.seed` function specify a random seed with which the system uses
 to generate the “random sample.” Long story short, “random” stuff
@@ -819,7 +819,7 @@ from 2000 to 2005.
     ##  8 Suriname     4  2001    402.           7.93
     ##  9 Suriname     4  2002    423.           8.25
     ## 10 Suriname     4  2003    451.           8.67
-    ## # ℹ 1,052 more rows
+    ## # … with 1,052 more rows
 
 We may subset observations whose `Country` variable, a `character`
 variable, equals to the text `"China"`.
@@ -839,7 +839,7 @@ variable, equals to the text `"China"`.
     ##  8 China     110  1991 329836.           2.71
     ##  9 China     110  1992 359817.           2.90
     ## 10 China     110  1993 393449.           3.15
-    ## # ℹ 29 more rows
+    ## # … with 29 more rows
 
 We may also stack multiple `filter` functions. For example, you may do
 the following if you want to look at a subset of the data whose `Year`
@@ -883,7 +883,7 @@ of `GDP_per_capita` appearing first and those with larger values of
     ##  8 Democratic Republic of the Congo   111  2001 2890.           0.54 
     ##  9 Liberia                             86  1998  147.           0.543
     ## 10 Democratic Republic of the Congo   111  2003 3141.           0.552
-    ## # ℹ 6,779 more rows
+    ## # … with 6,779 more rows
 
 Want the countries-years with larger values of `GDP_per_capita` appear
 first? Simply reverse the value using `-GDP_per_capita`. Alternatively,
@@ -904,7 +904,7 @@ you may replace `desc(GDP_per_capita)`.
     ##  8 Qatar                   94  2014 24194.           95.3
     ##  9 Qatar                   94  2010 18107.           94.4
     ## 10 United Arab Emirates   207  2000 31871.           93.3
-    ## # ℹ 6,779 more rows
+    ## # … with 6,779 more rows
 
 ### 7. Perform (4) (5) (6) group by group: `group_by`, `ungroup`
 
@@ -947,3 +947,203 @@ indicators:
 <!-- -->
 
     # INSERT CODE HERE
+
+## Final Notes
+
+### Pipe `|>`
+
+#### What is a pipe?
+
+> R now provides a simple native forward pipe syntax `|>`. The simple
+> form of the forward pipe <u>inserts the left-hand side as the first
+> argument in the right-hand side call</u>.
+
+Let’s elaborate this definition
+
+    # What we have used
+    d_gdp |> filter(Country == "China")
+
+    ## # A tibble: 39 × 5
+    ##    Country    ID  Year     GDP GDP_per_capita
+    ##    <chr>   <dbl> <dbl>   <dbl>          <dbl>
+    ##  1 China     110  1984 243976.           2.21
+    ##  2 China     110  1985 265805.           2.36
+    ##  3 China     110  1986 285707.           2.50
+    ##  4 China     110  1987 308227.           2.65
+    ##  5 China     110  1988 322596.           2.73
+    ##  6 China     110  1989 327739.           2.74
+    ##  7 China     110  1990 315683.           2.63
+    ##  8 China     110  1991 329836.           2.71
+    ##  9 China     110  1992 359817.           2.90
+    ## 10 China     110  1993 393449.           3.15
+    ## # … with 29 more rows
+
+    # is equivalent to...
+    filter(d_gdp, Country == "China")
+
+    ## # A tibble: 39 × 5
+    ##    Country    ID  Year     GDP GDP_per_capita
+    ##    <chr>   <dbl> <dbl>   <dbl>          <dbl>
+    ##  1 China     110  1984 243976.           2.21
+    ##  2 China     110  1985 265805.           2.36
+    ##  3 China     110  1986 285707.           2.50
+    ##  4 China     110  1987 308227.           2.65
+    ##  5 China     110  1988 322596.           2.73
+    ##  6 China     110  1989 327739.           2.74
+    ##  7 China     110  1990 315683.           2.63
+    ##  8 China     110  1991 329836.           2.71
+    ##  9 China     110  1992 359817.           2.90
+    ## 10 China     110  1993 393449.           3.15
+    ## # … with 29 more rows
+
+    # ... is equivalent to
+    d_gdp |> filter(.data = _, Country == "China") 
+
+    ## # A tibble: 39 × 5
+    ##    Country    ID  Year     GDP GDP_per_capita
+    ##    <chr>   <dbl> <dbl>   <dbl>          <dbl>
+    ##  1 China     110  1984 243976.           2.21
+    ##  2 China     110  1985 265805.           2.36
+    ##  3 China     110  1986 285707.           2.50
+    ##  4 China     110  1987 308227.           2.65
+    ##  5 China     110  1988 322596.           2.73
+    ##  6 China     110  1989 327739.           2.74
+    ##  7 China     110  1990 315683.           2.63
+    ##  8 China     110  1991 329836.           2.71
+    ##  9 China     110  1992 359817.           2.90
+    ## 10 China     110  1993 393449.           3.15
+    ## # … with 29 more rows
+
+    # Note: You may use "_" as a placeholder of the object passed down through the pipe. But it should be used as a *named argument*. Upon a lookup in the tidyvese documentation (using ?filter) ".data" is the name of the first argument. This is a more advanced feature of this command. Understanding is optional. 
+
+#### Why piping?
+
+Pipe is useful when you are conducting a series of operation on your
+data but want to minimize the number of intermediate outputs produced.
+To
+
+    # STEP 1: Subset variables
+    d_gdp <- d |> select(country_name, country_id, year, e_gdp, e_gdppc)
+
+    # STEP 2: Rename variables
+    d_gdp_renamed <- d_gdp |>
+      rename("GDP" = "e_gdp", "GDP_per_capita" = "e_gdppc",
+             "Country" = "country_name", "ID" = "country_id",
+             "Year" = "year")
+
+    # STEP 3: Filter down to China
+    d_gdp_china <- d_gdp_renamed |> filter(Country == "China")
+
+    # STEP 4: Filter down to 2000 - 2005
+    d_gdp_china_2000_2005 <- d_gdp_china |> filter(Year >= 2000 & Year <= 2005)
+
+    d_gdp_china_2000_2005
+
+    ## # A tibble: 6 × 5
+    ##   Country    ID  Year     GDP GDP_per_capita
+    ##   <chr>   <dbl> <dbl>   <dbl>          <dbl>
+    ## 1 China     110  2000 633740.           4.74
+    ## 2 China     110  2001 682141.           5.05
+    ## 3 China     110  2002 738393.           5.43
+    ## 4 China     110  2003 798702.           5.83
+    ## 5 China     110  2004 871314.           6.31
+    ## 6 China     110  2005 956102.           6.89
+
+As programmers, we face trade-offs. We want to work things out
+step-by-step. In this way, our code will look organized and readable for
+ourselves and other readers. However, the cost of a a step-by-step
+approach often is the growing size of intermediate outputs — to pass
+down results from our intermediate steps, we have to temporarily save
+intermediate outputs. Doing so consume system resources (as they take up
+your Memory), makes it hard to navigate through your Environment, and is
+error-prone.
+
+A pipe helps us maintain the step-by-step approach without creating many
+intermediate outputs. In our case, I can skip the intermediate outputs
+`d_gdp`, `d_gdp_renamed` and `d_gdp_china` with pipe.
+
+    rm(d_gdp, d_gdp_renamed, d_gdp_china, d_gdp_china_2000_2005)
+
+    d_gdp_china_2000_2005 <- d |>
+      # Subset variables
+      select(country_name, country_id, year, e_gdp, e_gdppc) |>
+      # Rename variables
+      rename("GDP" = "e_gdp", "GDP_per_capita" = "e_gdppc",
+             "Country" = "country_name", "ID" = "country_id",
+             "Year" = "year") |>
+      # Filter only observations from China
+      filter(Country == "China") |>
+      # Filter 2000 - 2005
+      filter(Year >= 2000 & Year <= 2005)
+
+    d_gdp_china_2000_2005
+
+    ## # A tibble: 6 × 5
+    ##   Country    ID  Year     GDP GDP_per_capita
+    ##   <chr>   <dbl> <dbl>   <dbl>          <dbl>
+    ## 1 China     110  2000 633740.           4.74
+    ## 2 China     110  2001 682141.           5.05
+    ## 3 China     110  2002 738393.           5.43
+    ## 4 China     110  2003 798702.           5.83
+    ## 5 China     110  2004 871314.           6.31
+    ## 6 China     110  2005 956102.           6.89
+
+#### `|>` v.s. `%>%`
+
+When you look up online resources, you may see pipe written in a
+different way: `%>%`. This is the pipe operator that data scientists
+(including myself) have been familiar with for years. You may use `|>`
+and `%>%` interchangeably for basic use cases (which is pretty much
+everything we are doing in this course). For more advanced use cases,
+`%>%` is more powerful.
+
+Read further:
+<https://www.tidyverse.org/blog/2023/04/base-vs-magrittr-pipe/>
+
+### To Create a New Object or Not
+
+With pipe `|>`, we can maintain a step-by-step approach but skip some
+intermediate outputs. However, as our data processing task becomes more
+and more complicated, intermediate outputs are unavoidable. When do we
+want to create an intermediate output and when do we want to skip it?
+This is more arts than science. Here is my take:
+
+1.  If I keep repeating some data wrangling steps for many downstream
+    tasks, I would create an intermediate output and use it for all
+    these downstream tasks.
+2.  If I find some intermediate outputs no longer needed, I will remove
+    them from my environment using `rm()` to keep my environment clean
+    and to make space.
+3.  Although I’d plan my data wrangling before I start the work,
+    unexpected things happen. Sometimes, I figure I can merge some data
+    wrangling steps to reduce intermediate outputs. Sometime, I suddenly
+    realize some intermediate outputs are essential. This is a
+    trial-and-error process.
+4.  Perfectionism is unnecessary in data wrangling. Produce replicable
+    code that you and readers can understand. But do not edit your code
+    to make it “pretty” endlessly.
+
+### Style
+
+Where should you add *a space*? Where should you add *a line break*?
+Where should you add *a comment*? Where should you add *a section
+break*? These are questions concerning the *style* of your R code. Like
+writing articles, maintaining a good style when you write code helps you
+better communicate information with your readers and your future self.
+
+Before talking about style, I should stress that the correctness of your
+syntax should always be prioritized over style. **One common mistake
+beginners make is to add spaces between functions and their arguments**.
+The typical error along this line is adding a space between a function
+and its arguments. For example, `filter(Year >= 2000 & Year <= 2005)` is
+correct, but `filter (Year >= 2000 & Year <= 2005)` is incorrect. The
+latter has a space between the function `filter` and its arguments
+`(Year >= 2000 & Year <= 2005)`. Take another example, `x[, 1]`, an
+expression that subset the first column of the data frame or matrix `x`,
+is correct. But `x [, 1]` is incorrect, because a space is added between
+the object `x` and the command that takes a subset from it `[, 1]`.
+
+As we heavily use `tidyverse`, we will use `tidyverse`’s style guide:
+<https://style.tidyverse.org/>. The style guide touches upon several
+advanced R functionality, for now, we will focus on Sections 1 (Files),
+4 (Pipes), and 5(`ggplot2`).

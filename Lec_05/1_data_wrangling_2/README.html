@@ -12,7 +12,7 @@
 <meta name="author" content="Haohan Chen" />
 
 
-<title>Data Visualization (1)</title>
+<title>Data Wrangling 2: Reshape and Combine Tables</title>
 
 <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -349,30 +349,163 @@ display: none;
 
 
 
-<h1 class="title toc-ignore">Data Visualization (1)</h1>
+<h1 class="title toc-ignore">Data Wrangling 2: Reshape and Combine
+Tables</h1>
 <h4 class="author">Haohan Chen</h4>
-<h4 class="date">Last update: October 04, 2023</h4>
+<h4 class="date">Last update: October 05, 2023</h4>
 
 </div>
 
 
-<p>In this lecture, we start our adventure in Data Visualization with R.
-Data Visualization is arguably (one of) R’s most powerful and
-irreplaceable functionality. A lot of data scientists (including myself)
-stick with R because of R’s data visualization module.</p>
-<p>You can find the concepts and R functionality for data visualization
-in the following two books.</p>
+<div id="objective" class="section level2">
+<h2>Objective</h2>
+<p>This lecture continues our introduction to data wrangling with R.
+Using the <em>V-Dem</em> data as an example, we will learn how to
+<em>reshape</em> and <em>merge</em> datasets using a set of <a href="https://www.tidyverse.org/"><code>tidyverse</code></a>
+functionality. Specifically, we will focus on functions…</p>
+<ol style="list-style-type: decimal">
+<li>… to <em>reshape</em> a table (long &lt;-&gt; wide) with
+<code>pivot_longer</code> and <code>pivot_wider</code></li>
+<li>… to <em>stack</em> tables by row or by column with
+<code>bind_rows</code> and <code>bind_cols</code> (or, alternatively,
+<code>cbind</code> and <code>rbind</code>)</li>
+<li>… to <em>merge</em> two tables with <code>inner_join</code>,
+<code>full_join</code>, <code>left_join</code>, <code>right_join</code>,
+<code>semi_join</code>, and <code>anti_join</code></li>
+</ol>
+</div>
+<div id="further-reading" class="section level2">
+<h2>Further Reading</h2>
 <ul>
-<li>[Kabacoff] Kabacoff, Rob. Data Visualization with R. 2020. E-book:
-<a href="rkabacoff.github.io/datavis">rkabacoff.github.io/datavis</a></li>
-<li>[Healy] Healy, Kieran. Data visualization: a practical introduction.
-Princeton University Press, 2018. E-book: <a href="socviz.co">socviz.co</a></li>
+<li><p>R for Data Science (2e) Chapters 6 and 20: <a href="https://r4ds.hadley.nz/" class="uri">https://r4ds.hadley.nz/</a></p></li>
+<li><p><code>dplyr</code> cheatsheet (the “Combine Tables” section on
+p. 2)</p></li>
+<li><p><code>tidyr</code> cheatsheet (the “Reshape Data” section on
+p. 1): <a href="https://rstudio.github.io/cheatsheets/html/tidyr.html" class="uri">https://rstudio.github.io/cheatsheets/html/tidyr.html</a></p></li>
 </ul>
-<div id="ggplot" class="section level2">
-<h2><code>ggplot</code></h2>
 </div>
-<div id="section" class="section level2">
-<h2></h2>
+<div id="outline-of-in-class-demo" class="section level2">
+<h2>Outline of In-Class Demo</h2>
+<p>For this in-class demonstration, we will continue working on the
+external parts of the V-Dem data from 1984 to 2022. The data are located
+here:
+<code>_DataPublic_/vdem/1984_2022/vdem_1984_2022_external</code></p>
+<ol style="list-style-type: decimal">
+<li>Reshape the V-Dem dataset
+<ol style="list-style-type: decimal">
+<li><code>pivot_longer</code>: Make it a long table where each variable
+gets its own row. That is, a row in the new dataset is a
+<em>country-year-observation</em>.</li>
+<li><code>pivot_wider</code>: Widen the above long table so that each
+<em>Year</em> has its own column.</li>
+</ol></li>
+<li>Stack multiple subsets of the V-Dem datasets by row and by columns
+<ol style="list-style-type: decimal">
+<li><code>bind_cols</code>: Merge the following two subsets of the V-Dem
+data: <code>_DataPublic_/vdem/1984_2022/vdem_1984_2022_external</code>
+and <code>_DataPublic_/vdem/1984_2022/vdem_1984_2022_index</code></li>
+<li><code>bind_rows</code>: Merge the following two subsets of the V-Dem
+data: <code>_DataPublic_/vdem/1984_2022/vdem_1984_2022_external</code>
+and
+<code>_DataPublic_/vdem/1945_1983/vdem_1945_1983_external</code></li>
+</ol></li>
+<li>Join multiple regional subsets of the V-Dem datasets
+<ol style="list-style-type: decimal">
+<li>Make a new data frame that contains the following variables:
+<code>country_name</code>, <code>year</code>,
+<code>e_regionpol_6C</code>, <code>e_fh_status</code>,
+<code>e_gdppc</code>, and <code>e_gdp</code></li>
+<li>Create two separate subsets of the above data frames. Each subset
+include a subset of countries/ regions that are within the
+<em>region</em> (defined by <code>e_regiongeo</code> and
+<code>e_regionpol_6C</code> respectively) where <em>China</em> is
+located.</li>
+<li>Explore the behavior of <code>inner_join</code>,
+<code>full_join</code>, <code>left_join</code>, <code>right_join</code>,
+<code>semi_join</code>, and <code>anti_join</code> with the two data
+frames.</li>
+</ol></li>
+<li>Validate V-dem’s GDP data with World Bank data</li>
+</ol>
+</div>
+<div id="in-class-demo" class="section level2">
+<h2>In-Class Demo</h2>
+<pre class="r"><code>library(tidyverse)</code></pre>
+<pre><code>## ── Attaching packages ─────────────────────────────────────── tidyverse 1.3.2 ──
+## ✔ ggplot2 3.3.6      ✔ purrr   0.3.5 
+## ✔ tibble  3.1.8      ✔ dplyr   1.0.10
+## ✔ tidyr   1.2.1      ✔ stringr 1.4.1 
+## ✔ readr   2.1.3      ✔ forcats 0.5.2 
+## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+## ✖ dplyr::filter() masks stats::filter()
+## ✖ dplyr::lag()    masks stats::lag()</code></pre>
+<div id="reshape-the-v-dem-dataset" class="section level3">
+<h3>1. Reshape the V-Dem dataset</h3>
+<pre class="r"><code># INSERT CODE</code></pre>
+</div>
+<div id="stack-multiple-subsets-of-the-v-dem-datasets" class="section level3">
+<h3>2. Stack multiple subsets of the V-Dem datasets</h3>
+<pre class="r"><code># INSERT CODE</code></pre>
+</div>
+<div id="join-multiple-regional-subsets-of-the-v-dem-datasets" class="section level3">
+<h3>3. Join multiple regional subsets of the V-Dem datasets</h3>
+<pre class="r"><code># INSERT CODE</code></pre>
+</div>
+<div id="validate-the-gdp-data-in-v-dem-with-world-bank-data" class="section level3">
+<h3>4. Validate the GDP data in V-Dem with World Bank data</h3>
+<p><strong>Task:</strong> There are many different “versions” of GDP
+data. I wonder whether the GDP data in the V-Dem dataset is reliable. So
+I would like to validate it with <a href="https://data.worldbank.org/">data from the World Bank</a>.</p>
+<div id="download-world-bank-data" class="section level4">
+<h4>Download World Bank Data</h4>
+<p>We will start the adventure by downloading World Bank data.</p>
+<pre class="r"><code># Install the WDI package that helps fetch data from the World Bank dataset
+# See: https://github.com/vincentarelbundock/WDI
+
+# install.packages(&quot;WDI&quot;)
+
+# Note: Comment out the above &quot;install.packages&quot; command after you are done with installing the package.</code></pre>
+<pre class="r"><code>library(WDI)</code></pre>
+<pre class="r"><code># Search for GDP related data
+wb_gdpdata_list &lt;- WDIsearch(&quot;gdp&quot;)
+
+str(wb_gdpdata_list)</code></pre>
+<pre><code>## &#39;data.frame&#39;:    540 obs. of  2 variables:
+##  $ indicator: chr  &quot;5.51.01.10.gdp&quot; &quot;6.0.GDP_current&quot; &quot;6.0.GDP_growth&quot; &quot;6.0.GDP_usd&quot; ...
+##  $ name     : chr  &quot;Per capita GDP growth&quot; &quot;GDP (current $)&quot; &quot;GDP growth (annual %)&quot; &quot;GDP (constant 2005 $)&quot; ...</code></pre>
+<pre class="r"><code># Narrow down to indicators of GDP (I have done some pre-screening)
+wb_gdpdata_list_s &lt;- wb_gdpdata_list |&gt; filter(str_detect(indicator, &quot;^NY\\.GDP&quot;))</code></pre>
+<pre class="r"><code># Download GDP-related data
+wb_gdpdata &lt;- WDI(
+  indicator = c(&quot;NY.GDP.MKTP.PP.KD&quot;, &quot;NY.GDP.PCAP.PP.KD&quot;), 
+  country = &quot;all&quot;, 
+  start = 1984, end = 2022)</code></pre>
+<pre class="r"><code># Remove the intermediate data we no longer need.
+rm(wb_gdpdata_list, wb_gdpdata_list_s)</code></pre>
+<p>To match two datasets from two different sources, we should always
+check whether the “identifiers” are consistent. In our case, are names
+of countries specified in the same way in the V-Dem and the World Bank
+dataset?</p>
+<pre class="r"><code># Check the specification of country names.</code></pre>
+</div>
+<div id="find-country-identifiers" class="section level4">
+<h4>Find Country Identifiers</h4>
+<p>When it comes to matching countries, country codes are usually more
+reliable. The problem is that we do not have country codes in the V-Dem
+data. An R package named <code>countrycode</code> can help.</p>
+<pre class="r"><code># install.packages(&quot;countrycode&quot;)
+# See how you may use the package: https://github.com/vincentarelbundock/countrycode</code></pre>
+<pre class="r"><code># INSERT CODE: Use countrycode to make country code indicators</code></pre>
+</div>
+<div id="join-and-compare" class="section level4">
+<h4>Join and Compare</h4>
+<p>Now that we have cleaned the World Bank data, our final step is to
+join it with the World Bank data and compare the GDP and GDP per capita
+indicators from the two sources.</p>
+<pre class="r"><code># INSERT CODE: Join the two datasets</code></pre>
+<pre class="r"><code># INSERT CODE: Compare the two datasets</code></pre>
+</div>
+</div>
 </div>
 
 
