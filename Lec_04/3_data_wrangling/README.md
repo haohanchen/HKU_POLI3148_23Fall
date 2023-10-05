@@ -175,11 +175,13 @@ lecture, perform the following task:
 
 <!-- -->
 
-    education <- d |> select(country_name,  year, e_peaveduc, e_peedgini)
+    education <- d |> 
+      select(country_name,  year, e_peaveduc, e_peedgini)
 
     2.  Rename the columns of education quality to make them informative.
 
-    education_renamed <- education |> rename( "average_years_of_postsecondary_education" = "e_peaveduc" , "postsecondary_gini_inequality_index" = "e_peedgini" )
+    education_renamed <- education |> 
+      rename( "average_years_of_postsecondary_education" = "e_peaveduc" , "postsecondary_gini_inequality_index" = "e_peedgini" )
 
 1.  **Subset by rows**
 
@@ -188,7 +190,8 @@ lecture, perform the following task:
 
 <!-- -->
 
-    education_renamed |> slice_max(average_years_of_postsecondary_education, n=5)
+    education_renamed |> 
+      slice_max(average_years_of_postsecondary_education, n=5)
 
     ## # A tibble: 13 × 4
     ##    country_name    year average_years_of_postsecondary_…¹ postsecondary_gini_i…²
@@ -211,7 +214,8 @@ lecture, perform the following task:
 
     2.  List 5 countries-years that suffer from the most severe inequality in education.
 
-    education_renamed |> slice_max(postsecondary_gini_inequality_index, n=5)
+    education_renamed |> 
+      slice_max(postsecondary_gini_inequality_index, n=5)
 
     ## # A tibble: 5 × 4
     ##   country_name  year average_years_of_postsecondary_edu…¹ postsecondary_gini_i…²
@@ -231,9 +235,13 @@ lecture, perform the following task:
 
 <!-- -->
 
-    cleaned_data <- education_renamed |> filter_at(vars(c(postsecondary_gini_inequality_index, average_years_of_postsecondary_education)), any_vars(!is.na(.)))
+    cleaned_data <- education_renamed |> 
+      filter_at(vars(c(postsecondary_gini_inequality_index, average_years_of_postsecondary_education)), any_vars(!is.na(.)))
 
-    education_renamed |> mutate(gini_missing = is.na(postsecondary_gini_inequality_index)) |> group_by(country_name) |>  summarize(number_missing_gini = sum(gini_missing))
+    education_renamed |> 
+      mutate(gini_missing = is.na(postsecondary_gini_inequality_index)) |>
+      group_by(country_name) |>  
+      summarize(number_missing_gini = sum(gini_missing))
 
     ## # A tibble: 181 × 2
     ##    country_name number_missing_gini
@@ -250,7 +258,10 @@ lecture, perform the following task:
     ## 10 Bahrain                       39
     ## # ℹ 171 more rows
 
-    education_renamed |> mutate(yrs_missing = is.na(average_years_of_postsecondary_education)) |> group_by(country_name) |>  summarize(number_missing_years_of_education = sum(yrs_missing))
+    education_renamed |> 
+      mutate(yrs_missing = is.na(average_years_of_postsecondary_education)) |>
+      group_by(country_name) |>  
+      summarize(number_missing_years_of_education = sum(yrs_missing))
 
     ## # A tibble: 181 × 2
     ##    country_name number_missing_years_of_education
@@ -290,7 +301,10 @@ lecture, perform the following task:
 
         1.  Average level of education quality from 1984 to 2022
 
-    education_renamed |> group_by(country_name) |> summarise(avg_gini_index = mean(postsecondary_gini_inequality_index, na.rm = TRUE)) |> arrange(avg_gini_index)
+    education_renamed |> 
+      group_by(country_name) |> 
+      summarise(avg_gini_index = mean(postsecondary_gini_inequality_index, na.rm = TRUE)) |>
+      arrange(avg_gini_index)
 
     ## # A tibble: 181 × 2
     ##    country_name   avg_gini_index
@@ -307,7 +321,10 @@ lecture, perform the following task:
     ## 10 Hungary                 11.2 
     ## # ℹ 171 more rows
 
-    education_renamed |> group_by(country_name) |> summarise(avg_gini_index = mean(postsecondary_gini_inequality_index, na.rm = TRUE)) |> arrange(-avg_gini_index)
+    education_renamed |> 
+      group_by(country_name) |> 
+      summarise(avg_gini_index = mean(postsecondary_gini_inequality_index, na.rm = TRUE)) |>
+      arrange(-avg_gini_index)
 
     ## # A tibble: 181 × 2
     ##    country_name avg_gini_index
@@ -324,7 +341,10 @@ lecture, perform the following task:
     ## 10 Nepal                  69.8
     ## # ℹ 171 more rows
 
-    education_renamed |> group_by(country_name) |> summarise(average_years_of_education = mean(average_years_of_postsecondary_education, na.rm = TRUE)) |> arrange(average_years_of_education)
+    education_renamed |> 
+      group_by(country_name) |> 
+      summarise(average_years_of_education = mean(average_years_of_postsecondary_education, na.rm = TRUE)) |> 
+      arrange(average_years_of_education)
 
     ## # A tibble: 181 × 2
     ##    country_name average_years_of_education
@@ -341,7 +361,10 @@ lecture, perform the following task:
     ## 10 Guinea                            2.62 
     ## # ℹ 171 more rows
 
-    education_renamed |> group_by(country_name) |> summarise(average_years_of_education = mean(average_years_of_postsecondary_education, na.rm = TRUE)) |> arrange(-average_years_of_education)
+    education_renamed |> 
+      group_by(country_name) |> 
+      summarise(average_years_of_education = mean(average_years_of_postsecondary_education, na.rm = TRUE)) |> 
+      arrange(-average_years_of_education)
 
     ## # A tibble: 181 × 2
     ##    country_name   average_years_of_education
@@ -360,7 +383,13 @@ lecture, perform the following task:
 
         2.  Change of education quality from 1984 to 2022
 
-    education_renamed |> group_by(country_name) |> arrange(year, by.group=TRUE) |> mutate(change_in_years_of_education = last(average_years_of_postsecondary_education, year) - first(average_years_of_postsecondary_education, year), na.rm = TRUE) |> filter(year==2022) |> select(country_name, year, change_in_years_of_education) |> arrange(-change_in_years_of_education)
+    education_renamed |> 
+      group_by(country_name) |> 
+      arrange(year, by.group=TRUE) |> 
+      mutate(change_in_years_of_education = last(average_years_of_postsecondary_education, year) - first(average_years_of_postsecondary_education, year), na.rm = TRUE) |> 
+      filter(year==2022) |> 
+      select(country_name, year, change_in_years_of_education) |>
+      arrange(-change_in_years_of_education)
 
     ## # A tibble: 179 × 3
     ## # Groups:   country_name [179]
@@ -378,7 +407,13 @@ lecture, perform the following task:
     ## 10 Algeria       2022                         3.35
     ## # ℹ 169 more rows
 
-    education_renamed |> group_by(country_name) |> arrange(year , by.group=TRUE) |> mutate(change_in_years_of_education = last(average_years_of_postsecondary_education, year) - first(average_years_of_postsecondary_education, year), na.rm = TRUE) |> filter(year==2022) |> select(country_name, year, change_in_years_of_education) |> arrange(change_in_years_of_education)
+    education_renamed |>
+      group_by(country_name) |>
+      arrange(year , by.group=TRUE) |>
+      mutate(change_in_years_of_education = last(average_years_of_postsecondary_education, year) - first(average_years_of_postsecondary_education, year), na.rm = TRUE) |> 
+      filter(year==2022) |> 
+      select(country_name, year, change_in_years_of_education) |>
+      arrange(change_in_years_of_education)
 
     ## # A tibble: 179 × 3
     ## # Groups:   country_name [179]
@@ -396,7 +431,12 @@ lecture, perform the following task:
     ## 10 Georgia       2022                        0.387
     ## # ℹ 169 more rows
 
-    education_renamed   |> group_by(country_name) |> arrange(year) |> mutate(change= last(na.omit(postsecondary_gini_inequality_index)) - first(na.omit(postsecondary_gini_inequality_index))) |> filter(year==2022) |> select(country_name, year, change) |> arrange(-change)
+    education_renamed   |> 
+      group_by(country_name) |> 
+      arrange(year) |> 
+      mutate(change= last(na.omit(postsecondary_gini_inequality_index)) - first(na.omit(postsecondary_gini_inequality_index))) |> 
+      filter(year==2022) |> select(country_name, year, change) |>
+      arrange(-change)
 
     ## # A tibble: 179 × 3
     ## # Groups:   country_name [179]
@@ -414,7 +454,13 @@ lecture, perform the following task:
     ## 10 Jamaica              2022 -0.597
     ## # ℹ 169 more rows
 
-    education_renamed   |> group_by(country_name) |> arrange(year) |> mutate(change= last(na.omit(postsecondary_gini_inequality_index)) - first(na.omit(postsecondary_gini_inequality_index))) |> filter(year==2022) |> select(country_name, year, change) |> arrange(change)
+    education_renamed   |>
+      group_by(country_name) |> 
+      arrange(year) |>
+      mutate(change= last(na.omit(postsecondary_gini_inequality_index)) - first(na.omit(postsecondary_gini_inequality_index))) |>
+      filter(year==2022) |> 
+      select(country_name, year, change) |> 
+      arrange(change)
 
     ## # A tibble: 179 × 3
     ## # Groups:   country_name [179]
