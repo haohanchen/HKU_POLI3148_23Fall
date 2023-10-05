@@ -617,7 +617,7 @@ effectively identify the distinct levels of *identifiers*
     ##  8 Mexico                3  1991
     ##  9 Mexico                3  1992
     ## 10 Mexico                3  1993
-    ## # … with 6,779 more rows
+    ## # ℹ 6,779 more rows
 
     # Which countries are in this dataset
     d |> select(country_name) |> distinct()
@@ -635,7 +635,7 @@ effectively identify the distinct levels of *identifiers*
     ##  8 Burma/Myanmar
     ##  9 Russia       
     ## 10 Albania      
-    ## # … with 171 more rows
+    ## # ℹ 171 more rows
 
     d |> select(year) |> distinct()
 
@@ -652,7 +652,7 @@ effectively identify the distinct levels of *identifiers*
     ##  8  1991
     ##  9  1992
     ## 10  1993
-    ## # … with 29 more rows
+    ## # ℹ 29 more rows
 
 Select both the country identifiers, GDP, and GDP per capita.
 
@@ -674,9 +674,14 @@ Select both the country identifiers, GDP, and GDP per capita.
     ##  8 Mexico                3  1991 107374.    11.6
     ##  9 Mexico                3  1992 111533.    11.9
     ## 10 Mexico                3  1993 114611.    12.0
-    ## # … with 6,779 more rows
+    ## # ℹ 6,779 more rows
 
 ### 3. Rename Columns to Make Names Informative
+
+    # d_gdp |>
+    #   rename("GDP" = "e_gdp", "GDP_per_capita" = "e_gdppc",
+    #          "Country" = "country_name", "ID" = "country_id",
+    #          "Year" = "year")
 
     d_gdp <- d_gdp |>
       rename("GDP" = "e_gdp", "GDP_per_capita" = "e_gdppc",
@@ -698,7 +703,7 @@ Select both the country identifiers, GDP, and GDP per capita.
     ##  8 Mexico      3  1991 107374.           11.6
     ##  9 Mexico      3  1992 111533.           11.9
     ## 10 Mexico      3  1993 114611.           12.0
-    ## # … with 6,779 more rows
+    ## # ℹ 6,779 more rows
 
 ### 4. Subset Rows of the Data Using `slice_`
 
@@ -785,7 +790,7 @@ size:
     ##  8 Vietnam        34  1990  10537.            1.47
     ##  9 Canada         66  1985  83713.           30.4 
     ## 10 Serbia        198  1987  17430.            7.64
-    ## # … with 668 more rows
+    ## # ℹ 668 more rows
 
 The `set.seed` function specify a random seed with which the system uses
 to generate the “random sample.” Long story short, “random” stuff
@@ -819,27 +824,12 @@ from 2000 to 2005.
     ##  8 Suriname     4  2001    402.           7.93
     ##  9 Suriname     4  2002    423.           8.25
     ## 10 Suriname     4  2003    451.           8.67
-    ## # … with 1,052 more rows
+    ## # ℹ 1,052 more rows
 
 We may subset observations whose `Country` variable, a `character`
 variable, equals to the text `"China"`.
 
-    d_gdp |> filter(Country == "China")
-
-    ## # A tibble: 39 × 5
-    ##    Country    ID  Year     GDP GDP_per_capita
-    ##    <chr>   <dbl> <dbl>   <dbl>          <dbl>
-    ##  1 China     110  1984 243976.           2.21
-    ##  2 China     110  1985 265805.           2.36
-    ##  3 China     110  1986 285707.           2.50
-    ##  4 China     110  1987 308227.           2.65
-    ##  5 China     110  1988 322596.           2.73
-    ##  6 China     110  1989 327739.           2.74
-    ##  7 China     110  1990 315683.           2.63
-    ##  8 China     110  1991 329836.           2.71
-    ##  9 China     110  1992 359817.           2.90
-    ## 10 China     110  1993 393449.           3.15
-    ## # … with 29 more rows
+    d_gdp_china <- d_gdp |> filter(Country == "China")
 
 We may also stack multiple `filter` functions. For example, you may do
 the following if you want to look at a subset of the data whose `Year`
@@ -883,7 +873,7 @@ of `GDP_per_capita` appearing first and those with larger values of
     ##  8 Democratic Republic of the Congo   111  2001 2890.           0.54 
     ##  9 Liberia                             86  1998  147.           0.543
     ## 10 Democratic Republic of the Congo   111  2003 3141.           0.552
-    ## # … with 6,779 more rows
+    ## # ℹ 6,779 more rows
 
 Want the countries-years with larger values of `GDP_per_capita` appear
 first? Simply reverse the value using `-GDP_per_capita`. Alternatively,
@@ -904,7 +894,24 @@ you may replace `desc(GDP_per_capita)`.
     ##  8 Qatar                   94  2014 24194.           95.3
     ##  9 Qatar                   94  2010 18107.           94.4
     ## 10 United Arab Emirates   207  2000 31871.           93.3
-    ## # … with 6,779 more rows
+    ## # ℹ 6,779 more rows
+
+    d_gdp |> arrange(desc(GDP_per_capita))
+
+    ## # A tibble: 6,789 × 5
+    ##    Country                 ID  Year    GDP GDP_per_capita
+    ##    <chr>                <dbl> <dbl>  <dbl>          <dbl>
+    ##  1 United Arab Emirates   207  1984 16817.          115. 
+    ##  2 United Arab Emirates   207  1985 15946.          103. 
+    ##  3 Qatar                   94  2012 23055.          101. 
+    ##  4 Qatar                   94  2011 21273.          100. 
+    ##  5 Qatar                   94  2013 24074.           98.9
+    ##  6 United Arab Emirates   207  1991 20567.           96.5
+    ##  7 United Arab Emirates   207  1992 21506.           95.7
+    ##  8 Qatar                   94  2014 24194.           95.3
+    ##  9 Qatar                   94  2010 18107.           94.4
+    ## 10 United Arab Emirates   207  2000 31871.           93.3
+    ## # ℹ 6,779 more rows
 
 ### 7. Perform (4) (5) (6) group by group: `group_by`, `ungroup`
 
@@ -920,9 +927,179 @@ development level for each country/ region respectively.
 
 <!-- -->
 
-    # INSERT CODE HERE
+    # Want: For each country, we want the year with the highest GDP
+    d_gdp |>
+      group_by(Country) |>
+      slice_max(GDP, n = 1)
+
+    ## # A tibble: 341 × 5
+    ## # Groups:   Country [181]
+    ##    Country        ID  Year     GDP GDP_per_capita
+    ##    <chr>       <dbl> <dbl>   <dbl>          <dbl>
+    ##  1 Afghanistan    36  2019   6775.           1.74
+    ##  2 Albania        12  2019   3490.          11.3 
+    ##  3 Algeria       103  2019  52143.          11.6 
+    ##  4 Angola        104  2015  17449.           6.56
+    ##  5 Argentina      37  2017  80302.          17.2 
+    ##  6 Armenia       105  2019   3903.          12.3 
+    ##  7 Australia      67  2019 127644.          48.1 
+    ##  8 Austria       144  2019  44063.          46.2 
+    ##  9 Azerbaijan    106  2014  15216.          15.1 
+    ## 10 Bahrain       146  2018   5149.          30.9 
+    ## # ℹ 331 more rows
+
+    # How many entries are there for each country
+    d_gdp |>
+      group_by(Country) |>
+      count()
+
+    ## # A tibble: 181 × 2
+    ## # Groups:   Country [181]
+    ##    Country         n
+    ##    <chr>       <int>
+    ##  1 Afghanistan    39
+    ##  2 Albania        39
+    ##  3 Algeria        39
+    ##  4 Angola         39
+    ##  5 Argentina      39
+    ##  6 Armenia        33
+    ##  7 Australia      39
+    ##  8 Austria        39
+    ##  9 Azerbaijan     33
+    ## 10 Bahrain        39
+    ## # ℹ 171 more rows
+
+    ?count
+
+    # Want: For each country, get the year when it has worst GDP
+    d_gdp |>
+      group_by(Country) |>
+      slice_min(order_by = GDP, n = 1)
+
+    ## # A tibble: 341 × 5
+    ## # Groups:   Country [181]
+    ##    Country        ID  Year    GDP GDP_per_capita
+    ##    <chr>       <dbl> <dbl>  <dbl>          <dbl>
+    ##  1 Afghanistan    36  1994  1573.           0.85
+    ##  2 Albania        12  1992   995.           2.98
+    ##  3 Algeria       103  1988 22997.           8.83
+    ##  4 Angola        104  1984  3001.           3.06
+    ##  5 Argentina      37  1985 25577.           8.43
+    ##  6 Armenia       105  1994  1037.           3.12
+    ##  7 Australia      67  1984 42768.          25.6 
+    ##  8 Austria       144  1984 18343.          22.9 
+    ##  9 Azerbaijan    106  1996  2362.           2.91
+    ## 10 Bahrain       146  1986   726.          15.4 
+    ## # ℹ 331 more rows
 
 ### 8. Create new columns in the data: `group_by`, `mutate`, `ungroup`
+
+    d_gdp |> mutate(New = 1)
+
+    ## # A tibble: 6,789 × 6
+    ##    Country    ID  Year     GDP GDP_per_capita   New
+    ##    <chr>   <dbl> <dbl>   <dbl>          <dbl> <dbl>
+    ##  1 Mexico      3  1984  93563.           11.7     1
+    ##  2 Mexico      3  1985  94259.           11.5     1
+    ##  3 Mexico      3  1986  92750.           11.1     1
+    ##  4 Mexico      3  1987  93220.           10.9     1
+    ##  5 Mexico      3  1988  94687.           10.8     1
+    ##  6 Mexico      3  1989  98145.           11.0     1
+    ##  7 Mexico      3  1990 103254.           11.4     1
+    ##  8 Mexico      3  1991 107374.           11.6     1
+    ##  9 Mexico      3  1992 111533.           11.9     1
+    ## 10 Mexico      3  1993 114611.           12.0     1
+    ## # ℹ 6,779 more rows
+
+    d_gdp |> mutate(New = GDP)
+
+    ## # A tibble: 6,789 × 6
+    ##    Country    ID  Year     GDP GDP_per_capita     New
+    ##    <chr>   <dbl> <dbl>   <dbl>          <dbl>   <dbl>
+    ##  1 Mexico      3  1984  93563.           11.7  93563.
+    ##  2 Mexico      3  1985  94259.           11.5  94259.
+    ##  3 Mexico      3  1986  92750.           11.1  92750.
+    ##  4 Mexico      3  1987  93220.           10.9  93220.
+    ##  5 Mexico      3  1988  94687.           10.8  94687.
+    ##  6 Mexico      3  1989  98145.           11.0  98145.
+    ##  7 Mexico      3  1990 103254.           11.4 103254.
+    ##  8 Mexico      3  1991 107374.           11.6 107374.
+    ##  9 Mexico      3  1992 111533.           11.9 111533.
+    ## 10 Mexico      3  1993 114611.           12.0 114611.
+    ## # ℹ 6,779 more rows
+
+    d_gdp |> mutate(New = log(GDP))
+
+    ## # A tibble: 6,789 × 6
+    ##    Country    ID  Year     GDP GDP_per_capita   New
+    ##    <chr>   <dbl> <dbl>   <dbl>          <dbl> <dbl>
+    ##  1 Mexico      3  1984  93563.           11.7  11.4
+    ##  2 Mexico      3  1985  94259.           11.5  11.5
+    ##  3 Mexico      3  1986  92750.           11.1  11.4
+    ##  4 Mexico      3  1987  93220.           10.9  11.4
+    ##  5 Mexico      3  1988  94687.           10.8  11.5
+    ##  6 Mexico      3  1989  98145.           11.0  11.5
+    ##  7 Mexico      3  1990 103254.           11.4  11.5
+    ##  8 Mexico      3  1991 107374.           11.6  11.6
+    ##  9 Mexico      3  1992 111533.           11.9  11.6
+    ## 10 Mexico      3  1993 114611.           12.0  11.6
+    ## # ℹ 6,779 more rows
+
+    d_gdp |> mutate(New = log(GDP) + 1)
+
+    ## # A tibble: 6,789 × 6
+    ##    Country    ID  Year     GDP GDP_per_capita   New
+    ##    <chr>   <dbl> <dbl>   <dbl>          <dbl> <dbl>
+    ##  1 Mexico      3  1984  93563.           11.7  12.4
+    ##  2 Mexico      3  1985  94259.           11.5  12.5
+    ##  3 Mexico      3  1986  92750.           11.1  12.4
+    ##  4 Mexico      3  1987  93220.           10.9  12.4
+    ##  5 Mexico      3  1988  94687.           10.8  12.5
+    ##  6 Mexico      3  1989  98145.           11.0  12.5
+    ##  7 Mexico      3  1990 103254.           11.4  12.5
+    ##  8 Mexico      3  1991 107374.           11.6  12.6
+    ##  9 Mexico      3  1992 111533.           11.9  12.6
+    ## 10 Mexico      3  1993 114611.           12.0  12.6
+    ## # ℹ 6,779 more rows
+
+    # Want: New column to be GDP relative to average GDP in the world 1984-2022
+    d_gdp |> mutate(GDP_over_avg = GDP / mean(GDP, na.rm = TRUE))
+
+    ## # A tibble: 6,789 × 6
+    ##    Country    ID  Year     GDP GDP_per_capita GDP_over_avg
+    ##    <chr>   <dbl> <dbl>   <dbl>          <dbl>        <dbl>
+    ##  1 Mexico      3  1984  93563.           11.7         2.11
+    ##  2 Mexico      3  1985  94259.           11.5         2.13
+    ##  3 Mexico      3  1986  92750.           11.1         2.09
+    ##  4 Mexico      3  1987  93220.           10.9         2.10
+    ##  5 Mexico      3  1988  94687.           10.8         2.14
+    ##  6 Mexico      3  1989  98145.           11.0         2.21
+    ##  7 Mexico      3  1990 103254.           11.4         2.33
+    ##  8 Mexico      3  1991 107374.           11.6         2.42
+    ##  9 Mexico      3  1992 111533.           11.9         2.52
+    ## 10 Mexico      3  1993 114611.           12.0         2.59
+    ## # ℹ 6,779 more rows
+
+    # Want: New column to be GDP relative to average GDP of the country in the world 1984-2022
+    d_gdp |> 
+      group_by(Country) |>
+      mutate(GDP_over_avg = GDP / mean(GDP, na.rm = TRUE))
+
+    ## # A tibble: 6,789 × 6
+    ## # Groups:   Country [181]
+    ##    Country    ID  Year     GDP GDP_per_capita GDP_over_avg
+    ##    <chr>   <dbl> <dbl>   <dbl>          <dbl>        <dbl>
+    ##  1 Mexico      3  1984  93563.           11.7        0.624
+    ##  2 Mexico      3  1985  94259.           11.5        0.628
+    ##  3 Mexico      3  1986  92750.           11.1        0.618
+    ##  4 Mexico      3  1987  93220.           10.9        0.622
+    ##  5 Mexico      3  1988  94687.           10.8        0.631
+    ##  6 Mexico      3  1989  98145.           11.0        0.654
+    ##  7 Mexico      3  1990 103254.           11.4        0.688
+    ##  8 Mexico      3  1991 107374.           11.6        0.716
+    ##  9 Mexico      3  1992 111533.           11.9        0.744
+    ## 10 Mexico      3  1993 114611.           12.0        0.764
+    ## # ℹ 6,779 more rows
 
 **Task:** Add the following economic indicators to the data:
 
@@ -932,9 +1109,84 @@ development level for each country/ region respectively.
 
 <!-- -->
 
-    # INSERT CODE HERE
+    # Country-year development level with reference to that of 1984.
+    d_gdp |>
+      group_by(Country) |>
+      arrange(Year) |>
+      mutate(GDP_over_1984 = GDP / first(GDP)) |>
+      ungroup() |>
+      arrange(Country, Year)
+
+    ## # A tibble: 6,789 × 6
+    ##    Country        ID  Year   GDP GDP_per_capita GDP_over_1984
+    ##    <chr>       <dbl> <dbl> <dbl>          <dbl>         <dbl>
+    ##  1 Afghanistan    36  1984 2723.          2.03          1    
+    ##  2 Afghanistan    36  1985 2690.          2.01          0.988
+    ##  3 Afghanistan    36  1986 2617.          1.97          0.961
+    ##  4 Afghanistan    36  1987 2471.          1.86          0.907
+    ##  5 Afghanistan    36  1988 2317.          1.73          0.851
+    ##  6 Afghanistan    36  1989 2173.          1.59          0.798
+    ##  7 Afghanistan    36  1990 2066.          1.46          0.759
+    ##  8 Afghanistan    36  1991 1953.          1.32          0.717
+    ##  9 Afghanistan    36  1992 1842.          1.16          0.676
+    ## 10 Afghanistan    36  1993 1676.          0.973         0.616
+    ## # ℹ 6,779 more rows
+
+    # first()
+
+    # Country-year development level with reference to that of 1984.
+    d_gdp
+
+    ## # A tibble: 6,789 × 5
+    ##    Country    ID  Year     GDP GDP_per_capita
+    ##    <chr>   <dbl> <dbl>   <dbl>          <dbl>
+    ##  1 Mexico      3  1984  93563.           11.7
+    ##  2 Mexico      3  1985  94259.           11.5
+    ##  3 Mexico      3  1986  92750.           11.1
+    ##  4 Mexico      3  1987  93220.           10.9
+    ##  5 Mexico      3  1988  94687.           10.8
+    ##  6 Mexico      3  1989  98145.           11.0
+    ##  7 Mexico      3  1990 103254.           11.4
+    ##  8 Mexico      3  1991 107374.           11.6
+    ##  9 Mexico      3  1992 111533.           11.9
+    ## 10 Mexico      3  1993 114611.           12.0
+    ## # ℹ 6,779 more rows
+
+    # Year-on-year economic growth.
+    # ?lag
+
+    d_gdp |>
+      group_by(Country) |>
+      arrange(Year) |>
+      mutate(GDP_yoy_change = GDP - lag(GDP, n = 1)) |>
+      ungroup() |>
+      arrange(Country, Year)
+
+    ## # A tibble: 6,789 × 6
+    ##    Country        ID  Year   GDP GDP_per_capita GDP_yoy_change
+    ##    <chr>       <dbl> <dbl> <dbl>          <dbl>          <dbl>
+    ##  1 Afghanistan    36  1984 2723.          2.03            NA  
+    ##  2 Afghanistan    36  1985 2690.          2.01           -33.1
+    ##  3 Afghanistan    36  1986 2617.          1.97           -72.8
+    ##  4 Afghanistan    36  1987 2471.          1.86          -146. 
+    ##  5 Afghanistan    36  1988 2317.          1.73          -154. 
+    ##  6 Afghanistan    36  1989 2173.          1.59          -144. 
+    ##  7 Afghanistan    36  1990 2066.          1.46          -107. 
+    ##  8 Afghanistan    36  1991 1953.          1.32          -113. 
+    ##  9 Afghanistan    36  1992 1842.          1.16          -111. 
+    ## 10 Afghanistan    36  1993 1676.          0.973         -166. 
+    ## # ℹ 6,779 more rows
 
 ### 9. Summarize the data: `group_by`, `summarise`, `ungroup`
+
+    # Want: Average GDP level of the world
+    d_gdp |> summarise(gdp_average = mean(GDP, na.rm = TRUE),
+                       gdp_per_capita_average = mean(GDP_per_capita, na.rm = TRUE))
+
+    ## # A tibble: 1 × 2
+    ##   gdp_average gdp_per_capita_average
+    ##         <dbl>                  <dbl>
+    ## 1      44324.                   13.2
 
 **Task:** Perform a data availability/ integrity check. Then aggregate
 the data into a new country-level dataset which contains the following
@@ -946,7 +1198,75 @@ indicators:
 
 <!-- -->
 
-    # INSERT CODE HERE
+    # Data availability/ integrity check
+    d_gdp |>
+      # Create a column that indicates whether the value is missing
+      mutate(GDP_missing = as.numeric(is.na(GDP)), .after = GDP) |>
+      group_by(Country) |>
+      summarise(N_GDP_missing = sum(GDP_missing))
+
+    ## # A tibble: 181 × 2
+    ##    Country     N_GDP_missing
+    ##    <chr>               <dbl>
+    ##  1 Afghanistan             3
+    ##  2 Albania                 3
+    ##  3 Algeria                 3
+    ##  4 Angola                  3
+    ##  5 Argentina               3
+    ##  6 Armenia                 4
+    ##  7 Australia               3
+    ##  8 Austria                 3
+    ##  9 Azerbaijan              3
+    ## 10 Bahrain                 3
+    ## # ℹ 171 more rows
+
+    # ?as.numeric
+
+    # Average development level
+    d_gdp |>
+      group_by(Country) |>
+      summarise(GDP_average = mean(GDP, na.rm = TRUE),
+                GDPpc_average = mean(GDP_per_capita, na.rm = TRUE))
+
+    ## # A tibble: 181 × 3
+    ##    Country     GDP_average GDPpc_average
+    ##    <chr>             <dbl>         <dbl>
+    ##  1 Afghanistan       3374.          1.35
+    ##  2 Albania           2029.          6.33
+    ##  3 Algeria          35153.         10.1 
+    ##  4 Angola            8133.          4.07
+    ##  5 Argentina        53263.         13.2 
+    ##  6 Armenia           2163.          6.83
+    ##  7 Australia        83495.         38.3 
+    ##  8 Austria          31285.         35.6 
+    ##  9 Azerbaijan        8230.          8.72
+    ## 10 Bahrain           2493.         24.4 
+    ## # ℹ 171 more rows
+
+    # GDP growth and GDP per capita growth: comparing 2019 with 1984
+    d_gdp |>
+      filter(Year >= 1984 & Year <= 2019) |>
+      group_by(Country) |>
+      arrange(Year) |>
+      summarise(GDP_growth_2019_1984 = (last(GDP) - first(GDP)) / first(GDP),
+                GDPpc_growth_2019_1984 = (last(GDP_per_capita) - first(GDP_per_capita)) / first(GDP_per_capita)) |>
+      ungroup() |>
+      arrange(Country)
+
+    ## # A tibble: 181 × 3
+    ##    Country     GDP_growth_2019_1984 GDPpc_growth_2019_1984
+    ##    <chr>                      <dbl>                  <dbl>
+    ##  1 Afghanistan                 1.49                 -0.142
+    ##  2 Albania                     1.84                  1.82 
+    ##  3 Algeria                     1.14                  0.118
+    ##  4 Angola                      4.64                  0.763
+    ##  5 Argentina                   2.03                  0.922
+    ##  6 Armenia                    NA                    NA    
+    ##  7 Australia                   1.98                  0.879
+    ##  8 Austria                     1.40                  1.02 
+    ##  9 Azerbaijan                  1.47                  0.766
+    ## 10 Bahrain                     5.50                  0.711
+    ## # ℹ 171 more rows
 
 ## Final Notes
 
@@ -976,7 +1296,7 @@ Let’s elaborate this definition
     ##  8 China     110  1991 329836.           2.71
     ##  9 China     110  1992 359817.           2.90
     ## 10 China     110  1993 393449.           3.15
-    ## # … with 29 more rows
+    ## # ℹ 29 more rows
 
     # is equivalent to...
     filter(d_gdp, Country == "China")
@@ -994,7 +1314,7 @@ Let’s elaborate this definition
     ##  8 China     110  1991 329836.           2.71
     ##  9 China     110  1992 359817.           2.90
     ## 10 China     110  1993 393449.           3.15
-    ## # … with 29 more rows
+    ## # ℹ 29 more rows
 
     # ... is equivalent to
     d_gdp |> filter(.data = _, Country == "China") 
@@ -1012,7 +1332,7 @@ Let’s elaborate this definition
     ##  8 China     110  1991 329836.           2.71
     ##  9 China     110  1992 359817.           2.90
     ## 10 China     110  1993 393449.           3.15
-    ## # … with 29 more rows
+    ## # ℹ 29 more rows
 
     # Note: You may use "_" as a placeholder of the object passed down through the pipe. But it should be used as a *named argument*. Upon a lookup in the tidyvese documentation (using ?filter) ".data" is the name of the first argument. This is a more advanced feature of this command. Understanding is optional. 
 

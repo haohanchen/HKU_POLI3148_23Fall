@@ -8,7 +8,7 @@ output:
   md_document: default
 knit: (function(inputFile, encoding){rmarkdown::render(inputFile, encoding = encoding, output_format = "all", knit_root_dir = getwd())})
 editor_options: 
-  chunk_output_type: console
+  chunk_output_type: inline
 ---
 
 ## Objective
@@ -49,16 +49,51 @@ For this in-class demonstration, we will continue working on the external parts 
 library(tidyverse)
 ```
 
+```{r}
+d <- read_csv("_DataPublic_/vdem/1984_2022/vdem_1984_2022_external.csv")
+
+```
+
 ### 1. Reshape the V-Dem dataset
 
 ```{r}
-# INSERT CODE
+# Want: Each row contain country-year-variable
+
+d |> select(country_name) |> distinct()
+
+d_subset <- d |> select(country_name, year, starts_with("e_"))
+
+d_subset_long <- 
+  d_subset |> pivot_longer(cols = starts_with("e_"))
+```
+
+```{r}
+d_subset_wide_year <-
+  d_subset_long |> pivot_wider(names_from = year, values_from = value)
 ```
 
 ### 2. Stack multiple subsets of the V-Dem datasets
 
 ```{r}
-# INSERT CODE
+d_VdemIndex <- read_csv("_DataPublic_/vdem/1984_2022/vdem_1984_2022_index.csv")
+
+```
+
+```{r}
+d_stack <- bind_cols(d, d_VdemIndex)
+```
+
+```{r}
+# Want: Stack two tables by rows?
+d_1945_1983 <- read_csv("_DataPublic_/vdem/1945_1983/vdem_1945_1983_external.csv")
+
+```
+
+```{r}
+d_1945_2022 <- bind_rows(d, d_1945_1983)
+
+d_1945_2022 |> select(year) |> distinct() |> arrange(year)
+
 ```
 
 ### 3. Join multiple regional subsets of the V-Dem datasets
@@ -67,7 +102,7 @@ library(tidyverse)
 # INSERT CODE
 ```
 
-### 4. Validate the GDP data in V-Dem with World Bank data 
+### 4. Validate the GDP data in V-Dem with World Bank data
 
 **Task:** There are many different "versions" of GDP data. I wonder whether the GDP data in the V-Dem dataset is reliable. So I would like to validate it with [data from the World Bank](https://data.worldbank.org/).
 
