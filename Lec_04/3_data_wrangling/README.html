@@ -351,11 +351,22 @@ display: none;
 
 <h1 class="title toc-ignore">Data Wrangling (1)</h1>
 <h4 class="author">Haohan Chen</h4>
-<h4 class="date">Last update: September 28, 2023</h4>
+<h4 class="date">Last update: October 05, 2023</h4>
 
 </div>
 
 
+<pre class="r"><code>library(tidyverse)</code></pre>
+<pre><code>## ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+## ✔ dplyr     1.1.3     ✔ readr     2.1.4
+## ✔ forcats   1.0.0     ✔ stringr   1.5.0
+## ✔ ggplot2   3.4.3     ✔ tibble    3.2.1
+## ✔ lubridate 1.9.2     ✔ tidyr     1.3.0
+## ✔ purrr     1.0.2     
+## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+## ✖ dplyr::filter() masks stats::filter()
+## ✖ dplyr::lag()    masks stats::lag()
+## ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
 <div id="objectives-of-this-lecture" class="section level2">
 <h2>Objectives of this Lecture</h2>
 <p>This lecture introduces data wrangling with R. Using V-Dem data as an
@@ -433,45 +444,329 @@ indicators:
 development. Applying the data wrangling tools we introduce in this
 lecture, perform the following task:</p>
 <ol style="list-style-type: decimal">
-<li><strong>Coodbook lookup</strong>. Look up the codebook, answer the
-following questions:
+<li><p><strong>Coodbook lookup</strong>. Look up the codebook, answer
+the following questions:</p>
 <ol style="list-style-type: decimal">
-<li><p>What indicators regarding the quality of education are available
-in the V-Dem datasets?</p></li>
-<li><p>What are the data’s coverage (i.e., for which countries and years
-do we have data?)</p></li>
-<li><p>What are their sources? Provide the link to least 1
-source.</p></li>
-</ol></li>
-<li><strong>Subset by columns</strong>
+<li>What indicators regarding the quality of education are available in
+the V-Dem datasets? 9 Background Factors (E)</li>
+</ol>
+<p>9.1.1 Education 15+ (E) (e_peaveduc) What is the average years of
+education among citizens older than 15?</p>
+<p>9.1.2 Educational inequality, Gini (E) (e_peedgini) How unequal is
+the level of education achieved by the population aged 15 years and
+older?</p>
+<ol start="2" style="list-style-type: decimal">
+<li>What are the data’s coverage (i.e., for which countries and years do
+we have data?)</li>
+</ol>
+<pre class="r"><code>setwd(&#39;C:/Users/warre/OneDrive/Documents/GitHub/HKU_POLI3148_23Fall/&#39;)
+set.seed(52)
+d &lt;- read_csv(&quot;_DataPublic_/vdem/1984_2022/vdem_1984_2022_external.csv&quot;)</code></pre>
+<pre><code>## Rows: 6789 Columns: 211
+## ── Column specification ────────────────────────────────────────────────────────
+## Delimiter: &quot;,&quot;
+## chr    (3): country_name, country_text_id, histname
+## dbl  (207): country_id, year, project, historical, codingstart, codingend, c...
+## date   (1): historical_date
+## 
+## ℹ Use `spec()` to retrieve the full column specification for this data.
+## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+<pre class="r"><code>d |&gt; select(country_name, country_id, year) |&gt; distinct()</code></pre>
+<pre><code>## # A tibble: 6,789 × 3
+##    country_name country_id  year
+##    &lt;chr&gt;             &lt;dbl&gt; &lt;dbl&gt;
+##  1 Mexico                3  1984
+##  2 Mexico                3  1985
+##  3 Mexico                3  1986
+##  4 Mexico                3  1987
+##  5 Mexico                3  1988
+##  6 Mexico                3  1989
+##  7 Mexico                3  1990
+##  8 Mexico                3  1991
+##  9 Mexico                3  1992
+## 10 Mexico                3  1993
+## # ℹ 6,779 more rows</code></pre>
+<pre class="r"><code>d |&gt; select(country_name) |&gt; distinct()</code></pre>
+<pre><code>## # A tibble: 181 × 1
+##    country_name 
+##    &lt;chr&gt;        
+##  1 Mexico       
+##  2 Suriname     
+##  3 Sweden       
+##  4 Switzerland  
+##  5 Ghana        
+##  6 South Africa 
+##  7 Japan        
+##  8 Burma/Myanmar
+##  9 Russia       
+## 10 Albania      
+## # ℹ 171 more rows</code></pre>
+<pre class="r"><code>d |&gt; select(year) |&gt; distinct()</code></pre>
+<pre><code>## # A tibble: 39 × 1
+##     year
+##    &lt;dbl&gt;
+##  1  1984
+##  2  1985
+##  3  1986
+##  4  1987
+##  5  1988
+##  6  1989
+##  7  1990
+##  8  1991
+##  9  1992
+## 10  1993
+## # ℹ 29 more rows</code></pre>
+<ol start="3" style="list-style-type: decimal">
+<li>What are their sources? Provide the link to least 1 source.</li>
+</ol>
+<p>e_peedgini: Source(s): Clio Infra (clio-infra.eu), drawing on
+Mitchell (1998a, 1998b, 1998c), United States Census Bureau (2021),
+UNESCO, Földvári and van Leeuwen (2010a), Leeuwen, van Leeuwen-Li,
+Földvári (2011), Leeuwen, van Leeuwen-Li, Földvári (2012a), Leeuwen, van
+Leeuwen-Li, Földvári (2012b), Didenko, Foldvari, van Leeuwen
+(2012).</p></li>
+<li><p><strong>Subset by columns</strong></p>
 <ol style="list-style-type: decimal">
-<li><p>Create a dataset containing only the country-year identifiers and
-indicators of education quality.</p></li>
-<li><p>Rename the columns of education quality to make them
-informative.</p></li>
-</ol></li>
-<li><strong>Subset by rows</strong>
-<ol style="list-style-type: decimal">
-<li><p>List 5 countries-years that have the highest education level
-among its population.</p></li>
-<li><p>List 5 countries-years that suffer from the most severe
-inequality in education.</p></li>
-</ol></li>
-<li><strong>Summarize the data</strong>
-<ol style="list-style-type: decimal">
-<li><p>Check data availability: For which countries and years are the
-indicators of education quality available?</p></li>
-<li><p>Create two types of country-level indicators of education
-quality</p>
-<ol style="list-style-type: decimal">
-<li><p>Average level of education quality from 1984 to 2022</p></li>
-<li><p>Change of education quality from 1984 to 2022</p></li>
-</ol></li>
-<li><p>Examine the data and <em>briefly</em> discuss: Which countries
-perform the best and the worst in terms of education quality in the past
-four decades?</p></li>
+<li>Create a dataset containing only the country-year identifiers and
+indicators of education quality.</li>
 </ol></li>
 </ol>
+<pre class="r"><code>education &lt;- d |&gt; select(country_name,  year, e_peaveduc, e_peedgini)</code></pre>
+<pre><code>2.  Rename the columns of education quality to make them informative.</code></pre>
+<pre class="r"><code>education_renamed &lt;- education |&gt; rename( &quot;average_years_of_postsecondary_education&quot; = &quot;e_peaveduc&quot; , &quot;postsecondary_gini_inequality_index&quot; = &quot;e_peedgini&quot; )</code></pre>
+<ol start="3" style="list-style-type: decimal">
+<li><p><strong>Subset by rows</strong></p>
+<ol style="list-style-type: decimal">
+<li>List 5 countries-years that have the highest education level among
+its population.</li>
+</ol></li>
+</ol>
+<pre class="r"><code>education_renamed |&gt; slice_max(average_years_of_postsecondary_education, n=5)</code></pre>
+<pre><code>## # A tibble: 13 × 4
+##    country_name    year average_years_of_postsecondary_…¹ postsecondary_gini_i…²
+##    &lt;chr&gt;          &lt;dbl&gt;                             &lt;dbl&gt;                  &lt;dbl&gt;
+##  1 United Kingdom  2010                              13.3                   6.07
+##  2 United Kingdom  2011                              13.3                  NA   
+##  3 United Kingdom  2012                              13.3                  NA   
+##  4 United Kingdom  2013                              13.3                  NA   
+##  5 United Kingdom  2014                              13.3                  NA   
+##  6 United Kingdom  2015                              13.3                  NA   
+##  7 United Kingdom  2016                              13.3                  NA   
+##  8 United Kingdom  2017                              13.3                  NA   
+##  9 United Kingdom  2018                              13.3                  NA   
+## 10 United Kingdom  2019                              13.3                  NA   
+## 11 United Kingdom  2020                              13.3                  NA   
+## 12 United Kingdom  2021                              13.3                  NA   
+## 13 United Kingdom  2022                              13.3                  NA   
+## # ℹ abbreviated names: ¹​average_years_of_postsecondary_education,
+## #   ²​postsecondary_gini_inequality_index</code></pre>
+<pre><code>2.  List 5 countries-years that suffer from the most severe inequality in education.</code></pre>
+<pre class="r"><code>education_renamed |&gt; slice_max(postsecondary_gini_inequality_index, n=5)</code></pre>
+<pre><code>## # A tibble: 5 × 4
+##   country_name  year average_years_of_postsecondary_edu…¹ postsecondary_gini_i…²
+##   &lt;chr&gt;        &lt;dbl&gt;                                &lt;dbl&gt;                  &lt;dbl&gt;
+## 1 Burkina Faso  1984                                0.301                   97.0
+## 2 Burkina Faso  1985                                0.322                   96.9
+## 3 Burkina Faso  1986                                0.343                   96.7
+## 4 Burkina Faso  1987                                0.364                   96.4
+## 5 Burkina Faso  1988                                0.385                   96.1
+## # ℹ abbreviated names: ¹​average_years_of_postsecondary_education,
+## #   ²​postsecondary_gini_inequality_index</code></pre>
+<ol start="4" style="list-style-type: decimal">
+<li><p><strong>Summarize the data</strong></p>
+<ol style="list-style-type: decimal">
+<li>Check data availability: For which countries and years are the
+indicators of education quality available?</li>
+</ol></li>
+</ol>
+<pre class="r"><code>cleaned_data &lt;- education_renamed |&gt; filter_at(vars(c(postsecondary_gini_inequality_index, average_years_of_postsecondary_education)), any_vars(!is.na(.)))
+
+education_renamed |&gt; mutate(gini_missing = is.na(postsecondary_gini_inequality_index)) |&gt; group_by(country_name) |&gt;  summarize(number_missing_gini = sum(gini_missing))</code></pre>
+<pre><code>## # A tibble: 181 × 2
+##    country_name number_missing_gini
+##    &lt;chr&gt;                      &lt;int&gt;
+##  1 Afghanistan                   12
+##  2 Albania                       39
+##  3 Algeria                       12
+##  4 Angola                        12
+##  5 Argentina                     12
+##  6 Armenia                       12
+##  7 Australia                     12
+##  8 Austria                       12
+##  9 Azerbaijan                    12
+## 10 Bahrain                       39
+## # ℹ 171 more rows</code></pre>
+<pre class="r"><code>education_renamed |&gt; mutate(yrs_missing = is.na(average_years_of_postsecondary_education)) |&gt; group_by(country_name) |&gt;  summarize(number_missing_years_of_education = sum(yrs_missing))</code></pre>
+<pre><code>## # A tibble: 181 × 2
+##    country_name number_missing_years_of_education
+##    &lt;chr&gt;                                    &lt;int&gt;
+##  1 Afghanistan                                  0
+##  2 Albania                                     39
+##  3 Algeria                                      0
+##  4 Angola                                       0
+##  5 Argentina                                    0
+##  6 Armenia                                      0
+##  7 Australia                                    0
+##  8 Austria                                      0
+##  9 Azerbaijan                                   0
+## 10 Bahrain                                     39
+## # ℹ 171 more rows</code></pre>
+<pre class="r"><code>summary(cleaned_data)</code></pre>
+<pre><code>##  country_name            year      average_years_of_postsecondary_education
+##  Length:5015        Min.   :1984   Min.   : 0.301                          
+##  Class :character   1st Qu.:1994   1st Qu.: 4.840                          
+##  Mode  :character   Median :2003   Median : 7.489                          
+##                     Mean   :2003   Mean   : 7.360                          
+##                     3rd Qu.:2013   3rd Qu.:10.118                          
+##                     Max.   :2022   Max.   :13.300                          
+##                                                                            
+##  postsecondary_gini_inequality_index
+##  Min.   : 3.771                     
+##  1st Qu.:18.726                     
+##  Median :27.937                     
+##  Mean   :34.298                     
+##  3rd Qu.:46.602                     
+##  Max.   :96.983                     
+##  NA&#39;s   :1637</code></pre>
+<pre><code>2.  Create two types of country-level indicators of education quality
+
+    1.  Average level of education quality from 1984 to 2022</code></pre>
+<pre class="r"><code>education_renamed |&gt; group_by(country_name) |&gt; summarise(avg_gini_index = mean(postsecondary_gini_inequality_index, na.rm = TRUE)) |&gt; arrange(avg_gini_index)</code></pre>
+<pre><code>## # A tibble: 181 × 2
+##    country_name   avg_gini_index
+##    &lt;chr&gt;                   &lt;dbl&gt;
+##  1 Austria                  6.35
+##  2 Barbados                 6.98
+##  3 Denmark                  8.17
+##  4 Switzerland              8.28
+##  5 United Kingdom           8.38
+##  6 Japan                    9.33
+##  7 Norway                   9.58
+##  8 Australia                9.60
+##  9 Tajikistan              10.8 
+## 10 Hungary                 11.2 
+## # ℹ 171 more rows</code></pre>
+<pre class="r"><code>education_renamed |&gt; group_by(country_name) |&gt; summarise(avg_gini_index = mean(postsecondary_gini_inequality_index, na.rm = TRUE)) |&gt; arrange(-avg_gini_index)</code></pre>
+<pre><code>## # A tibble: 181 × 2
+##    country_name avg_gini_index
+##    &lt;chr&gt;                 &lt;dbl&gt;
+##  1 Burkina Faso           91.3
+##  2 Mali                   87.9
+##  3 Niger                  85.3
+##  4 Somalia                84.7
+##  5 Afghanistan            77.8
+##  6 Benin                  76.9
+##  7 The Gambia             76.7
+##  8 Guinea                 73.4
+##  9 Burundi                73.0
+## 10 Nepal                  69.8
+## # ℹ 171 more rows</code></pre>
+<pre class="r"><code>education_renamed |&gt; group_by(country_name) |&gt; summarise(average_years_of_education = mean(average_years_of_postsecondary_education, na.rm = TRUE)) |&gt; arrange(average_years_of_education)</code></pre>
+<pre><code>## # A tibble: 181 × 2
+##    country_name average_years_of_education
+##    &lt;chr&gt;                             &lt;dbl&gt;
+##  1 Burkina Faso                      0.982
+##  2 Niger                             1.06 
+##  3 Mali                              1.25 
+##  4 Somalia                           1.29 
+##  5 Burundi                           1.86 
+##  6 Mozambique                        2.36 
+##  7 Benin                             2.39 
+##  8 Angola                            2.46 
+##  9 Senegal                           2.54 
+## 10 Guinea                            2.62 
+## # ℹ 171 more rows</code></pre>
+<pre class="r"><code>education_renamed |&gt; group_by(country_name) |&gt; summarise(average_years_of_education = mean(average_years_of_postsecondary_education, na.rm = TRUE)) |&gt; arrange(-average_years_of_education)</code></pre>
+<pre><code>## # A tibble: 181 × 2
+##    country_name   average_years_of_education
+##    &lt;chr&gt;                               &lt;dbl&gt;
+##  1 Germany                              12.9
+##  2 Australia                            12.9
+##  3 United Kingdom                       12.9
+##  4 Canada                               12.7
+##  5 Switzerland                          12.7
+##  6 Japan                                12.6
+##  7 Norway                               12.4
+##  8 France                               12.0
+##  9 South Korea                          12.0
+## 10 New Zealand                          11.9
+## # ℹ 171 more rows</code></pre>
+<pre><code>    2.  Change of education quality from 1984 to 2022</code></pre>
+<pre class="r"><code>education_renamed |&gt; group_by(country_name) |&gt; arrange(year, by.group=TRUE) |&gt; mutate(change_in_years_of_education = last(average_years_of_postsecondary_education, year) - first(average_years_of_postsecondary_education, year), na.rm = TRUE) |&gt; filter(year==2022) |&gt; select(country_name, year, change_in_years_of_education) |&gt; arrange(-change_in_years_of_education)</code></pre>
+<pre><code>## # A tibble: 179 × 3
+## # Groups:   country_name [179]
+##    country_name  year change_in_years_of_education
+##    &lt;chr&gt;        &lt;dbl&gt;                        &lt;dbl&gt;
+##  1 Botswana      2022                         5.17
+##  2 Singapore     2022                         4.52
+##  3 Libya         2022                         4.07
+##  4 Cuba          2022                         3.84
+##  5 Chad          2022                         3.82
+##  6 Egypt         2022                         3.82
+##  7 Jordan        2022                         3.82
+##  8 South Korea   2022                         3.54
+##  9 Saudi Arabia  2022                         3.49
+## 10 Algeria       2022                         3.35
+## # ℹ 169 more rows</code></pre>
+<pre class="r"><code>education_renamed |&gt; group_by(country_name) |&gt; arrange(year , by.group=TRUE) |&gt; mutate(change_in_years_of_education = last(average_years_of_postsecondary_education, year) - first(average_years_of_postsecondary_education, year), na.rm = TRUE) |&gt; filter(year==2022) |&gt; select(country_name, year, change_in_years_of_education) |&gt; arrange(change_in_years_of_education)</code></pre>
+<pre><code>## # A tibble: 179 × 3
+## # Groups:   country_name [179]
+##    country_name  year change_in_years_of_education
+##    &lt;chr&gt;        &lt;dbl&gt;                        &lt;dbl&gt;
+##  1 Tajikistan    2022                       -0.252
+##  2 North Korea   2022                        0    
+##  3 Russia        2022                        0.230
+##  4 Azerbaijan    2022                        0.252
+##  5 Uzbekistan    2022                        0.272
+##  6 Kyrgyzstan    2022                        0.301
+##  7 Switzerland   2022                        0.328
+##  8 Armenia       2022                        0.336
+##  9 Germany       2022                        0.350
+## 10 Georgia       2022                        0.387
+## # ℹ 169 more rows</code></pre>
+<pre class="r"><code>education_renamed   |&gt; group_by(country_name) |&gt; arrange(year) |&gt; mutate(change= last(na.omit(postsecondary_gini_inequality_index)) - first(na.omit(postsecondary_gini_inequality_index))) |&gt; filter(year==2022) |&gt; select(country_name, year, change) |&gt; arrange(-change)</code></pre>
+<pre><code>## # A tibble: 179 × 3
+## # Groups:   country_name [179]
+##    country_name         year change
+##    &lt;chr&gt;               &lt;dbl&gt;  &lt;dbl&gt;
+##  1 Costa Rica           2022  4.12 
+##  2 New Zealand          2022  3.16 
+##  3 Spain                2022  2.30 
+##  4 Trinidad and Tobago  2022  2.30 
+##  5 Switzerland          2022  1.72 
+##  6 Lebanon              2022  0.718
+##  7 Seychelles           2022  0.696
+##  8 France               2022 -0.287
+##  9 Venezuela            2022 -0.395
+## 10 Jamaica              2022 -0.597
+## # ℹ 169 more rows</code></pre>
+<pre class="r"><code>education_renamed   |&gt; group_by(country_name) |&gt; arrange(year) |&gt; mutate(change= last(na.omit(postsecondary_gini_inequality_index)) - first(na.omit(postsecondary_gini_inequality_index))) |&gt; filter(year==2022) |&gt; select(country_name, year, change) |&gt; arrange(change)</code></pre>
+<pre><code>## # A tibble: 179 × 3
+## # Groups:   country_name [179]
+##    country_name  year change
+##    &lt;chr&gt;        &lt;dbl&gt;  &lt;dbl&gt;
+##  1 Nepal         2022  -39.8
+##  2 Botswana      2022  -34.0
+##  3 Haiti         2022  -31.5
+##  4 Egypt         2022  -30.8
+##  5 Iran          2022  -30.3
+##  6 Angola        2022  -29.5
+##  7 India         2022  -29.0
+##  8 Nigeria       2022  -27.5
+##  9 Malawi        2022  -27.2
+## 10 Uganda        2022  -26.8
+## # ℹ 169 more rows</code></pre>
+<pre><code>3.  Examine the data and *briefly* discuss: Which countries perform the best and the worst in terms of education quality in the past four decades?</code></pre>
+<p>African Nations generally do not see much education of individuals
+past the age of 15, where as Western developed nations sees higher
+education levels for individuals older than 15. Those same African
+nations also see a higher inequality, with a few very educated
+individuals and a lot of uneducated individuals. We see that Singapore
+and other developing Asian nations have seen higher growth of education
+level. However, in previous soviet states, the education years have gone
+down. This may be due to the following: while the soviets valued
+education, the value of education has become less relevant in the post
+soviet world as many states have become petro-states.</p>
 <p><strong>Submission requirement:</strong> You will submit your outputs
 through Moodle. In your submission:</p>
 <ol style="list-style-type: decimal">
@@ -499,34 +794,6 @@ later lectures.</em></p>
 </div>
 <div id="demo" class="section level2">
 <h2>Demo</h2>
-<div id="load-the-tidyverse-packages" class="section level3">
-<h3>0. Load the <code>tidyverse</code> Packages</h3>
-<p>This section loads the packages we need in this lecture.</p>
-<pre class="r"><code>library(tidyverse)</code></pre>
-<pre><code>## ── Attaching packages ─────────────────────────────────────── tidyverse 1.3.2 ──
-## ✔ ggplot2 3.3.6      ✔ purrr   0.3.5 
-## ✔ tibble  3.1.8      ✔ dplyr   1.0.10
-## ✔ tidyr   1.2.1      ✔ stringr 1.4.1 
-## ✔ readr   2.1.3      ✔ forcats 0.5.2 
-## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
-## ✖ dplyr::filter() masks stats::filter()
-## ✖ dplyr::lag()    masks stats::lag()</code></pre>
-</div>
-<div id="import-and-export-the-v-dem-data" class="section level3">
-<h3>1. Import and Export the V-Dem Data</h3>
-<p>This section loads the VDEM dataset and describe its basic
-information</p>
-<pre class="r"><code>d &lt;- read_csv(&quot;_DataPublic_/vdem/1984_2022/vdem_1984_2022_external.csv&quot;)</code></pre>
-<pre><code>## Rows: 6789 Columns: 211
-## ── Column specification ────────────────────────────────────────────────────────
-## Delimiter: &quot;,&quot;
-## chr    (3): country_name, country_text_id, histname
-## dbl  (207): country_id, year, project, historical, codingstart, codingend, c...
-## date   (1): historical_date
-## 
-## ℹ Use `spec()` to retrieve the full column specification for this data.
-## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
-</div>
 </div>
 
 

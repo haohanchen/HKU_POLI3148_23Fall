@@ -15,6 +15,10 @@ editor_options:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+```{r}
+library(tidyverse)
+```
+
 ## Objectives of this Lecture
 
 This lecture introduces data wrangling with R. Using V-Dem data as an example, we will learn how to use the wrangle data with a set of [`tidyverse`](https://www.tidyverse.org/) functionality. Specifically, we will focus on functions...
@@ -65,29 +69,109 @@ To demonstrate the above functionality, we will use real-world political data fr
 The quality of education has a decisive effect on a country's future development. Applying the data wrangling tools we introduce in this lecture, perform the following task:
 
 1.  **Coodbook lookup**. Look up the codebook, answer the following questions:
-    1.  What indicators regarding the quality of education are available in the V-Dem datasets?
+
+    1.  What indicators regarding the quality of education are available in the V-Dem datasets? 9 Background Factors (E)
+
+    9.1.1 Education 15+ (E) (e_peaveduc) What is the average years of education among citizens older than 15?
+
+    9.1.2 Educational inequality, Gini (E) (e_peedgini) How unequal is the level of education achieved by the population aged 15 years and older?
 
     2.  What are the data's coverage (i.e., for which countries and years do we have data?)
 
+    ```{r}
+    setwd('C:/Users/warre/OneDrive/Documents/GitHub/HKU_POLI3148_23Fall/')
+    set.seed(52)
+    d <- read_csv("_DataPublic_/vdem/1984_2022/vdem_1984_2022_external.csv")
+    d |> select(country_name, country_id, year) |> distinct()
+    d |> select(country_name) |> distinct()
+    d |> select(year) |> distinct()
+
+    ```
+
     3.  What are their sources? Provide the link to least 1 source.
+
+    e_peedgini: Source(s): Clio Infra (clio-infra.eu), drawing on Mitchell (1998a, 1998b, 1998c), United States Census Bureau (2021), UNESCO, Földvári and van Leeuwen (2010a), Leeuwen, van Leeuwen-Li, Földvári (2011), Leeuwen, van Leeuwen-Li, Földvári (2012a), Leeuwen, van Leeuwen-Li, Földvári (2012b), Didenko, Foldvari, van Leeuwen (2012).
+
 2.  **Subset by columns**
+
     1.  Create a dataset containing only the country-year identifiers and indicators of education quality.
 
-    2.  Rename the columns of education quality to make them informative.
+```{r}
+education <- d |> select(country_name,  year, e_peaveduc, e_peedgini)
+
+```
+
+```         
+2.  Rename the columns of education quality to make them informative.
+```
+
+```{r}
+education_renamed <- education |> rename( "average_years_of_postsecondary_education" = "e_peaveduc" , "postsecondary_gini_inequality_index" = "e_peedgini" )
+```
+
 3.  **Subset by rows**
+
     1.  List 5 countries-years that have the highest education level among its population.
 
-    2.  List 5 countries-years that suffer from the most severe inequality in education.
+```{r}
+education_renamed |> slice_max(average_years_of_postsecondary_education, n=5)
+```
+
+```         
+2.  List 5 countries-years that suffer from the most severe inequality in education.
+```
+
+```{r}
+education_renamed |> slice_max(postsecondary_gini_inequality_index, n=5)
+```
+
 4.  **Summarize the data**
+
     1.  Check data availability: For which countries and years are the indicators of education quality available?
 
+```{r}
+cleaned_data <- education_renamed |> filter_at(vars(c(postsecondary_gini_inequality_index, average_years_of_postsecondary_education)), any_vars(!is.na(.)))
+
+education_renamed |> mutate(gini_missing = is.na(postsecondary_gini_inequality_index)) |> group_by(country_name) |>  summarize(number_missing_gini = sum(gini_missing))
+
+education_renamed |> mutate(yrs_missing = is.na(average_years_of_postsecondary_education)) |> group_by(country_name) |>  summarize(number_missing_years_of_education = sum(yrs_missing))
+
+summary(cleaned_data)
+
+```
+
+     
     2.  Create two types of country-level indicators of education quality
 
         1.  Average level of education quality from 1984 to 2022
 
+
+```{r}
+education_renamed |> group_by(country_name) |> summarise(avg_gini_index = mean(postsecondary_gini_inequality_index, na.rm = TRUE)) |> arrange(avg_gini_index)
+
+education_renamed |> group_by(country_name) |> summarise(avg_gini_index = mean(postsecondary_gini_inequality_index, na.rm = TRUE)) |> arrange(-avg_gini_index)
+
+education_renamed |> group_by(country_name) |> summarise(average_years_of_education = mean(average_years_of_postsecondary_education, na.rm = TRUE)) |> arrange(average_years_of_education)
+
+education_renamed |> group_by(country_name) |> summarise(average_years_of_education = mean(average_years_of_postsecondary_education, na.rm = TRUE)) |> arrange(-average_years_of_education)
+```
+
         2.  Change of education quality from 1984 to 2022
 
+```{r}
+education_renamed |> group_by(country_name) |> arrange(year, by.group=TRUE) |> mutate(change_in_years_of_education = last(average_years_of_postsecondary_education, year) - first(average_years_of_postsecondary_education, year), na.rm = TRUE) |> filter(year==2022) |> select(country_name, year, change_in_years_of_education) |> arrange(-change_in_years_of_education)
+
+education_renamed |> group_by(country_name) |> arrange(year , by.group=TRUE) |> mutate(change_in_years_of_education = last(average_years_of_postsecondary_education, year) - first(average_years_of_postsecondary_education, year), na.rm = TRUE) |> filter(year==2022) |> select(country_name, year, change_in_years_of_education) |> arrange(change_in_years_of_education)
+
+education_renamed   |> group_by(country_name) |> arrange(year) |> mutate(change= last(na.omit(postsecondary_gini_inequality_index)) - first(na.omit(postsecondary_gini_inequality_index))) |> filter(year==2022) |> select(country_name, year, change) |> arrange(-change)
+
+education_renamed   |> group_by(country_name) |> arrange(year) |> mutate(change= last(na.omit(postsecondary_gini_inequality_index)) - first(na.omit(postsecondary_gini_inequality_index))) |> filter(year==2022) |> select(country_name, year, change) |> arrange(change)
+```
+
+        
     3.  Examine the data and *briefly* discuss: Which countries perform the best and the worst in terms of education quality in the past four decades?
+
+African Nations generally do not see much education of individuals past the age of 15, where as Western developed nations sees higher education levels for individuals older than 15. Those same African nations also see a higher inequality, with a few very educated individuals and a lot of uneducated individuals. We see that Singapore and other developing Asian nations have seen higher growth of education level. However, in previous soviet states, the education years have gone down. This may be due to the following: while the soviets valued education, the value of education has become less relevant in the post soviet world as many states have become petro-states.
 
 **Submission requirement:** You will submit your outputs through Moodle. In your submission:
 
@@ -109,19 +193,3 @@ The quality of education has a decisive effect on a country's future development
 -   V-Dem documentation: <https://v-dem.net/>
 
 ## Demo
-
-### 0. Load the `tidyverse` Packages
-
-This section loads the packages we need in this lecture.
-
-```{r}
-library(tidyverse)
-```
-
-### 1. Import and Export the V-Dem Data
-
-This section loads the VDEM dataset and describe its basic information
-
-```{r}
-d <- read_csv("_DataPublic_/vdem/1984_2022/vdem_1984_2022_external.csv")
-```
