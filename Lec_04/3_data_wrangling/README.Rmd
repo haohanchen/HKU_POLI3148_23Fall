@@ -97,7 +97,8 @@ The quality of education has a decisive effect on a country's future development
     1.  Create a dataset containing only the country-year identifiers and indicators of education quality.
 
 ```{r}
-education <- d |> select(country_name,  year, e_peaveduc, e_peedgini)
+education <- d |> 
+  select(country_name,  year, e_peaveduc, e_peedgini)
 
 ```
 
@@ -106,7 +107,8 @@ education <- d |> select(country_name,  year, e_peaveduc, e_peedgini)
 ```
 
 ```{r}
-education_renamed <- education |> rename( "average_years_of_postsecondary_education" = "e_peaveduc" , "postsecondary_gini_inequality_index" = "e_peedgini" )
+education_renamed <- education |> 
+  rename( "average_years_of_postsecondary_education" = "e_peaveduc" , "postsecondary_gini_inequality_index" = "e_peedgini" )
 ```
 
 3.  **Subset by rows**
@@ -114,7 +116,8 @@ education_renamed <- education |> rename( "average_years_of_postsecondary_educat
     1.  List 5 countries-years that have the highest education level among its population.
 
 ```{r}
-education_renamed |> slice_max(average_years_of_postsecondary_education, n=5)
+education_renamed |> 
+  slice_max(average_years_of_postsecondary_education, n=5)
 ```
 
 ```         
@@ -122,7 +125,8 @@ education_renamed |> slice_max(average_years_of_postsecondary_education, n=5)
 ```
 
 ```{r}
-education_renamed |> slice_max(postsecondary_gini_inequality_index, n=5)
+education_renamed |> 
+  slice_max(postsecondary_gini_inequality_index, n=5)
 ```
 
 4.  **Summarize the data**
@@ -130,11 +134,18 @@ education_renamed |> slice_max(postsecondary_gini_inequality_index, n=5)
     1.  Check data availability: For which countries and years are the indicators of education quality available?
 
 ```{r}
-cleaned_data <- education_renamed |> filter_at(vars(c(postsecondary_gini_inequality_index, average_years_of_postsecondary_education)), any_vars(!is.na(.)))
+cleaned_data <- education_renamed |> 
+  filter_at(vars(c(postsecondary_gini_inequality_index, average_years_of_postsecondary_education)), any_vars(!is.na(.)))
 
-education_renamed |> mutate(gini_missing = is.na(postsecondary_gini_inequality_index)) |> group_by(country_name) |>  summarize(number_missing_gini = sum(gini_missing))
+education_renamed |> 
+  mutate(gini_missing = is.na(postsecondary_gini_inequality_index)) |>
+  group_by(country_name) |>  
+  summarize(number_missing_gini = sum(gini_missing))
 
-education_renamed |> mutate(yrs_missing = is.na(average_years_of_postsecondary_education)) |> group_by(country_name) |>  summarize(number_missing_years_of_education = sum(yrs_missing))
+education_renamed |> 
+  mutate(yrs_missing = is.na(average_years_of_postsecondary_education)) |>
+  group_by(country_name) |>  
+  summarize(number_missing_years_of_education = sum(yrs_missing))
 
 summary(cleaned_data)
 
@@ -147,25 +158,60 @@ summary(cleaned_data)
 
 
 ```{r}
-education_renamed |> group_by(country_name) |> summarise(avg_gini_index = mean(postsecondary_gini_inequality_index, na.rm = TRUE)) |> arrange(avg_gini_index)
+education_renamed |> 
+  group_by(country_name) |> 
+  summarise(avg_gini_index = mean(postsecondary_gini_inequality_index, na.rm = TRUE)) |>
+  arrange(avg_gini_index)
 
-education_renamed |> group_by(country_name) |> summarise(avg_gini_index = mean(postsecondary_gini_inequality_index, na.rm = TRUE)) |> arrange(-avg_gini_index)
+education_renamed |> 
+  group_by(country_name) |> 
+  summarise(avg_gini_index = mean(postsecondary_gini_inequality_index, na.rm = TRUE)) |>
+  arrange(-avg_gini_index)
 
-education_renamed |> group_by(country_name) |> summarise(average_years_of_education = mean(average_years_of_postsecondary_education, na.rm = TRUE)) |> arrange(average_years_of_education)
+education_renamed |> 
+  group_by(country_name) |> 
+  summarise(average_years_of_education = mean(average_years_of_postsecondary_education, na.rm = TRUE)) |> 
+  arrange(average_years_of_education)
 
-education_renamed |> group_by(country_name) |> summarise(average_years_of_education = mean(average_years_of_postsecondary_education, na.rm = TRUE)) |> arrange(-average_years_of_education)
+education_renamed |> 
+  group_by(country_name) |> 
+  summarise(average_years_of_education = mean(average_years_of_postsecondary_education, na.rm = TRUE)) |> 
+  arrange(-average_years_of_education)
 ```
 
         2.  Change of education quality from 1984 to 2022
 
 ```{r}
-education_renamed |> group_by(country_name) |> arrange(year, by.group=TRUE) |> mutate(change_in_years_of_education = last(average_years_of_postsecondary_education, year) - first(average_years_of_postsecondary_education, year), na.rm = TRUE) |> filter(year==2022) |> select(country_name, year, change_in_years_of_education) |> arrange(-change_in_years_of_education)
+education_renamed |> 
+  group_by(country_name) |> 
+  arrange(year, by.group=TRUE) |> 
+  mutate(change_in_years_of_education = last(average_years_of_postsecondary_education, year) - first(average_years_of_postsecondary_education, year), na.rm = TRUE) |> 
+  filter(year==2022) |> 
+  select(country_name, year, change_in_years_of_education) |>
+  arrange(-change_in_years_of_education)
 
-education_renamed |> group_by(country_name) |> arrange(year , by.group=TRUE) |> mutate(change_in_years_of_education = last(average_years_of_postsecondary_education, year) - first(average_years_of_postsecondary_education, year), na.rm = TRUE) |> filter(year==2022) |> select(country_name, year, change_in_years_of_education) |> arrange(change_in_years_of_education)
+education_renamed |>
+  group_by(country_name) |>
+  arrange(year , by.group=TRUE) |>
+  mutate(change_in_years_of_education = last(average_years_of_postsecondary_education, year) - first(average_years_of_postsecondary_education, year), na.rm = TRUE) |> 
+  filter(year==2022) |> 
+  select(country_name, year, change_in_years_of_education) |>
+  arrange(change_in_years_of_education)
 
-education_renamed   |> group_by(country_name) |> arrange(year) |> mutate(change= last(na.omit(postsecondary_gini_inequality_index)) - first(na.omit(postsecondary_gini_inequality_index))) |> filter(year==2022) |> select(country_name, year, change) |> arrange(-change)
+education_renamed   |> 
+  group_by(country_name) |> 
+  arrange(year) |> 
+  mutate(change= last(na.omit(postsecondary_gini_inequality_index)) - first(na.omit(postsecondary_gini_inequality_index))) |> 
+  filter(year==2022) |> select(country_name, year, change) |>
+  arrange(-change)
 
-education_renamed   |> group_by(country_name) |> arrange(year) |> mutate(change= last(na.omit(postsecondary_gini_inequality_index)) - first(na.omit(postsecondary_gini_inequality_index))) |> filter(year==2022) |> select(country_name, year, change) |> arrange(change)
+education_renamed   |>
+  group_by(country_name) |> 
+  arrange(year) |>
+  mutate(change= last(na.omit(postsecondary_gini_inequality_index)) - first(na.omit(postsecondary_gini_inequality_index))) |>
+  filter(year==2022) |> 
+  select(country_name, year, change) |> 
+  arrange(change)
 ```
 
         
