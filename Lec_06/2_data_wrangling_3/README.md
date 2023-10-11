@@ -457,10 +457,10 @@ If the identifiers have different names, you have two options
 
 -   Specify the `by =` part differently.
 
-    d_gdppc_1984_2010_t <- d_gdppc_1984_2010 |> 
-      rename("country_id" = "country_text_id")
     # Above, I make an artificial example whose variable name of a matching 
     # identifier is different from d_gdp_2020_2022.
+    d_gdppc_1984_2010_t <- d_gdppc_1984_2010 |> 
+      rename("country_id" = "country_text_id")
 
     # Option 1: Rename the variables beforehand
     d_aj_t <- d_gdp_2000_2022 |> 
