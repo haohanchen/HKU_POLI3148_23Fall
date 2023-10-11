@@ -267,7 +267,7 @@ changes, and send the code back.
 
 ## One more thing…
 
-These slides are written with Rmarkdown.
+These slides are made with Rmarkdown.
 
 -   Check out my code on our course Github repo. Play with it.
 

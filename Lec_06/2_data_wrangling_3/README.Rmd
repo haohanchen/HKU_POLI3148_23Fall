@@ -1,179 +1,447 @@
 ---
-title: "Data Wrangling 2: Reshape and Combine Tables"
+title: "Data Wrangling (3)"
+subtitle: "Reshape and Combine Tables (con'd)"
 author: "Haohan Chen"
+institute: "POLI3148 Data Science in PPA (The University of Hong Kong)"
 date: "Last update: `r format(Sys.Date(), '%B %d, %Y')`"
 output: 
-  html_document: default
-  pdf_document: default
+  beamer_presentation:
+    theme: "Goettingen"
+    colortheme: "default"
+    fonttheme: "serif"
   md_document: default
+classoption: "aspectratio=169"
 knit: (function(inputFile, encoding){rmarkdown::render(inputFile, encoding = encoding, output_format = "all", knit_root_dir = getwd())})
 editor_options: 
-  chunk_output_type: inline
+  chunk_output_type: console
 ---
 
-## Objective
+```{r, include=FALSE}
+knitr::opts_chunk$set(size="small")
+```
 
-This lecture continues our introduction to data wrangling with R. Using the *V-Dem* data as an example, we will learn how to *reshape* and *merge* datasets using a set of [`tidyverse`](https://www.tidyverse.org/) functionality. Specifically, we will focus on functions...
+# Setup
 
-1.  ... to *reshape* a table (long \<-\> wide) with `pivot_longer` and `pivot_wider`
-2.  ... to *stack* tables by row or by column with `bind_rows` and `bind_cols` (or, alternatively, `cbind` and `rbind`)
-3.  ... to *merge* two tables with `inner_join`, `full_join`, `left_join`, `right_join`, `semi_join`, and `anti_join`
+## Recap
 
-## Further Reading
+-   Reshape (long \<-\> wide) with `pivot_longer` and `pivot_wider`
+-   Stack tables by row or by column with `bind_rows` and `bind_cols` (or, alternatively, `cbind` and `rbind`)
+-   Merge two tables with `inner_join`, `full_join`, `left_join`, `right_join`, `semi_join`, and `anti_join`
 
--   R for Data Science (2e) Chapters 6 and 20: <https://r4ds.hadley.nz/>
+## Example: The V-Dem Data
 
--   `dplyr` cheatsheet (the "Combine Tables" section on p. 2)
+\scriptsize
 
--   `tidyr` cheatsheet (the "Reshape Data" section on p. 1): <https://rstudio.github.io/cheatsheets/html/tidyr.html>
-
-## Outline of In-Class Demo
-
-For this in-class demonstration, we will continue working on the external parts of the V-Dem data from 1984 to 2022. The data are located here: `_DataPublic_/vdem/1984_2022/vdem_1984_2022_external`
-
-1.  Reshape the V-Dem dataset
-    1.  `pivot_longer`: Make it a long table where each variable gets its own row. That is, a row in the new dataset is a *country-year-observation*.
-    2.  `pivot_wider`: Widen the above long table so that each *Year* has its own column.
-2.  Stack multiple subsets of the V-Dem datasets by row and by columns
-    1.  `bind_cols`: Merge the following two subsets of the V-Dem data: `_DataPublic_/vdem/1984_2022/vdem_1984_2022_external` and `_DataPublic_/vdem/1984_2022/vdem_1984_2022_index`
-    2.  `bind_rows`: Merge the following two subsets of the V-Dem data: `_DataPublic_/vdem/1984_2022/vdem_1984_2022_external` and `_DataPublic_/vdem/1945_1983/vdem_1945_1983_external`
-3.  Join multiple regional subsets of the V-Dem datasets
-    1.  Make a new data frame that contains the following variables: `country_name`, `year`, `e_regionpol_6C`, `e_fh_status`, `e_gdppc`, and `e_gdp`
-    2.  Create two separate subsets of the above data frames. Each subset include a subset of countries/ regions that are within the *region* (defined by `e_regiongeo` and `e_regionpol_6C` respectively) where *China* is located.
-    3.  Explore the behavior of `inner_join`, `full_join`, `left_join`, `right_join`, `semi_join`, and `anti_join` with the two data frames.
-4.  Validate V-dem's GDP data with World Bank data
-
-## In-Class Demo
-
-```{r}
+```{r, message=FALSE}
 library(tidyverse)
-```
-
-```{r}
 d <- read_csv("_DataPublic_/vdem/1984_2022/vdem_1984_2022_external.csv")
+d |> print(n = 3)
+```
+
+## Example: The V-Dem Data
+
+Focus on the economic indicators: GDP and GDP per capita.
+
+```{r}
+d_gdp <- d |> 
+  select(country_text_id, year, e_gdp, e_gdppc) |>
+  rename("gdp" = "e_gdp", "gdppc" = "e_gdppc")
+
+d_gdp |> print(n = 3)
+```
+
+# Reshape a Table
+
+## Wide to Long: `pivot_longer`
+
+```{r}
+d_gdp_long <- d_gdp |>
+  pivot_longer(cols = c("gdp", "gdppc"), 
+               names_to = "variable", values_to = "value")
+
+d_gdp_long |> print(n = 4)
+```
+
+## Long to Wide: `pivot_wider`
+
+Task: Reverse the above `pivot_long` operation.
+
+```{r}
+d_gdp_wide_1 <- d_gdp_long |>
+  pivot_wider(names_from = "variable", values_from = "value")
+
+d_gdp_wide_1 |> print(n = 4)
+```
+
+## Long to Wide: `pivot_wider`
+
+Task: Make `year` the column variable.
+
+\scriptsize
+
+```{r}
+d_gdp_wide_2 <- d_gdp_long |>
+  pivot_wider(names_from = "year", values_from = "value")
+
+d_gdp_wide_2 |> print(n = 2)
+```
+
+## Long to Wide: `pivot_wider`
+
+Task: Make `country_text_id` the column variable.
+
+\scriptsize
+
+```{r}
+d_gdp_wide_3 <- d_gdp_long |>
+  pivot_wider(names_from = "country_text_id", values_from = "value")
+
+d_gdp_wide_3 |> print(n = 2)
+```
+
+## Why Do We Reshape Data?
+
+-   **For data cleaning:** Sometime it is much easier to clean the data after reshaping
+
+-   **For data visualization:** Some data visualization functions only take tables shaped in a specific way
+
+-   **For data sharing:** Sometimes you want to export the data for human readers (e.g., data coding/ labeling)
+
+*"But I am sure Excel can do the same thing!" It can do it for HUGE data reliably and fast. And the process is replicable.*
+
+# Stack Tables
+
+## Task
+
+-   Let's say we want to merge your GDP data `d_gdp` with some additional datasets that *you know* you can just safely stack together.
+
+-   Example
+
+    -   Merge with GDP data from 1906 to 1983
+
+    -   Merge with education and Freedom House data from 1984 to 2022
+
+## Housekeeping: Load New Data
+
+To demonstrate how to stack data vertically, I make a table with GDP data from two previous time periods (1945 to 1983 and 1906-1944).
+
+\scriptsize
+
+```{r, message=FALSE}
+d_gdp_1945 <- 
+  read_csv("_DataPublic_/vdem/1945_1983/vdem_1945_1983_external.csv") |>
+  select(country_text_id, year, e_gdp, e_gdppc) |>
+  rename("gdp" = "e_gdp", "gdppc" = "e_gdppc")
+
+d_gdp_1906 <- 
+  read_csv("_DataPublic_/vdem/1906_1944/vdem_1906_1944_external.csv") |>
+  select(country_text_id, year, e_gdp, e_gdppc) |>
+  rename("gdp" = "e_gdp", "gdppc" = "e_gdppc")
+
+d_gdp_1945 |> print(n = 2) 
+```
+
+## Housekeeping: Load New Data
+
+To demonstrate how to stack data horizontally, I make two subsets of `d` --- one with education indicators, another with Freedom House indicators.
+
+\scriptsize
+
+```{r}
+d_edu <- d |>
+  select(e_peaveduc, e_peedgini) |>
+  rename("edu_15" = "e_peaveduc", "edu_gini" = "e_peedgini")
+
+d_fh <- d |>
+  select(starts_with("e_fh")) |>
+  rename("fh_CivilLiberty" = "e_fh_cl", "fh_PoliticalRight" = "e_fh_pr",
+         "fh_RuleOfLaw" = "e_fh_rol", "fh_Status" = "e_fh_status")
+
+d_fh |> print(n = 2)
+```
+
+## `bind_rows`
+
+\scriptsize
+
+```{r}
+d_gdp_1945_2022 <- bind_rows(d_gdp, d_gdp_1945)
+d_gdp_1945_2022 |> print(n = 3)
+unique(d_gdp_1945_2022$year) |> sort()
+```
+
+## `bind_rows`
+
+\scriptsize
+
+```{r}
+d_gdp_1906_2022 <- bind_rows(d_gdp, d_gdp_1945, d_gdp_1906) # can take multiple data frames
+d_gdp_1906_2022 |> print(n = 3)
+unique(d_gdp_1906_2022$year) |> sort()
+```
+
+## `bind_cols`
+
+\scriptsize
+
+```{r}
+d_gdp_edu_fh <- bind_cols(d_gdp, d_edu, d_fh) # can take multiple data frames
+d_gdp_edu_fh |> print(n = 3)
+names(d_gdp_edu_fh)
+```
+
+## !! WARNING !!
+
+### These are error-prone operations 
+
+-   Do `bind_rows` and `bind_cols` ONLY WHEN you know for sure that there will not be a mismatch!
+
+-   If you have any slightest doubt, don't use them.
+
+# Join Tables
+
+## Tasks
+
+Understand the behavior of different `join_` functions
+
+-   `left_join`: Merge and only keep observations that appear in the left-hand-side table.
+
+-   `right_join`: Merge and only keep observations that appear in the right-hand-side table.
+
+-   `inner_join`: Merge and only keep observations that appear in both tables.
+
+-   `full_join`: Merge and keep observations that appear either table.
+
+-   `anti_join`: Filter out observations that does appears in the right-hand-side table
+
+-   `semi_join`: Filter out observations that does not appear in the right-hand-side table
+
+## Task 1: The Case
+
+Join two datasets from the V-Dem data using the above different `join_` functions
+
+-   *GDP* data from 2000-2022
+
+-   *GDP per capita* data from 1984 to 2010
+
+## Task 1: Setup
+
+\scriptsize
+
+```{r}
+d_gdp_2000_2022 <- d |> filter(year %in% 2000:2022) |>
+  select(country_text_id, year, e_gdp) |> rename("gdp" = "e_gdp")
+
+d_gdppc_1984_2010 <- d |> filter(year %in% 1984:2010) |>
+  select(country_text_id, year, e_gdppc) |> rename("gdppc" = "e_gdppc")
+
+d_gdp_2000_2022 |> print(n = 2)
+d_gdppc_1984_2010 |> print(n = 2)
+```
+
+## `left_join`
+
+\scriptsize
+
+```{r}
+d_lj <- d_gdp_2000_2022 |> 
+  left_join(d_gdppc_1984_2010, by = c("country_text_id", "year"))
+
+d_lj |> print(n = 2)
+unique(d_lj$year) |> sort()
+```
+
+## `right_join`
+
+\scriptsize
+
+```{r}
+d_rj <- d_gdp_2000_2022 |> 
+  right_join(d_gdppc_1984_2010, by = c("country_text_id", "year"))
+
+d_rj |> print(n = 2)
+unique(d_rj$year) |> sort()
+```
+
+## `inner_join`
+
+\scriptsize
+
+```{r}
+d_ij <- d_gdp_2000_2022 |> 
+  inner_join(d_gdppc_1984_2010, by = c("country_text_id", "year"))
+
+d_ij |> print(n = 2)
+unique(d_ij$year) |> sort()
+```
+
+## `full_join`
+
+\scriptsize
+
+```{r}
+d_fj <- d_gdp_2000_2022 |> 
+  full_join(d_gdppc_1984_2010, by = c("country_text_id", "year"))
+
+d_fj |> print(n = 2)
+unique(d_fj$year) |> sort()
+```
+
+## `semi_join`
+
+\scriptsize
+
+```{r}
+d_sj <- d_gdp_2000_2022 |> 
+  semi_join(d_gdppc_1984_2010, by = c("country_text_id", "year"))
+
+d_sj |> print(n = 2)
+unique(d_sj$year) |> sort()
+```
+
+## `anti_join`
+
+\scriptsize
+
+```{r}
+d_aj <- d_gdp_2000_2022 |> 
+  anti_join(d_gdppc_1984_2010, by = c("country_text_id", "year"))
+
+d_aj |> print(n = 2)
+unique(d_aj$year) |> sort()
+```
+
+## Join by Identifiers with Different Variable Names
+
+If the identifiers have different names, you have two options
+
+-   Rename it beforehand
+
+-   Specify the `by =` part differently.
+
+\scriptsize
+
+```{r}
+# This is an artificial example whose variable name of a matching identifier 
+# is different from d_gdp_2020_2022
+d_gdppc_1984_2010_t <- d_gdppc_1984_2010 |> 
+  rename("country_id" = "country_text_id")
+```
+
+```{r}
+# Option 1: Rename the variables beforehand
+d_aj_t <- d_gdp_2000_2022 |> 
+  rename("country_id" = "country_text_id") |>
+  anti_join(d_gdppc_1984_2010_t, by = c("country_id", "year"))
+
+# Option 2: Specify the "by =" argument with a *named vector*
+d_aj_t_2 <- d_gdp_2000_2022 |> 
+  anti_join(d_gdppc_1984_2010_t, 
+            by = c("country_text_id" = "country_id", 
+                   "year" = "year"))
 
 ```
 
-### 1. Reshape the V-Dem dataset
+## Many-to-One Join: Repeat!
+
+Calculate each country's average 1984-2010 *GDP per capita* and merge it with our annual GDP data from 2000 to 2022.
+
+\scriptsize
 
 ```{r}
-# Want: Each row contain country-year-variable
-
-d |> select(country_name) |> distinct()
-
-d_subset <- d |> select(country_name, year, starts_with("e_"))
-
-d_subset_long <- 
-  d_subset |> pivot_longer(cols = starts_with("e_"))
+d_gdppc_1984_2010_avg <- d_gdppc_1984_2010 |> group_by(country_text_id) |>
+  summarise(gdppc_1984to2010 = mean(gdppc, na.rm = TRUE))
+d_gdppc_1984_2010_avg |> print(n = 2)
 ```
 
 ```{r}
-d_subset_wide_year <-
-  d_subset_long |> pivot_wider(names_from = year, values_from = value)
+d_lj_ManyToOne <- d_gdp_2000_2022 |> 
+  left_join(d_gdppc_1984_2010_avg, by = "country_text_id")
+d_lj_ManyToOne |> print(n = 2)
 ```
 
-### 2. Stack multiple subsets of the V-Dem datasets
+## Good Habit
+
+Joining tables is also error-prone.
+
+-   You want to have a clear mind about which variables from which datasets are kept in your final merged data.
+
+-   Failing to do so can cause difficulty with replication.
+
+Some advice based on personal experience
+
+-   Add suffixes or prefixes indicating data sources
+
+-   Add binary indicators (1/0) indicating from in which dataset is each observation available
+
+## Good Habit: Add Availability Indicators
+
+Add binary indicators about data availability in each sources.
+
+\scriptsize
 
 ```{r}
-d_VdemIndex <- read_csv("_DataPublic_/vdem/1984_2022/vdem_1984_2022_index.csv")
+# The d_gdp_2000_2022 data are from V-Dem
+d_gdp_2000_2022_t <- d_gdp_2000_2022 |> mutate(source_vdem = 1)
 
+# *Pretend* that the d_gdppc_1984_2010 data are from the World Bank
+d_gdppc_1984_2010_t <- d_gdppc_1984_2010 |> mutate(source_wb = 1)
+
+d_fj_habit <- d_gdp_2000_2022_t |> 
+  full_join(d_gdppc_1984_2010_t, by = c("country_text_id", "year"))
+
+d_fj_habit |> print(n = 3)
 ```
 
+## Good Habit: Add Availability Indicators
+
+What can you do with these binary indicators? We can know the overlaps of multiple sources.
+
+\scriptsize
+
 ```{r}
-d_stack <- bind_cols(d, d_VdemIndex)
+d_fj_habit |>
+  group_by(source_vdem, source_wb) |>
+  count()
 ```
 
-```{r}
-# Want: Stack two tables by rows?
-d_1945_1983 <- read_csv("_DataPublic_/vdem/1945_1983/vdem_1945_1983_external.csv")
+\normalsize
 
-```
+If the overlap looks weird to you, you will know that you need to re-examine the data merging process.
 
-```{r}
-d_1945_2022 <- bind_rows(d, d_1945_1983)
+## Good Habit: Add Availability Indicators
 
-d_1945_2022 |> select(year) |> distinct() |> arrange(year)
+Question: Why not just check `NA` in each variables?
 
-```
+Answer: An observation can be missing for two reasons
 
-### 3. Join multiple regional subsets of the V-Dem datasets
+-   It is in the one of the tables but it does not contain a value.
 
-```{r}
-# INSERT CODE
-```
+-   It is not in any of the tables at all.
 
-### 4. Validate the GDP data in V-Dem with World Bank data
+`join_` make it hard to distinguish between the two scenarios.
 
-**Task:** There are many different "versions" of GDP data. I wonder whether the GDP data in the V-Dem dataset is reliable. So I would like to validate it with [data from the World Bank](https://data.worldbank.org/).
+## Good Habit: Add prefix or suffix to variable names
 
-#### Download World Bank Data
+-   My previous advice: Give informative names to variable
 
-We will start the adventure by downloading World Bank data.
+-   New advice: Add the source of the variables as part of their names if your final dataset is a combination of many different datasets
 
-```{r}
-# Install the WDI package that helps fetch data from the World Bank dataset
-# See: https://github.com/vincentarelbundock/WDI
+## Good Habit: Add prefix or suffix to variable names
 
-# install.packages("WDI")
-
-# Note: Comment out the above "install.packages" command after you are done with installing the package.
-```
+\scriptsize
 
 ```{r}
-library(WDI)
-```
+d_gdp_2000_2022_rn <- d_gdp_2000_2022 |> 
+  rename("vdem_gdp" = "gdp")
+  # rename_at(vars(-c("country_text_id", "year")), ~str_c("vdem_", .))
 
-```{r}
-# Search for GDP related data
-wb_gdpdata_list <- WDIsearch("gdp")
+d_gdppc_1984_2010_rn <- d_gdppc_1984_2010 |> 
+  rename("wb_gdppc" = "gdppc")
+  # rename_at(vars(-c("country_text_id", "year")), ~str_c("wb_", .))
 
-str(wb_gdpdata_list)
+d_fj_habit_2 <- d_gdp_2000_2022_rn |>
+  full_join(d_gdppc_1984_2010_rn, by = c("country_text_id", "year"))
 
-# Narrow down to indicators of GDP (I have done some pre-screening)
-wb_gdpdata_list_s <- wb_gdpdata_list |> filter(str_detect(indicator, "^NY\\.GDP"))
-```
-
-```{r}
-# Download GDP-related data
-wb_gdpdata <- WDI(
-  indicator = c("NY.GDP.MKTP.PP.KD", "NY.GDP.PCAP.PP.KD"), 
-  country = "all", 
-  start = 1984, end = 2022)
-```
-
-```{r}
-# Remove the intermediate data we no longer need.
-rm(wb_gdpdata_list, wb_gdpdata_list_s)
-```
-
-To match two datasets from two different sources, we should always check whether the "identifiers" are consistent. In our case, are names of countries specified in the same way in the V-Dem and the World Bank dataset?
-
-```{r}
-# Check the specification of country names.
-
-```
-
-#### Find Country Identifiers
-
-When it comes to matching countries, country codes are usually more reliable. The problem is that we do not have country codes in the V-Dem data. An R package named `countrycode` can help.
-
-```{r}
-# install.packages("countrycode")
-# See how you may use the package: https://github.com/vincentarelbundock/countrycode
-```
-
-```{r}
-# INSERT CODE: Use countrycode to make country code indicators
-```
-
-#### Join and Compare
-
-Now that we have cleaned the World Bank data, our final step is to join it with the World Bank data and compare the GDP and GDP per capita indicators from the two sources.
-
-```{r}
-# INSERT CODE: Join the two datasets
-```
-
-```{r}
-# INSERT CODE: Compare the two datasets
+d_fj_habit_2 |> print(n = 3)
 ```
