@@ -457,8 +457,8 @@ If the identifiers have different names, you have two options
 
 -   Specify the `by =` part differently.
 
-    # Above, I make an artificial example whose variable name of a matching 
-    # identifier is different from d_gdp_2020_2022.
+    #Above, I make an artificial example whose variable name of a matching 
+    #identifier is different from d_gdp_2020_2022.
     d_gdppc_1984_2010_t <- d_gdppc_1984_2010 |> 
       rename("country_id" = "country_text_id")
 
