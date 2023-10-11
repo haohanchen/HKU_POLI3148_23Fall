@@ -8,7 +8,7 @@ output:
   md_document: default
 knit: (function(inputFile, encoding){rmarkdown::render(inputFile, encoding = encoding, output_format = "all", knit_root_dir = getwd())})
 editor_options: 
-  chunk_output_type: inline
+  chunk_output_type: console
 ---
 
 ```{r setup, include=FALSE}
@@ -258,36 +258,52 @@ d_gdp |> arrange(desc(GDP_per_capita))
 
 ### 7. Perform (4) (5) (6) group by group: `group_by`, `ungroup`
 
-**Task:** Create a dataset that contains the year of the higest development level for each country/ region respectively.
-
-1.  Perform a data availability/ integrity check. Then aggregate the data into a new country-level dataset which contains the following indicators:
-    1.  Average development level from 1984 to 2022.
-
-    2.  Magnitude of growth from 1984 to 2022.
+**Task 1:** Create a dataset that, for each country, include the country-year with the highest GDP.
 
 ```{r}
 # Want: For each country, we want the year with the highest GDP
-d_gdp |>
+d_gdp_highest <- d_gdp |>
   group_by(Country) |>
   slice_max(GDP, n = 1)
+
+nrow(d_gdp_highest)
 ```
+
+Note: As you may recall, there are 181 distinct countries in this dataset. However, the number of observations as output is 341. That means there are duplicates. What may cause duplication? The straightforward way to go (especially for small dataset) is to manually examining the data.
 
 ```{r}
-# How many entries are there for each country
-d_gdp |>
-  group_by(Country) |>
-  count()
-?count
+d_gdp_highest
 ```
 
-```         
-```
+Upon examination, the cause of duplicates is that some countries or regions have no GDP data. In these cases, there is naturally no way for `slice_` function to find a maximum or a minimum. So it includes all! Hong Kong is an example:
 
 ```{r}
-# Want: For each country, get the year when it has worst GDP
-d_gdp |>
+d_gdp_highest |> filter(Country == "Hong Kong")
+```
+
+To remove these cases, we have two options: (1) we can use `filter` to remove observations whose `GDP` column is `NA`; (2) we can look up `slice_` 's documentation and see if there is a way to remove `NA` cases. I'd go for the latter.
+
+```{r}
+# Filter out NA cases with the filter() function
+d_gdp_highest <- d_gdp |> 
   group_by(Country) |>
-  slice_min(order_by = GDP, n = 1)
+  slice_max(GDP, n = 1) |>
+  filter(!is.na(GDP))
+
+# specify arguments for the slice_max() function to remove NA cases
+d_gdp_highest <- d_gdp |>
+  group_by(Country) |>
+  slice_max(GDP, n = 1, na_rm = TRUE)
+```
+
+**In-class exercise:** Create a dataset that, for each country, include the country-year with the lowest GDP.
+
+```{r}
+d_gdp_lowest <- d_gdp |>
+  group_by(Country) |>
+  slice_min(GDP, n = 1, na_rm = TRUE)
+
+d_gdp_lowest
 ```
 
 ### 8. Create new columns in the data: `group_by`, `mutate`, `ungroup`
