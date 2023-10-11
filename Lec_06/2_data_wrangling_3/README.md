@@ -2,7 +2,7 @@
 
 ## Recap
 
--   Reshape (long &lt;-&gt; wide) with `pivot_longer` and `pivot_wider`
+-   Reshape (long \<-\> wide) with `pivot_longer` and `pivot_wider`
 -   Stack tables by row or by column with `bind_rows` and `bind_cols`
     (or, alternatively, `cbind` and `rbind`)
 -   Merge two tables with `inner_join`, `full_join`, `left_join`,
@@ -10,9 +10,11 @@
 
 ## Example: The V-Dem Data
 
-    library(tidyverse)
-    d <- read_csv("_DataPublic_/vdem/1984_2022/vdem_1984_2022_external.csv")
-    d |> print(n = 3)
+``` r
+library(tidyverse)
+d <- read_csv("_DataPublic_/vdem/1984_2022/vdem_1984_2022_external.csv")
+d |> print(n = 3)
+```
 
     ## # A tibble: 6,789 × 211
     ##   country_name country_text_id country_id  year historical_date project
@@ -32,11 +34,13 @@
 
 Focus on the economic indicators: GDP and GDP per capita.
 
-    d_gdp <- d |> 
-      select(country_text_id, year, e_gdp, e_gdppc) |>
-      rename("gdp" = "e_gdp", "gdppc" = "e_gdppc")
+``` r
+d_gdp <- d |> 
+  select(country_text_id, year, e_gdp, e_gdppc) |>
+  rename("gdp" = "e_gdp", "gdppc" = "e_gdppc")
 
-    d_gdp |> print(n = 3)
+d_gdp |> print(n = 3)
+```
 
     ## # A tibble: 6,789 × 4
     ##   country_text_id  year    gdp gdppc
@@ -50,11 +54,13 @@ Focus on the economic indicators: GDP and GDP per capita.
 
 ## Wide to Long: `pivot_longer`
 
-    d_gdp_long <- d_gdp |>
-      pivot_longer(cols = c("gdp", "gdppc"), 
-                   names_to = "variable", values_to = "value")
+``` r
+d_gdp_long <- d_gdp |>
+  pivot_longer(cols = c("gdp", "gdppc"), 
+               names_to = "variable", values_to = "value")
 
-    d_gdp_long |> print(n = 4)
+d_gdp_long |> print(n = 4)
+```
 
     ## # A tibble: 13,578 × 4
     ##   country_text_id  year variable   value
@@ -69,10 +75,12 @@ Focus on the economic indicators: GDP and GDP per capita.
 
 Task: Reverse the above `pivot_long` operation.
 
-    d_gdp_wide_1 <- d_gdp_long |>
-      pivot_wider(names_from = "variable", values_from = "value")
+``` r
+d_gdp_wide_1 <- d_gdp_long |>
+  pivot_wider(names_from = "variable", values_from = "value")
 
-    d_gdp_wide_1 |> print(n = 4)
+d_gdp_wide_1 |> print(n = 4)
+```
 
     ## # A tibble: 6,789 × 4
     ##   country_text_id  year    gdp gdppc
@@ -87,10 +95,12 @@ Task: Reverse the above `pivot_long` operation.
 
 Task: Make `year` the column variable.
 
-    d_gdp_wide_2 <- d_gdp_long |>
-      pivot_wider(names_from = "year", values_from = "value")
+``` r
+d_gdp_wide_2 <- d_gdp_long |>
+  pivot_wider(names_from = "year", values_from = "value")
 
-    d_gdp_wide_2 |> print(n = 2)
+d_gdp_wide_2 |> print(n = 2)
+```
 
     ## # A tibble: 362 × 41
     ##   country_text_id variable  `1984`  `1985`  `1986`  `1987`  `1988` `1989` `1990`
@@ -109,10 +119,12 @@ Task: Make `year` the column variable.
 
 Task: Make `country_text_id` the column variable.
 
-    d_gdp_wide_3 <- d_gdp_long |>
-      pivot_wider(names_from = "country_text_id", values_from = "value")
+``` r
+d_gdp_wide_3 <- d_gdp_long |>
+  pivot_wider(names_from = "country_text_id", values_from = "value")
 
-    d_gdp_wide_3 |> print(n = 2)
+d_gdp_wide_3 |> print(n = 2)
+```
 
     ## # A tibble: 78 × 183
     ##    year variable     MEX    SUR    SWE    CHE    GHA    ZAF    JPN    MMR    RUS
@@ -160,17 +172,19 @@ reliably and fast. And the process is replicable.*
 To demonstrate how to stack data vertically, I make a table with GDP
 data from two previous time periods (1945 to 1983 and 1906-1944).
 
-    d_gdp_1945 <- 
-      read_csv("_DataPublic_/vdem/1945_1983/vdem_1945_1983_external.csv") |>
-      select(country_text_id, year, e_gdp, e_gdppc) |>
-      rename("gdp" = "e_gdp", "gdppc" = "e_gdppc")
+``` r
+d_gdp_1945 <- 
+  read_csv("_DataPublic_/vdem/1945_1983/vdem_1945_1983_external.csv") |>
+  select(country_text_id, year, e_gdp, e_gdppc) |>
+  rename("gdp" = "e_gdp", "gdppc" = "e_gdppc")
 
-    d_gdp_1906 <- 
-      read_csv("_DataPublic_/vdem/1906_1944/vdem_1906_1944_external.csv") |>
-      select(country_text_id, year, e_gdp, e_gdppc) |>
-      rename("gdp" = "e_gdp", "gdppc" = "e_gdppc")
+d_gdp_1906 <- 
+  read_csv("_DataPublic_/vdem/1906_1944/vdem_1906_1944_external.csv") |>
+  select(country_text_id, year, e_gdp, e_gdppc) |>
+  rename("gdp" = "e_gdp", "gdppc" = "e_gdppc")
 
-    d_gdp_1945 |> print(n = 2) 
+d_gdp_1945 |> print(n = 2) 
+```
 
     ## # A tibble: 6,082 × 4
     ##   country_text_id  year   gdp gdppc
@@ -184,16 +198,18 @@ data from two previous time periods (1945 to 1983 and 1906-1944).
 To demonstrate how to stack data horizontally, I make two subsets of `d`
 — one with education indicators, another with Freedom House indicators.
 
-    d_edu <- d |>
-      select(e_peaveduc, e_peedgini) |>
-      rename("edu_15" = "e_peaveduc", "edu_gini" = "e_peedgini")
+``` r
+d_edu <- d |>
+  select(e_peaveduc, e_peedgini) |>
+  rename("edu_15" = "e_peaveduc", "edu_gini" = "e_peedgini")
 
-    d_fh <- d |>
-      select(starts_with("e_fh")) |>
-      rename("fh_CivilLiberty" = "e_fh_cl", "fh_PoliticalRight" = "e_fh_pr",
-             "fh_RuleOfLaw" = "e_fh_rol", "fh_Status" = "e_fh_status")
+d_fh <- d |>
+  select(starts_with("e_fh")) |>
+  rename("fh_CivilLiberty" = "e_fh_cl", "fh_PoliticalRight" = "e_fh_pr",
+         "fh_RuleOfLaw" = "e_fh_rol", "fh_Status" = "e_fh_status")
 
-    d_fh |> print(n = 2)
+d_fh |> print(n = 2)
+```
 
     ## # A tibble: 6,789 × 4
     ##   fh_CivilLiberty fh_PoliticalRight fh_RuleOfLaw fh_Status
@@ -204,8 +220,10 @@ To demonstrate how to stack data horizontally, I make two subsets of `d`
 
 ## `bind_rows`
 
-    d_gdp_1945_2022 <- bind_rows(d_gdp, d_gdp_1945)
-    d_gdp_1945_2022 |> print(n = 3)
+``` r
+d_gdp_1945_2022 <- bind_rows(d_gdp, d_gdp_1945)
+d_gdp_1945_2022 |> print(n = 3)
+```
 
     ## # A tibble: 12,871 × 4
     ##   country_text_id  year    gdp gdppc
@@ -215,7 +233,9 @@ To demonstrate how to stack data horizontally, I make two subsets of `d`
     ## 3 MEX              1986 92750.  11.1
     ## # ℹ 12,868 more rows
 
-    unique(d_gdp_1945_2022$year) |> sort()
+``` r
+unique(d_gdp_1945_2022$year) |> sort()
+```
 
     ##  [1] 1945 1946 1947 1948 1949 1950 1951 1952 1953 1954 1955 1956 1957 1958 1959
     ## [16] 1960 1961 1962 1963 1964 1965 1966 1967 1968 1969 1970 1971 1972 1973 1974
@@ -226,8 +246,10 @@ To demonstrate how to stack data horizontally, I make two subsets of `d`
 
 ## `bind_rows`
 
-    d_gdp_1906_2022 <- bind_rows(d_gdp, d_gdp_1945, d_gdp_1906) # can take multiple data frames
-    d_gdp_1906_2022 |> print(n = 3)
+``` r
+d_gdp_1906_2022 <- bind_rows(d_gdp, d_gdp_1945, d_gdp_1906) # can take multiple data frames
+d_gdp_1906_2022 |> print(n = 3)
+```
 
     ## # A tibble: 18,559 × 4
     ##   country_text_id  year    gdp gdppc
@@ -237,7 +259,9 @@ To demonstrate how to stack data horizontally, I make two subsets of `d`
     ## 3 MEX              1986 92750.  11.1
     ## # ℹ 18,556 more rows
 
-    unique(d_gdp_1906_2022$year) |> sort()
+``` r
+unique(d_gdp_1906_2022$year) |> sort()
+```
 
     ##   [1] 1906 1907 1908 1909 1910 1911 1912 1913 1914 1915 1916 1917 1918 1919 1920
     ##  [16] 1921 1922 1923 1924 1925 1926 1927 1928 1929 1930 1931 1932 1933 1934 1935
@@ -250,8 +274,10 @@ To demonstrate how to stack data horizontally, I make two subsets of `d`
 
 ## `bind_cols`
 
-    d_gdp_edu_fh <- bind_cols(d_gdp, d_edu, d_fh) # can take multiple data frames
-    d_gdp_edu_fh |> print(n = 3)
+``` r
+d_gdp_edu_fh <- bind_cols(d_gdp, d_edu, d_fh) # can take multiple data frames
+d_gdp_edu_fh |> print(n = 3)
+```
 
     ## # A tibble: 6,789 × 10
     ##   country_text_id  year    gdp gdppc edu_15 edu_gini fh_CivilLiberty
@@ -263,7 +289,9 @@ To demonstrate how to stack data horizontally, I make two subsets of `d`
     ## # ℹ 3 more variables: fh_PoliticalRight <dbl>, fh_RuleOfLaw <dbl>,
     ## #   fh_Status <dbl>
 
-    names(d_gdp_edu_fh)
+``` r
+names(d_gdp_edu_fh)
+```
 
     ##  [1] "country_text_id"   "year"              "gdp"              
     ##  [4] "gdppc"             "edu_15"            "edu_gini"         
@@ -313,13 +341,15 @@ functions
 
 ## Task 1: Setup
 
-    d_gdp_2000_2022 <- d |> filter(year %in% 2000:2022) |>
-      select(country_text_id, year, e_gdp) |> rename("gdp" = "e_gdp")
+``` r
+d_gdp_2000_2022 <- d |> filter(year %in% 2000:2022) |>
+  select(country_text_id, year, e_gdp) |> rename("gdp" = "e_gdp")
 
-    d_gdppc_1984_2010 <- d |> filter(year %in% 1984:2010) |>
-      select(country_text_id, year, e_gdppc) |> rename("gdppc" = "e_gdppc")
+d_gdppc_1984_2010 <- d |> filter(year %in% 1984:2010) |>
+  select(country_text_id, year, e_gdppc) |> rename("gdppc" = "e_gdppc")
 
-    d_gdp_2000_2022 |> print(n = 2)
+d_gdp_2000_2022 |> print(n = 2)
+```
 
     ## # A tibble: 4,099 × 3
     ##   country_text_id  year     gdp
@@ -328,7 +358,9 @@ functions
     ## 2 MEX              2001 146993.
     ## # ℹ 4,097 more rows
 
-    d_gdppc_1984_2010 |> print(n = 2)
+``` r
+d_gdppc_1984_2010 |> print(n = 2)
+```
 
     ## # A tibble: 4,641 × 3
     ##   country_text_id  year gdppc
@@ -339,10 +371,12 @@ functions
 
 ## `left_join`
 
-    d_lj <- d_gdp_2000_2022 |> 
-      left_join(d_gdppc_1984_2010, by = c("country_text_id", "year"))
+``` r
+d_lj <- d_gdp_2000_2022 |> 
+  left_join(d_gdppc_1984_2010, by = c("country_text_id", "year"))
 
-    d_lj |> print(n = 2)
+d_lj |> print(n = 2)
+```
 
     ## # A tibble: 4,099 × 4
     ##   country_text_id  year     gdp gdppc
@@ -351,17 +385,21 @@ functions
     ## 2 MEX              2001 146993.  13.6
     ## # ℹ 4,097 more rows
 
-    unique(d_lj$year) |> sort()
+``` r
+unique(d_lj$year) |> sort()
+```
 
     ##  [1] 2000 2001 2002 2003 2004 2005 2006 2007 2008 2009 2010 2011 2012 2013 2014
     ## [16] 2015 2016 2017 2018 2019 2020 2021 2022
 
 ## `right_join`
 
-    d_rj <- d_gdp_2000_2022 |> 
-      right_join(d_gdppc_1984_2010, by = c("country_text_id", "year"))
+``` r
+d_rj <- d_gdp_2000_2022 |> 
+  right_join(d_gdppc_1984_2010, by = c("country_text_id", "year"))
 
-    d_rj |> print(n = 2)
+d_rj |> print(n = 2)
+```
 
     ## # A tibble: 4,641 × 4
     ##   country_text_id  year     gdp gdppc
@@ -370,17 +408,21 @@ functions
     ## 2 MEX              2001 146993.  13.6
     ## # ℹ 4,639 more rows
 
-    unique(d_rj$year) |> sort()
+``` r
+unique(d_rj$year) |> sort()
+```
 
     ##  [1] 1984 1985 1986 1987 1988 1989 1990 1991 1992 1993 1994 1995 1996 1997 1998
     ## [16] 1999 2000 2001 2002 2003 2004 2005 2006 2007 2008 2009 2010
 
 ## `inner_join`
 
-    d_ij <- d_gdp_2000_2022 |> 
-      inner_join(d_gdppc_1984_2010, by = c("country_text_id", "year"))
+``` r
+d_ij <- d_gdp_2000_2022 |> 
+  inner_join(d_gdppc_1984_2010, by = c("country_text_id", "year"))
 
-    d_ij |> print(n = 2)
+d_ij |> print(n = 2)
+```
 
     ## # A tibble: 1,951 × 4
     ##   country_text_id  year     gdp gdppc
@@ -389,16 +431,20 @@ functions
     ## 2 MEX              2001 146993.  13.6
     ## # ℹ 1,949 more rows
 
-    unique(d_ij$year) |> sort()
+``` r
+unique(d_ij$year) |> sort()
+```
 
     ##  [1] 2000 2001 2002 2003 2004 2005 2006 2007 2008 2009 2010
 
 ## `full_join`
 
-    d_fj <- d_gdp_2000_2022 |> 
-      full_join(d_gdppc_1984_2010, by = c("country_text_id", "year"))
+``` r
+d_fj <- d_gdp_2000_2022 |> 
+  full_join(d_gdppc_1984_2010, by = c("country_text_id", "year"))
 
-    d_fj |> print(n = 2)
+d_fj |> print(n = 2)
+```
 
     ## # A tibble: 6,789 × 4
     ##   country_text_id  year     gdp gdppc
@@ -407,7 +453,9 @@ functions
     ## 2 MEX              2001 146993.  13.6
     ## # ℹ 6,787 more rows
 
-    unique(d_fj$year) |> sort()
+``` r
+unique(d_fj$year) |> sort()
+```
 
     ##  [1] 1984 1985 1986 1987 1988 1989 1990 1991 1992 1993 1994 1995 1996 1997 1998
     ## [16] 1999 2000 2001 2002 2003 2004 2005 2006 2007 2008 2009 2010 2011 2012 2013
@@ -415,10 +463,12 @@ functions
 
 ## `semi_join`
 
-    d_sj <- d_gdp_2000_2022 |> 
-      semi_join(d_gdppc_1984_2010, by = c("country_text_id", "year"))
+``` r
+d_sj <- d_gdp_2000_2022 |> 
+  semi_join(d_gdppc_1984_2010, by = c("country_text_id", "year"))
 
-    d_sj |> print(n = 2)
+d_sj |> print(n = 2)
+```
 
     ## # A tibble: 1,951 × 3
     ##   country_text_id  year     gdp
@@ -427,16 +477,20 @@ functions
     ## 2 MEX              2001 146993.
     ## # ℹ 1,949 more rows
 
-    unique(d_sj$year) |> sort()
+``` r
+unique(d_sj$year) |> sort()
+```
 
     ##  [1] 2000 2001 2002 2003 2004 2005 2006 2007 2008 2009 2010
 
 ## `anti_join`
 
-    d_aj <- d_gdp_2000_2022 |> 
-      anti_join(d_gdppc_1984_2010, by = c("country_text_id", "year"))
+``` r
+d_aj <- d_gdp_2000_2022 |> 
+  anti_join(d_gdppc_1984_2010, by = c("country_text_id", "year"))
 
-    d_aj |> print(n = 2)
+d_aj |> print(n = 2)
+```
 
     ## # A tibble: 2,148 × 3
     ##   country_text_id  year     gdp
@@ -445,7 +499,9 @@ functions
     ## 2 MEX              2012 192272.
     ## # ℹ 2,146 more rows
 
-    unique(d_aj$year) |> sort()
+``` r
+unique(d_aj$year) |> sort()
+```
 
     ##  [1] 2011 2012 2013 2014 2015 2016 2017 2018 2019 2020 2021 2022
 
@@ -454,30 +510,36 @@ functions
 If the identifiers have different names, you have two options: (1)
 Rename it beforehand, (2) specify the `by =` argument differently.
 
-    # I make an artificial example whose variable name of a matching 
-    # identifier is different from d_gdp_2020_2022.
-    d_gdppc_1984_2010_t <- d_gdppc_1984_2010 |> 
-      rename("country_id" = "country_text_id")
+``` r
+# I make an artificial example whose variable name of a matching 
+# identifier is different from d_gdp_2020_2022.
+d_gdppc_1984_2010_t <- d_gdppc_1984_2010 |> 
+  rename("country_id" = "country_text_id")
+```
 
-    # Option 1: Rename the variables beforehand
-    d_aj_t <- d_gdp_2000_2022 |> 
-      rename("country_id" = "country_text_id") |>
-      anti_join(d_gdppc_1984_2010_t, by = c("country_id", "year"))
+``` r
+# Option 1: Rename the variables beforehand
+d_aj_t <- d_gdp_2000_2022 |> 
+  rename("country_id" = "country_text_id") |>
+  anti_join(d_gdppc_1984_2010_t, by = c("country_id", "year"))
 
-    # Option 2: Specify the "by =" argument with a *named vector*
-    d_aj_t_2 <- d_gdp_2000_2022 |> 
-      anti_join(d_gdppc_1984_2010_t, 
-                by = c("country_text_id" = "country_id", 
-                       "year" = "year"))
+# Option 2: Specify the "by =" argument with a *named vector*
+d_aj_t_2 <- d_gdp_2000_2022 |> 
+  anti_join(d_gdppc_1984_2010_t, 
+            by = c("country_text_id" = "country_id", 
+                   "year" = "year"))
+```
 
 ## Many-to-One Join: Repeat!
 
 Calculate each country’s average 1984-2010 *GDP per capita* and merge it
 with our annual GDP data from 2000 to 2022.
 
-    d_gdppc_1984_2010_avg <- d_gdppc_1984_2010 |> group_by(country_text_id) |>
-      summarise(gdppc_1984to2010 = mean(gdppc, na.rm = TRUE))
-    d_gdppc_1984_2010_avg |> print(n = 2)
+``` r
+d_gdppc_1984_2010_avg <- d_gdppc_1984_2010 |> group_by(country_text_id) |>
+  summarise(gdppc_1984to2010 = mean(gdppc, na.rm = TRUE))
+d_gdppc_1984_2010_avg |> print(n = 2)
+```
 
     ## # A tibble: 180 × 2
     ##   country_text_id gdppc_1984to2010
@@ -486,9 +548,11 @@ with our annual GDP data from 2000 to 2022.
     ## 2 AGO                         3.35
     ## # ℹ 178 more rows
 
-    d_lj_ManyToOne <- d_gdp_2000_2022 |> 
-      left_join(d_gdppc_1984_2010_avg, by = "country_text_id")
-    d_lj_ManyToOne |> print(n = 2)
+``` r
+d_lj_ManyToOne <- d_gdp_2000_2022 |> 
+  left_join(d_gdppc_1984_2010_avg, by = "country_text_id")
+d_lj_ManyToOne |> print(n = 2)
+```
 
     ## # A tibble: 4,099 × 4
     ##   country_text_id  year     gdp gdppc_1984to2010
@@ -517,16 +581,18 @@ Some advice based on personal experience
 
 Add binary indicators about data availability in each sources.
 
-    # The d_gdp_2000_2022 data are from V-Dem
-    d_gdp_2000_2022_t <- d_gdp_2000_2022 |> mutate(source_vdem = 1)
+``` r
+# The d_gdp_2000_2022 data are from V-Dem
+d_gdp_2000_2022_t <- d_gdp_2000_2022 |> mutate(source_vdem = 1)
 
-    # *Pretend* that the d_gdppc_1984_2010 data are from the World Bank
-    d_gdppc_1984_2010_t <- d_gdppc_1984_2010 |> mutate(source_wb = 1)
+# *Pretend* that the d_gdppc_1984_2010 data are from the World Bank
+d_gdppc_1984_2010_t <- d_gdppc_1984_2010 |> mutate(source_wb = 1)
 
-    d_fj_habit <- d_gdp_2000_2022_t |> 
-      full_join(d_gdppc_1984_2010_t, by = c("country_text_id", "year"))
+d_fj_habit <- d_gdp_2000_2022_t |> 
+  full_join(d_gdppc_1984_2010_t, by = c("country_text_id", "year"))
 
-    d_fj_habit |> print(n = 3)
+d_fj_habit |> print(n = 3)
+```
 
     ## # A tibble: 6,789 × 6
     ##   country_text_id  year     gdp source_vdem gdppc source_wb
@@ -541,9 +607,11 @@ Add binary indicators about data availability in each sources.
 What can you do with these binary indicators? We can know the overlaps
 of multiple sources.
 
-    d_fj_habit |>
-      group_by(source_vdem, source_wb) |>
-      count()
+``` r
+d_fj_habit |>
+  group_by(source_vdem, source_wb) |>
+  count()
+```
 
     ## # A tibble: 3 × 3
     ## # Groups:   source_vdem, source_wb [3]
@@ -577,18 +645,20 @@ Answer: An observation can be missing for two reasons
 
 ## Good Habit: Add prefix or suffix to variable names
 
-    d_gdp_2000_2022_rn <- d_gdp_2000_2022 |> 
-      rename("vdem_gdp" = "gdp")
-      # rename_at(vars(-c("country_text_id", "year")), ~str_c("vdem_", .))
+``` r
+d_gdp_2000_2022_rn <- d_gdp_2000_2022 |> 
+  rename("vdem_gdp" = "gdp")
+  # rename_at(vars(-c("country_text_id", "year")), ~str_c("vdem_", .))
 
-    d_gdppc_1984_2010_rn <- d_gdppc_1984_2010 |> 
-      rename("wb_gdppc" = "gdppc")
-      # rename_at(vars(-c("country_text_id", "year")), ~str_c("wb_", .))
+d_gdppc_1984_2010_rn <- d_gdppc_1984_2010 |> 
+  rename("wb_gdppc" = "gdppc")
+  # rename_at(vars(-c("country_text_id", "year")), ~str_c("wb_", .))
 
-    d_fj_habit_2 <- d_gdp_2000_2022_rn |>
-      full_join(d_gdppc_1984_2010_rn, by = c("country_text_id", "year"))
+d_fj_habit_2 <- d_gdp_2000_2022_rn |>
+  full_join(d_gdppc_1984_2010_rn, by = c("country_text_id", "year"))
 
-    d_fj_habit_2 |> print(n = 3)
+d_fj_habit_2 |> print(n = 3)
+```
 
     ## # A tibble: 6,789 × 4
     ##   country_text_id  year vdem_gdp wb_gdppc

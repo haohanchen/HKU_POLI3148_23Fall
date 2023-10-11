@@ -9,7 +9,8 @@ output:
     theme: "Goettingen"
     colortheme: "default"
     fonttheme: "serif"
-  md_document: default
+  md_document: 
+    variant: markdown_github
 classoption: "aspectratio=169"
 knit: (function(inputFile, encoding){rmarkdown::render(inputFile, encoding = encoding, output_format = "all", knit_root_dir = getwd())})
 editor_options: 
