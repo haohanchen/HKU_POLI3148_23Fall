@@ -22,9 +22,9 @@ What should you do if things go wrong?
 
 -   You have not loaded your data.
 
-<!-- -->
-
-    d
+``` r
+d
+```
 
     ## # A tibble: 6,789 × 211
     ##    country_name country_text_id country_id  year historical_date project
@@ -49,9 +49,9 @@ What should you do if things go wrong?
 
 -   You have not loaded your package.
 
-<!-- -->
-
-    d <- read_csv("vdem_1984_2022_external.csv")
+``` r
+d <- read_csv("vdem_1984_2022_external.csv")
+```
 
     ## Error: 'vdem_1984_2022_external.csv' does not exist in current working directory ('/Users/haohanchen/Documents/HKU_POLI3148_23Fall').
 
@@ -77,11 +77,15 @@ Note:
 When you load a package, the printed output shows you information about
 the package.
 
-    library(tidyverse) 
+``` r
+library(tidyverse) 
+```
 
 ## Other Messages: Loading Data
 
-    d <- read_csv("_DataPublic_/vdem/1984_2022/vdem_1984_2022_external.csv")
+``` r
+d <- read_csv("_DataPublic_/vdem/1984_2022/vdem_1984_2022_external.csv")
+```
 
     ## Rows: 6789 Columns: 211
     ## ── Column specification ────────────────────────────────────────────────────────
@@ -108,7 +112,7 @@ Recap of my previous advice
 
 -   How to open the R project?
 
-    -   File –&gt; “Open Project”
+    -   File –\> “Open Project”
 
     -   Click the `.Rproj` file in your R project folder.
 
@@ -197,12 +201,12 @@ width="301" />
     -   Remove the part that is specific to your case (file name, object
         name)
 
-    -   **Example:** Error in eval(expr, envir, enclos): object
-        <s>‘d’</s> not found
+    -   **Example:** Error in eval(expr, envir, enclos): object ~~‘d’~~
+        not found
 
     -   **Example:** Error in
-        read\_csv<s>(“vdem\_1984\_2022\_external.csv”):</s> could not
-        find function
+        read_csv~~(“vdem_1984_2022_external.csv”):~~ could not find
+        function
 
 ## Seek Assistance: Large Language Model
 
@@ -234,21 +238,25 @@ Example: [A (very well-written) question](#0) on CampusWire about
 `geom_dotplot` could have been asked with the following example by R’s
 default dataset `mtccars`:
 
-    ggplot(mtcars, aes(x = mpg)) +
-      geom_dotplot(method="histodot", binwidth = 1.5)
+``` r
+ggplot(mtcars, aes(x = mpg)) +
+  geom_dotplot(method="histodot", binwidth = 1.5)
+```
 
-![](README_files/figure-markdown_strict/unnamed-chunk-5-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-5-1.png)
 
 ## Seek Assistance: Human
 
 Then, the person who gives an answer copy the code to their R, suggest
 changes, and send the code back.
 
-    ggplot(mtcars, aes(x = mpg)) +
-      geom_dotplot(method="histodot", binwidth = 0.8) +
-      theme(axis.text.y = element_blank(), axis.title.y = element_blank())
+``` r
+ggplot(mtcars, aes(x = mpg)) +
+  geom_dotplot(method="histodot", binwidth = 0.8) +
+  theme(axis.text.y = element_blank(), axis.title.y = element_blank())
+```
 
-![](README_files/figure-markdown_strict/unnamed-chunk-6-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-6-1.png)
 
 ## Tips
 

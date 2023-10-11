@@ -8,7 +8,8 @@ output:
   beamer_presentation:
     theme: "Warsaw"
     colortheme: "default"
-  md_document: default
+  md_document: 
+    variant: markdown_github
 classoption: "aspectratio=169"
 knit: (function(inputFile, encoding){rmarkdown::render(inputFile, encoding = encoding, output_format = "all", knit_root_dir = getwd())})
 editor_options: 
@@ -60,9 +61,8 @@ When you start coding, here are the first things to check:
 
 -   Have you loaded the data you need?
 
-```{=html}
 <!-- -->
-```
+
 -   Have you loaded the packages you need?
 
 Note:
@@ -92,7 +92,7 @@ Recap of my previous advice
 -   Start an R project
 
 -   In Rmarkdown, evaluate code chunks in the document from the project directory\
-    ![](images/Screenshot 2023-10-11 at 20.14.44.png){width="299"}
+    ![](images/Screenshot%202023-10-11%20at%2020.14.44.png){width="299"}
 
 -   **Open** the R project ***every time*** you continue working on it
 
@@ -142,7 +142,7 @@ Solution: [Clear]{.underline} and [start over]{.underline}
 
     -   to mimic how your code will run in the *Render* environment.
 
-![](images/Screenshot 2023-10-11 at 15.32.48.png){width="301"}
+![](images/Screenshot%202023-10-11%20at%2015.32.48.png){width="301"}
 
 ## Locate the Problem: Clear, clear, clear
 
@@ -162,7 +162,7 @@ Solution: [Clear]{.underline} and [start over]{.underline}
 
 -   "**Run All Chunks Above**" and "**Run All**" are handy tools.
 
-    ![](images/Screenshot 2023-10-11 at 18.10.42.png){width="186"}
+    ![](images/Screenshot%202023-10-11%20at%2018.10.42.png){width="186"}
 
 -   The program will run until error occurs.
 
