@@ -1,12 +1,13 @@
 # Setup
 
-## Recap
+## Outline
 
 -   Reshape (long \<-\> wide) with `pivot_longer` and `pivot_wider`
 -   Stack tables by row or by column with `bind_rows` and `bind_cols`
     (or, alternatively, `cbind` and `rbind`)
 -   Merge two tables with `inner_join`, `full_join`, `left_join`,
     `right_join`, `semi_join`, and `anti_join`
+-   Save your outputs
 
 ## Example: The V-Dem Data
 
@@ -667,3 +668,116 @@ d_fj_habit_2 |> print(n = 3)
     ## 2 MEX              2001  146993.     13.6
     ## 3 MEX              2002  148549.     13.6
     ## # ℹ 6,786 more rows
+
+# Save Outputs
+
+## Saving Your Outputs after Data Wrangling
+
+You can save your clean data in a variety of formats. I will highlight
+two most popular options
+
+-   `.csv` “comma-separated values,” readable by Excel or a text editor
+
+-   `.rds` “R data serialization,” readable by R only
+
+``` r
+# Save to a .csv file
+write_csv(d_gdp_1945_2022, "Lec_06/2_data_wrangling_3/data/gdp_1945_2002.csv")
+
+# Save to a .rds file
+saveRDS(d_gdp_1945_2022, "Lec_06/2_data_wrangling_3/data/gdp_1945_2002.rds")
+```
+
+## Saving Your Outputs after Data Wrangling
+
+You can re-load saved `.csv` and `.rds` files using `read_csv` and
+`readRDS` respectively
+
+``` r
+# Read a .csv file
+d_read_1 <- read_csv("Lec_06/2_data_wrangling_3/data/gdp_1945_2002.csv")
+```
+
+    ## Rows: 12871 Columns: 4
+    ## ── Column specification ────────────────────────────────────────────────────────
+    ## Delimiter: ","
+    ## chr (1): country_text_id
+    ## dbl (3): year, gdp, gdppc
+    ## 
+    ## ℹ Use `spec()` to retrieve the full column specification for this data.
+    ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+
+``` r
+# Read a .rds file
+d_read_2 <- readRDS("Lec_06/2_data_wrangling_3/data/gdp_1945_2002.rds")
+```
+
+## Saving Your Outputs after Data Wrangling
+
+Comparing the two output types
+
+<table style="width:99%;">
+<colgroup>
+<col style="width: 6%" />
+<col style="width: 36%" />
+<col style="width: 56%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Type</th>
+<th>Pro</th>
+<th>Con</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>.csv</code></td>
+<td><ul>
+<li><p>Readable outside R</p></li>
+<li><p>Conveniently convertible to Excel files</p></li>
+</ul></td>
+<td><ul>
+<li><p>Variable types may change when you read it back if you do not
+carefully specify them</p></li>
+<li><p>Error-prone with <em>text</em> data (encoding, line breaks
+etc.)</p></li>
+<li><p>(Maybe) takes longer to read</p></li>
+</ul></td>
+</tr>
+<tr class="even">
+<td><code>.rds</code></td>
+<td><ul>
+<li><p><strong>Replicable</strong>: Get precisely how the data are
+saved</p></li>
+<li><p>Smaller files (if stick with default compression)</p></li>
+<li><p>(Sometimes) faster read/write</p></li>
+</ul></td>
+<td><ul>
+<li>Can’t read <code>.rds</code> outside R</li>
+</ul></td>
+</tr>
+</tbody>
+</table>
+
+## Saving Your Outputs after Data Wrangling
+
+-   When to save as `.csv`
+
+    -   Simple data types
+
+    -   Want to manually examine it outside R (e.g., Excel)
+
+    -   Want to share it with non-R users
+
+-   When to save as `.rds`
+
+    -   Complex combination of data types
+
+    -   Simply saving for your future use in R
+
+    -   Large dataset and you want to save space
+
+    -   Text data
+
+If you don’t care about looking at the data outside R, `.rds` is a safer
+option.

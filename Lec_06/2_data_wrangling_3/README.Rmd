@@ -17,17 +17,14 @@ editor_options:
   chunk_output_type: console
 ---
 
-```{r, include=FALSE}
-knitr::opts_chunk$set(size="small")
-```
-
 # Setup
 
-## Recap
+## Outline
 
 -   Reshape (long \<-\> wide) with `pivot_longer` and `pivot_wider`
 -   Stack tables by row or by column with `bind_rows` and `bind_cols` (or, alternatively, `cbind` and `rbind`)
 -   Merge two tables with `inner_join`, `full_join`, `left_join`, `right_join`, `semi_join`, and `anti_join`
+-   Save your outputs
 
 ## Example: The V-Dem Data
 
@@ -193,7 +190,7 @@ names(d_gdp_edu_fh)
 
 ## !! WARNING !!
 
-### These are error-prone operations 
+### These are error-prone operations
 
 -   Do `bind_rows` and `bind_cols` ONLY WHEN you know for sure that there will not be a mismatch!
 
@@ -442,3 +439,81 @@ d_fj_habit_2 <- d_gdp_2000_2022_rn |>
 
 d_fj_habit_2 |> print(n = 3)
 ```
+
+# Save Outputs
+
+## Saving Your Outputs after Data Wrangling
+
+You can save your clean data in a variety of formats. I will highlight two most popular options
+
+-   `.csv` "comma-separated values," readable by Excel or a text editor
+
+-   `.rds` "R data serialization," readable by R only
+
+\scriptsize
+
+```{r}
+# Save to a .csv file
+write_csv(d_gdp_1945_2022, "Lec_06/2_data_wrangling_3/data/gdp_1945_2002.csv")
+
+# Save to a .rds file
+saveRDS(d_gdp_1945_2022, "Lec_06/2_data_wrangling_3/data/gdp_1945_2002.rds")
+```
+
+## Saving Your Outputs after Data Wrangling
+
+You can re-load saved `.csv` and `.rds` files using `read_csv` and `readRDS` respectively
+
+\footnotesize
+
+```{r}
+# Read a .csv file
+d_read_1 <- read_csv("Lec_06/2_data_wrangling_3/data/gdp_1945_2002.csv")
+
+# Read a .rds file
+d_read_2 <- readRDS("Lec_06/2_data_wrangling_3/data/gdp_1945_2002.rds")
+```
+
+## Saving Your Outputs after Data Wrangling
+
+Comparing the two output types
+
+\footnotesize
+
++---------+----------------------------------------------------------+------------------------------------------------------------------------------------------+
+| Type    | Pro                                                      | Con                                                                                      |
++=========+==========================================================+==========================================================================================+
+| `.csv`  | -   Readable outside R                                   | -   Variable types may change when you read it back if you do not carefully specify them |
+|         |                                                          |                                                                                          |
+|         | -   Conveniently convertible to Excel files              | -   Error-prone with *text* data (encoding, line breaks etc.)                            |
+|         |                                                          |                                                                                          |
+|         |                                                          | -   (Maybe) takes longer to read                                                         |
++---------+----------------------------------------------------------+------------------------------------------------------------------------------------------+
+| `.rds`  | -   **Replicable**: Get precisely how the data are saved | -   Can't read `.rds` outside R                                                          |
+|         |                                                          |                                                                                          |
+|         | -   Smaller files (if stick with default compression)    |                                                                                          |
+|         |                                                          |                                                                                          |
+|         | -   (Sometimes) faster read/write                        |                                                                                          |
++---------+----------------------------------------------------------+------------------------------------------------------------------------------------------+
+
+## Saving Your Outputs after Data Wrangling
+
+-   When to save as `.csv`
+
+    -   Simple data types
+
+    -   Want to manually examine it outside R (e.g., Excel)
+
+    -   Want to share it with non-R users
+
+-   When to save as `.rds`
+
+    -   Complex combination of data types
+
+    -   Simply saving for your future use in R
+
+    -   Large dataset and you want to save space
+
+    -   Text data
+
+If you don't care about looking at the data outside R, `.rds` is a safer option.
