@@ -31,7 +31,7 @@ What does data visualization do? Let's start with some examples.
 
 -   V-Dem data visualization tools: <https://v-dem.net/graphing/graphing-tools/>
 
-## Our Task: Extend the "Health and Wealth" Thesis
+## Our Task: Extend the "Health and Wealth" Analysis
 
 <https://www.gapminder.org/fw/world-health-chart/>
 
@@ -39,7 +39,7 @@ What does data visualization do? Let's start with some examples.
 
 > Hans Rosling shows that income and health go hand in hand. People live longer in richer countries. Or the other way around. Countries are richer where people live longer. There are no high income countries with a short life expectancy, and no low income countries with a long life expectancy. Still, there\'s a huge difference in life expectancy between countries on the same income level, depending on how the money is distributed and how it is used.
 
-## Our Task: Extend the "Health and Wealth" Thesis
+## Our Task: Extend the "Health and Wealth" Analysis
 
 <https://www.gapminder.org/fw/world-health-chart/>
 
@@ -201,7 +201,7 @@ Plot a scatter plot with ALL the data points.
 d |> ggplot(aes(x = gdppc, y = life_expectancy)) + 
   geom_point() +
   labs(x = "GDP per capita", y = "Life Expectancy", 
-       title = "Wealth and Health in the World (2000-2019)",
+       title = "Wealth and Health in the World (1800-2019)",
        caption = "By Haohan Chen. Data source: V-Dem v.13")
 ```
 
@@ -216,7 +216,7 @@ To make your nice data visualization stay. You can either (temporarily) save it 
 p_all <- d |> ggplot(aes(x = gdppc, y = life_expectancy)) + 
   geom_point() +
   labs(x = "GDP per capita", y = "Life Expectancy", 
-       title = "Wealth and Health in the World (2000-2019)",
+       title = "Wealth and Health in the World (1800-2019)",
        caption = "By Haohan Chen. Data source: V-Dem v.13")
 
 # Save plot as a .rds file in your folder
