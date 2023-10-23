@@ -1,0 +1,350 @@
+---
+title: "Data Visualization (1)"
+subtitle: "Basics"
+author: "Haohan Chen"
+institute: "POLI3148 Data Science in PPA (The University of Hong Kong)"
+date: "Last update: `r format(Sys.Date(), '%B %d, %Y')`"
+output: 
+  beamer_presentation:
+    theme: "Goettingen"
+    colortheme: "default"
+    fonttheme: "default"
+  md_document: 
+    variant: markdown_github
+classoption: "aspectratio=169"
+knit: (function(inputFile, encoding){rmarkdown::render(inputFile, encoding = encoding, output_format = "all", knit_root_dir = getwd())})
+editor_options: 
+  chunk_output_type: console
+---
+
+# Motivation
+
+## Data Visualization
+
+Life is short. Use graphs!
+
+What does data visualization do? Let's start with some examples.
+
+-   Hans Roling's Gapminder: <https://www.gapminder.org/tools/>
+
+-   Our World in Data: <https://ourworldindata.org/>
+
+-   V-Dem data visualization tools: <https://v-dem.net/graphing/graphing-tools/>
+
+## Our Task: Extend the "Health and Wealth" Analysis
+
+<https://www.gapminder.org/fw/world-health-chart/>
+
+\vspace{1cm}
+
+> Hans Rosling shows that income and health go hand in hand. People live longer in richer countries. Or the other way around. Countries are richer where people live longer. There are no high income countries with a short life expectancy, and no low income countries with a long life expectancy. Still, there's a huge difference in life expectancy between countries on the same income level, depending on how the money is distributed and how it is used.
+
+## Our Task: Extend the "Health and Wealth" Analysis
+
+<https://www.gapminder.org/fw/world-health-chart/>
+
+![](images/Screenshot%202023-10-12%20at%2009.22.06.png){width="478"}
+
+# Data Preparation
+
+## Load the Data
+
+\tiny
+
+```{r, message=FALSE, warning=FALSE}
+library(tidyverse)
+
+d_full <- bind_rows(
+  read_csv("_DataPublic_/vdem/1789_1827/vdem_1789_1827_external.csv"),
+  read_csv("_DataPublic_/vdem/1867_1905/vdem_1867_1905_external.csv"),
+  read_csv("_DataPublic_/vdem/1906_1944/vdem_1906_1944_external.csv"),
+  read_csv("_DataPublic_/vdem/1945_1983/vdem_1945_1983_external.csv"),
+  read_csv("_DataPublic_/vdem/1984_2022/vdem_1984_2022_external.csv")
+)
+```
+
+## Select Indicators of Interest
+
+-   Country-year identifiers `country_text_id` `year`
+
+-   Region `e_regiongeo`
+
+-   Wealth: GDP per capita `e_gdppc`
+
+-   Health: Life expectancy `e_pelifeex`
+
+-   Population: `e_mipopula` `e_sb_pop`
+
+-   Extension: Democracy
+
+    -   Binary "democracy" indicator `e_boix_regime`
+
+    -   The Lexical index of Electoral Democracy `e_lexical_index`
+
+    -   Polity V scores (-10 to +10) `e_p_polity`
+
+## Select Indicators of Interest (con'd)
+
+\scriptsize
+
+```{r}
+d <- d_full |>
+  select(
+    country_text_id, year, 
+    e_regiongeo, e_pelifeex, e_gdppc, 
+    e_mipopula, e_wb_pop,
+    e_boix_regime, e_lexical_index, e_p_polity) |>
+  rename("region" = "e_regiongeo", 
+         "life_expectancy" = "e_pelifeex", 
+         "gdppc" = "e_gdppc",
+         "population_ClioInfra" = "e_mipopula", 
+         "population_WorldBank" = "e_wb_pop",
+         "democracy_binary" = "e_boix_regime",
+         "democracy_lexical" = "e_lexical_index",
+         "democracy_polity5" = "e_p_polity") |>
+  filter(year >= 1800)
+
+saveRDS(d, "Lec_07/data/wealth_and_health.rds")
+```
+
+## Take a Quick Look at the Data
+
+\tiny
+
+```{r}
+summary(d)
+```
+
+## Region
+
+![](images/Screenshot%202023-10-23%20at%2014.09.55.png){width="299" height="25"}
+
+![](images/Screenshot%202023-10-23%20at%2014.09.24.png){width="299"}
+
+## Democracy Indicators: Boix et al. 2013
+
+![](images/Screenshot%202023-10-23%20at%2014.01.23.png){width="450"}
+
+## Democracy Indicators: Lexical Index
+
+![](images/Screenshot%202023-10-23%20at%2013.59.43.png){width="331"}
+
+## Democracy Indicators: Polity V
+
+![](images/Screenshot 2023-10-23 at 16.54.32.png){width="450"}
+
+## Democracy Indicators (further readings)
+
+In addition to the V-Dem dataset, check out more data of democracy indicators
+
+<https://xmarquez.github.io/democracyData/index.html>
+
+## Problem: Multiple Population Data Sources!
+
+We have two population data sources, with different coverage of years.
+
+![](images/Screenshot%202023-10-12%20at%2010.27.17.png){width="370"}
+
+![](images/Screenshot%202023-10-12%20at%2010.27.46.png){width="370"}
+
+## Multiple Population Data Sources
+
+Consistency? Check years that are available in both datasets.
+
+\scriptsize
+
+```{r}
+d_pop_overlap <- d |> select(country_text_id, year, starts_with("population_")) |> 
+  drop_na()
+print(d_pop_overlap, n = 3)
+unique(d_pop_overlap$year)
+cor(d_pop_overlap$population_ClioInfra, d_pop_overlap$population_WorldBank)
+```
+
+## Set a Rule to Merge the Two Population Columns
+
+-   Different units: Divide `population_WorldBank` by 1000 (so that the unit of population is "in thousands"
+
+-   Different coverage but almost perfect correlation
+
+    -   For years that only one dataset has coverage, take the value from the dataset that has available data points.
+
+    -   For years that both datasets have coverage, take their `mean`.
+
+That means, effectively, we are taking the `mean` and allow `na.rm = TRUE`. Think about it.
+
+## Merge the Two Population Columns
+
+Below is an implementation of the rule we have just set. The output of this step is a new variable called `population` which aggregate data from both sources.
+
+\tiny
+
+```{r}
+# STEP 1: "Harmonize" the units
+d <- d |> mutate(population_WorldBank = population_WorldBank / 1000)
+
+# STEP 2 Method 1: Slower but use only tidyverse functionality
+# [Slow! Not recommended!]
+d <- d |> rowwise() |>
+  mutate(population = mean(c_across(c("population_ClioInfra", "population_WorldBank")), na.rm = TRUE))
+
+# STEP 2 Method 2: Faster but use a non-tidyverse function rowMeans() 
+# and create a temporary vector tmp_population, which I remove after use with rm()
+# [Faster !Recommended!]
+tmp_population <- d |> select(population_ClioInfra, population_WorldBank) |> rowMeans(na.rm = TRUE)
+d <- d |> mutate(population = !!(tmp_population))
+
+rm(tmp_population)
+
+# Remove the columns we no longer need
+d <- d |> select(-population_ClioInfra, -population_WorldBank)
+```
+
+## Sanity Check
+
+\scriptsize
+
+```{r}
+summary(d %>% select(-country_text_id, -year, -region))
+```
+
+*Always watch out for when you see `NA`, especially when the number is non-trivial!*
+
+## Check Data Availability
+
+\scriptsize
+
+```{r}
+check_data_available <- d |> 
+  mutate(Available = (!is.na(life_expectancy) & !is.na(gdppc) & !is.na(population))) 
+# Check number of missing values by country-year
+table(check_data_available$Available, useNA = "always")
+
+check_data_available |> print(n = 3)
+```
+
+## Check Data Availability (con'd)
+
+\scriptsize
+
+```{r}
+check_data_available_wide <- check_data_available |>
+  select(country_text_id, year, Available) |>
+  pivot_wider(names_from = "country_text_id", values_from = "Available", 
+              names_prefix = "c_") |>
+  arrange(year)
+
+check_data_available_wide |> print(n = 3)
+```
+
+## Check Data Availability (con'd)
+
+\scriptsize
+
+```{r}
+# Check, for each year, the availability of each column
+check_data_available_by_column <- d |>
+  group_by(year) |>
+  summarise(
+    life_expectancy = sum(is.na(life_expectancy)),
+    gdppc = sum(is.na(gdppc)),
+    population = sum(is.na(population))
+  )
+  # summarise_at(vars(life_expectancy, gdppc, population), ~sum(!is.na(.))) 
+  # above is an alternative way to write the summarise() step
+
+check_data_available_by_column |> print(n = 3)
+```
+
+## Save Cleaned Data
+
+**OK. All look good! We are ready to create some beautiful data visualization.**
+
+\scriptsize
+
+```{r}
+dir.create("Lec_07/data")
+saveRDS(d, "Lec_07/data/wealth_and_health.rds")
+```
+
+# Data Viz Basics
+
+## Simplest Possible Visualization
+
+Plot a scatter plot with ALL the data points.
+
+\tiny
+
+```{r, warning=FALSE, fig.width=9, fig.height=4}
+d |> 
+  ggplot(aes(x = gdppc, y = life_expectancy)) + 
+  geom_point() +
+  labs(x = "GDP per capita", y = "Life Expectancy", 
+       title = "Wealth and Health in the World (1800-2019)",
+       caption = "By Haohan Chen. Data source: V-Dem v.13")
+```
+
+## Store Your First Data Visualization
+
+To make your nice data visualization stay. You can either (temporarily) save it in your R Environment, or save it as a file in your folder.
+
+\tiny
+
+```{r, warning=FALSE}
+# Store in R environment (temporary)
+p_all <- d |> 
+  ggplot(aes(x = gdppc, y = life_expectancy)) + 
+  geom_point() +
+  labs(x = "GDP per capita", y = "Life Expectancy", 
+       title = "Wealth and Health in the World (1800-2019)",
+       caption = "By Haohan Chen. Data source: V-Dem v.13")
+# Save plot as a .rds file in your folder
+dir.create("Lec_07/1_data_visualization_1/figures")
+saveRDS(p_all, "Lec_07/1_data_visualization_1/figures/welath_and_health_all.rds")
+# Save plot as a PDF file in your folder
+ggsave(filename = "Lec_07/1_data_visualization_1/figures/welath_and_health_all.pdf", 
+       plot = p_all, width = 9, height = 4)
+```
+
+## Set Themes: `theme_bw`
+
+\tiny
+
+```{r, warning=FALSE, fig.width=9, fig.height=4}
+p_all + theme_bw()
+```
+
+## Set Themes: `theme_classic`
+
+\tiny
+
+```{r, warning=FALSE, fig.width=9, fig.height=4}
+p_all + theme_classic()
+```
+
+## Set Themes: `theme_minimal`
+
+\tiny
+
+```{r, warning=FALSE, fig.width=9, fig.height=4}
+p_all + theme_minimal()
+```
+
+## Other Fancy Themes: The Economist
+
+\tiny
+
+```{r, warning=FALSE, fig.width=9, fig.height=4}
+# install.packages("ggthemes") # install the package upon your first use.
+# Take a look at the package's website: https://yutannihilation.github.io/allYourFigureAreBelongToUs/ggthemes/
+library(ggthemes)
+p_all + theme_economist()
+```
+
+## Other Fancy Themes: The WSJ
+
+\tiny
+
+```{r, warning=FALSE, fig.width=9, fig.height=4}
+p_all + theme_wsj(base_size = 6)
+```

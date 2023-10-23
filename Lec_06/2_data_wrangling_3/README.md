@@ -245,6 +245,13 @@ unique(d_gdp_1945_2022$year) |> sort()
     ## [61] 2005 2006 2007 2008 2009 2010 2011 2012 2013 2014 2015 2016 2017 2018 2019
     ## [76] 2020 2021 2022
 
+``` r
+d_gdp_1945_2022_ue_rows <- bind_rows(
+ d_gdp |> select(-gdppc),
+ d_gdp_1945 |> select(-gdp)
+)
+```
+
 ## `bind_rows`
 
 ``` r
@@ -314,31 +321,32 @@ names(d_gdp_edu_fh)
 
 Understand the behavior of different `join_` functions
 
--   `left_join`: Merge and only keep observations that appear in the
-    left-hand-side table.
+-   `left_join`: Merge and only keep observations whose identifiers
+    (matching keys) appear in the left-hand-side table.
 
--   `right_join`: Merge and only keep observations that appear in the
-    right-hand-side table.
+-   `right_join`: Merge and only keep observations whose identifiers
+    (matching keys) appear in the right-hand-side table.
 
--   `inner_join`: Merge and only keep observations that appear in both
-    tables.
+-   `inner_join`: Merge and only keep observations whose identifiers
+    (matching keys) appear in both tables.
 
--   `full_join`: Merge and keep observations that appear either table.
+-   `full_join`: Merge and keep observations whose identifiers (matching
+    keys) appear either table.
 
--   `anti_join`: Filter out observations that does appears in the
-    right-hand-side table
+-   `anti_join`: Filter out observations whose identifiers (matching
+    keys) appear in the right-hand-side table
 
--   `semi_join`: Filter out observations that does not appear in the
-    right-hand-side table
+-   `semi_join`: Filter out observations whose identifiers (matching
+    keys) do not appear in the right-hand-side table
 
 ## Task 1: The Case
 
 Join two datasets from the V-Dem data using the above different `join_`
 functions
 
--   *GDP* data from 2000-2022
+-   *GDP* data from **2000-2022**
 
--   *GDP per capita* data from 1984 to 2010
+-   *GDP per capita* data from **1984 to 2010**
 
 ## Task 1: Setup
 
@@ -674,7 +682,7 @@ d_fj_habit_2 |> print(n = 3)
 ## Saving Your Outputs after Data Wrangling
 
 You can save your clean data in a variety of formats. I will highlight
-two most popular options
+two most popular options.
 
 -   `.csv` “comma-separated values,” readable by Excel or a text editor
 
@@ -718,7 +726,7 @@ Comparing the two output types
 
 <table style="width:99%;">
 <colgroup>
-<col style="width: 6%" />
+<col style="width: 5%" />
 <col style="width: 36%" />
 <col style="width: 56%" />
 </colgroup>
