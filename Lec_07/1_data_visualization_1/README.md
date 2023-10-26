@@ -221,13 +221,15 @@ d <- d |> mutate(population_WorldBank = population_WorldBank / 1000)
 # STEP 2 Method 1: Slower but use only tidyverse functionality
 # [Slow! Not recommended!]
 d <- d |> rowwise() |>
-  mutate(population = mean(c_across(c("population_ClioInfra", "population_WorldBank")), na.rm = TRUE))
+  mutate(population = mean(c_across(c("population_ClioInfra", "population_WorldBank")), 
+                           na.rm = TRUE), .after = population_WorldBank) |>
+  ungroup()
 
 # STEP 2 Method 2: Faster but use a non-tidyverse function rowMeans() 
 # and create a temporary vector tmp_population, which I remove after use with rm()
 # [Faster !Recommended!]
 tmp_population <- d |> select(population_ClioInfra, population_WorldBank) |> rowMeans(na.rm = TRUE)
-d <- d |> mutate(population = !!(tmp_population))
+d <- d |> mutate(population = !!(tmp_population), .after = population_WorldBank)
 
 rm(tmp_population)
 
@@ -241,22 +243,22 @@ d <- d |> select(-population_ClioInfra, -population_WorldBank)
 summary(d %>% select(-country_text_id, -year, -region))
 ```
 
-    ##  life_expectancy     gdppc         democracy_binary democracy_lexical
-    ##  Min.   : 1.50   Min.   :  0.286   Min.   :0.000    Min.   :0.000    
-    ##  1st Qu.:35.50   1st Qu.:  1.599   1st Qu.:0.000    1st Qu.:0.000    
-    ##  Median :50.30   Median :  2.774   Median :0.000    Median :2.000    
-    ##  Mean   :51.37   Mean   :  7.194   Mean   :0.364    Mean   :2.338    
-    ##  3rd Qu.:67.10   3rd Qu.:  7.606   3rd Qu.:1.000    3rd Qu.:4.000    
-    ##  Max.   :85.30   Max.   :156.628   Max.   :1.000    Max.   :6.000    
-    ##  NA's   :1232    NA's   :4571      NA's   :7623     NA's   :675      
-    ##  democracy_polity5   population       
-    ##  Min.   :-88.000   Min.   :     17.9  
-    ##  1st Qu.: -7.000   1st Qu.:   1246.3  
-    ##  Median : -3.000   Median :   4234.3  
-    ##  Mean   : -3.616   Mean   :  23083.3  
-    ##  3rd Qu.:  7.000   3rd Qu.:  11914.2  
-    ##  Max.   : 10.000   Max.   :1412360.0  
-    ##  NA's   :8195      NA's   :2981
+    ##  life_expectancy     gdppc           population        democracy_binary
+    ##  Min.   : 1.50   Min.   :  0.286   Min.   :     17.9   Min.   :0.000   
+    ##  1st Qu.:35.50   1st Qu.:  1.599   1st Qu.:   1246.3   1st Qu.:0.000   
+    ##  Median :50.30   Median :  2.774   Median :   4234.3   Median :0.000   
+    ##  Mean   :51.37   Mean   :  7.194   Mean   :  23083.3   Mean   :0.364   
+    ##  3rd Qu.:67.10   3rd Qu.:  7.606   3rd Qu.:  11914.2   3rd Qu.:1.000   
+    ##  Max.   :85.30   Max.   :156.628   Max.   :1412360.0   Max.   :1.000   
+    ##  NA's   :1232    NA's   :4571      NA's   :2981        NA's   :7623    
+    ##  democracy_lexical democracy_polity5
+    ##  Min.   :0.000     Min.   :-88.000  
+    ##  1st Qu.:0.000     1st Qu.: -7.000  
+    ##  Median :2.000     Median : -3.000  
+    ##  Mean   :2.338     Mean   : -3.616  
+    ##  3rd Qu.:4.000     3rd Qu.:  7.000  
+    ##  Max.   :6.000     Max.   : 10.000  
+    ##  NA's   :675       NA's   :8195
 
 *Always watch out for when you see `NA`, especially when the number is
 non-trivial!*
@@ -279,15 +281,14 @@ check_data_available |> print(n = 3)
 ```
 
     ## # A tibble: 23,593 × 10
-    ## # Rowwise: 
-    ##   country_text_id  year region life_expectancy gdppc democracy_binary
-    ##   <chr>           <dbl>  <dbl>           <dbl> <dbl>            <dbl>
-    ## 1 MEX              1800     17            26.9  1.35               NA
-    ## 2 MEX              1801     17            26.9  1.34               NA
-    ## 3 MEX              1802     17            26.9  1.32               NA
+    ##   country_text_id  year region life_expectancy gdppc population democracy_binary
+    ##   <chr>           <dbl>  <dbl>           <dbl> <dbl>      <dbl>            <dbl>
+    ## 1 MEX              1800     17            26.9  1.35      5100                NA
+    ## 2 MEX              1801     17            26.9  1.34      5174.               NA
+    ## 3 MEX              1802     17            26.9  1.32      5249.               NA
     ## # ℹ 23,590 more rows
-    ## # ℹ 4 more variables: democracy_lexical <dbl>, democracy_polity5 <dbl>,
-    ## #   population <dbl>, Available <lgl>
+    ## # ℹ 3 more variables: democracy_lexical <dbl>, democracy_polity5 <dbl>,
+    ## #   Available <lgl>
 
 ## Check Data Availability (con’d)
 

@@ -131,7 +131,7 @@ summary(d)
 
 ## Democracy Indicators: Polity V
 
-![](images/Screenshot 2023-10-23 at 16.54.32.png){width="450"}
+![](images/Screenshot%202023-10-23%20at%2016.54.32.png){width="450"}
 
 ## Democracy Indicators (further readings)
 
@@ -186,13 +186,15 @@ d <- d |> mutate(population_WorldBank = population_WorldBank / 1000)
 # STEP 2 Method 1: Slower but use only tidyverse functionality
 # [Slow! Not recommended!]
 d <- d |> rowwise() |>
-  mutate(population = mean(c_across(c("population_ClioInfra", "population_WorldBank")), na.rm = TRUE))
+  mutate(population = mean(c_across(c("population_ClioInfra", "population_WorldBank")), 
+                           na.rm = TRUE), .after = population_WorldBank) |>
+  ungroup()
 
 # STEP 2 Method 2: Faster but use a non-tidyverse function rowMeans() 
 # and create a temporary vector tmp_population, which I remove after use with rm()
 # [Faster !Recommended!]
 tmp_population <- d |> select(population_ClioInfra, population_WorldBank) |> rowMeans(na.rm = TRUE)
-d <- d |> mutate(population = !!(tmp_population))
+d <- d |> mutate(population = !!(tmp_population), .after = population_WorldBank)
 
 rm(tmp_population)
 
