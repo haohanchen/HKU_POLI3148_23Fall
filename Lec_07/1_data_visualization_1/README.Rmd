@@ -75,7 +75,9 @@ d_full <- bind_rows(
 
 -   Population: `e_mipopula` `e_sb_pop`
 
--   Extension: Democracy
+-   Extension 1: Infant mortality rate (`e_peinfmor`)
+
+-   Extension 2: Democracy
 
     -   Binary "democracy" indicator `e_boix_regime`
 
@@ -92,13 +94,14 @@ d <- d_full |>
   select(
     country_text_id, year, 
     e_regiongeo, e_pelifeex, e_gdppc, 
-    e_mipopula, e_wb_pop,
+    e_mipopula, e_wb_pop, e_peinfmor,
     e_boix_regime, e_lexical_index, e_p_polity) |>
   rename("region" = "e_regiongeo", 
          "life_expectancy" = "e_pelifeex", 
          "gdppc" = "e_gdppc",
          "population_ClioInfra" = "e_mipopula", 
          "population_WorldBank" = "e_wb_pop",
+         "infant_mortality" = "e_peinfmor",
          "democracy_binary" = "e_boix_regime",
          "democracy_lexical" = "e_lexical_index",
          "democracy_polity5" = "e_p_polity") |>

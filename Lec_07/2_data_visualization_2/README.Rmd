@@ -95,7 +95,7 @@ Visualization tools to use largely depends on variable types
 
     -   Population
 
-    -   (Maybe) Polity V index
+    -   Infant mortality
 
 -   Categorical
 
@@ -703,3 +703,34 @@ It is *technically* feasible to plot more than 3 variables in the same figure, b
 -   You don't want your figure to be too "busy"
 
 -   "Less is more"
+
+## Add infant mortality to the visualization
+
+In this case, using color to visualize infant mortality is reasonable.
+
+\tiny
+
+```{r, message=FALSE, warning=FALSE}
+d |> 
+  filter(year == 2019) |>
+  ggplot(aes(x = gdppc, y = life_expectancy)) +
+  geom_point(aes(size = population, color = infant_mortality), alpha = 0.3) +
+  scale_color_viridis_c(option = "A") +
+  labs(x = "GDP per capita", y = "Life Expectancy", 
+       size = "Population", color = "Infant Mortality",
+       title = "Wealth and Health in the World (2019)")
+```
+
+## Correlation Matrix
+
+\tiny
+
+```{r, message=FALSE, warning=FALSE}
+d |> filter(year == 2019) |>select(gdppc, life_expectancy, population, infant_mortality) |>
+  mutate(population = log(population)) |>
+  ggpairs(
+    columnLabels = c("GDP per capita", "Life Expectancy", "log(Population)", "Infant Mortality"), # Label variables
+    upper = list(continuous = wrap("cor", method = "spearman", color = "blue")),
+    diag = list(continuous = wrap("barDiag", bins = 30, fill = "white", color = "black")), 
+    lower = list(continuous = wrap("smooth_loess", alpha = 0.3, color = "gray")))
+```

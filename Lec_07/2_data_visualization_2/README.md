@@ -31,14 +31,15 @@ d <- readRDS("Lec_07/data/wealth_and_health.rds")
 d |> print(n = 3)
 ```
 
-    ## # A tibble: 23,593 × 9
-    ##   country_text_id  year region life_expectancy gdppc population democracy_binary
+    ## # A tibble: 23,593 × 10
+    ##   country_text_id  year region life_expectancy gdppc population infant_mortality
     ##   <chr>           <dbl>  <dbl>           <dbl> <dbl>      <dbl>            <dbl>
-    ## 1 MEX              1800     17            26.9  1.35      5100                NA
-    ## 2 MEX              1801     17            26.9  1.34      5174.               NA
-    ## 3 MEX              1802     17            26.9  1.32      5249.               NA
+    ## 1 MEX              1800     17            26.9  1.35      5100               487
+    ## 2 MEX              1801     17            26.9  1.34      5174.              487
+    ## 3 MEX              1802     17            26.9  1.32      5249.              487
     ## # ℹ 23,590 more rows
-    ## # ℹ 2 more variables: democracy_lexical <dbl>, democracy_polity5 <dbl>
+    ## # ℹ 3 more variables: democracy_binary <dbl>, democracy_lexical <dbl>,
+    ## #   democracy_polity5 <dbl>
 
 ## `ggplot` syntax
 
@@ -81,7 +82,7 @@ Visualization tools to use largely depends on variable types
 
     -   Population
 
-    -   (Maybe) Polity V index
+    -   Infant mortality
 
 -   Categorical
 
@@ -301,12 +302,12 @@ d_anno <- d |> filter(country_text_id == "CHN", year == 2019) |> mutate(anno = p
 print(d_anno)
 ```
 
-    ## # A tibble: 1 × 10
+    ## # A tibble: 1 × 11
     ##   country_text_id  year anno     region life_expectancy gdppc population
     ##   <chr>           <dbl> <chr>     <dbl>           <dbl> <dbl>      <dbl>
     ## 1 CHN              2019 CHN 2019     12            77.6  15.4    1407745
-    ## # ℹ 3 more variables: democracy_binary <dbl>, democracy_lexical <dbl>,
-    ## #   democracy_polity5 <dbl>
+    ## # ℹ 4 more variables: infant_mortality <dbl>, democracy_binary <dbl>,
+    ## #   democracy_lexical <dbl>, democracy_polity5 <dbl>
 
 ``` r
 # A "manual" approach
@@ -345,14 +346,14 @@ d_anno <- d |> filter(country_text_id %in% c("CHN", "JPN", "USA"), year == 2019)
 print(d_anno)
 ```
 
-    ## # A tibble: 3 × 10
+    ## # A tibble: 3 × 11
     ##   country_text_id  year anno     region life_expectancy gdppc population
     ##   <chr>           <dbl> <chr>     <dbl>           <dbl> <dbl>      <dbl>
     ## 1 JPN              2019 JPN 2019     12            84.8  39.1    126633 
     ## 2 USA              2019 USA 2019     16            78.9  60.6    328330.
     ## 3 CHN              2019 CHN 2019     12            77.6  15.4   1407745 
-    ## # ℹ 3 more variables: democracy_binary <dbl>, democracy_lexical <dbl>,
-    ## #   democracy_polity5 <dbl>
+    ## # ℹ 4 more variables: infant_mortality <dbl>, democracy_binary <dbl>,
+    ## #   democracy_lexical <dbl>, democracy_polity5 <dbl>
 
 ``` r
 d |> ggplot(aes(x = gdppc)) + geom_histogram() + 
@@ -813,3 +814,34 @@ figure, but…
 -   You don’t want your figure to be too “busy”
 
 -   “Less is more”
+
+## Add infant mortality to the visualization
+
+In this case, using color to visualize infant mortality is reasonable.
+
+``` r
+d |> 
+  filter(year == 2019) |>
+  ggplot(aes(x = gdppc, y = life_expectancy)) +
+  geom_point(aes(size = population, color = infant_mortality), alpha = 0.3) +
+  scale_color_viridis_c(option = "A") +
+  labs(x = "GDP per capita", y = "Life Expectancy", 
+       size = "Population", color = "Infant Mortality",
+       title = "Wealth and Health in the World (2019)")
+```
+
+![](README_files/figure-markdown_github/unnamed-chunk-46-1.png)
+
+## Correlation Matrix
+
+``` r
+d |> filter(year == 2019) |>select(gdppc, life_expectancy, population, infant_mortality) |>
+  mutate(population = log(population)) |>
+  ggpairs(
+    columnLabels = c("GDP per capita", "Life Expectancy", "log(Population)", "Infant Mortality"), # Label variables
+    upper = list(continuous = wrap("cor", method = "spearman", color = "blue")),
+    diag = list(continuous = wrap("barDiag", bins = 30, fill = "white", color = "black")), 
+    lower = list(continuous = wrap("smooth_loess", alpha = 0.3, color = "gray")))
+```
+
+![](README_files/figure-markdown_github/unnamed-chunk-47-1.png)

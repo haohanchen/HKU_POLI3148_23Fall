@@ -60,7 +60,9 @@ d_full <- bind_rows(
 
 -   Population: `e_mipopula` `e_sb_pop`
 
--   Extension: Democracy
+-   Extension 1: Infant mortality rate (`e_peinfmor`)
+
+-   Extension 2: Democracy
 
     -   Binary “democracy” indicator `e_boix_regime`
 
@@ -75,13 +77,14 @@ d <- d_full |>
   select(
     country_text_id, year, 
     e_regiongeo, e_pelifeex, e_gdppc, 
-    e_mipopula, e_wb_pop,
+    e_mipopula, e_wb_pop, e_peinfmor,
     e_boix_regime, e_lexical_index, e_p_polity) |>
   rename("region" = "e_regiongeo", 
          "life_expectancy" = "e_pelifeex", 
          "gdppc" = "e_gdppc",
          "population_ClioInfra" = "e_mipopula", 
          "population_WorldBank" = "e_wb_pop",
+         "infant_mortality" = "e_peinfmor",
          "democracy_binary" = "e_boix_regime",
          "democracy_lexical" = "e_lexical_index",
          "democracy_polity5" = "e_p_polity") |>
@@ -104,22 +107,22 @@ summary(d)
     ##                     3rd Qu.:1989   3rd Qu.:14.00   3rd Qu.:67.10  
     ##                     Max.   :2022   Max.   :19.00   Max.   :85.30  
     ##                                                    NA's   :1232   
-    ##      gdppc         population_ClioInfra population_WorldBank democracy_binary
-    ##  Min.   :  0.286   Min.   :     17.9    Min.   :4.170e+04    Min.   :0.000   
-    ##  1st Qu.:  1.599   1st Qu.:   1021.9    1st Qu.:2.348e+06    1st Qu.:0.000   
-    ##  Median :  2.774   Median :   3522.3    Median :7.144e+06    Median :0.000   
-    ##  Mean   :  7.194   Mean   :  18688.0    Mean   :3.239e+07    Mean   :0.364   
-    ##  3rd Qu.:  7.606   3rd Qu.:   9718.8    3rd Qu.:2.103e+07    3rd Qu.:1.000   
-    ##  Max.   :156.628   Max.   :1262645.0    Max.   :1.412e+09    Max.   :1.000   
-    ##  NA's   :4571      NA's   :7173         NA's   :13583        NA's   :7623    
-    ##  democracy_lexical democracy_polity5
-    ##  Min.   :0.000     Min.   :-88.000  
-    ##  1st Qu.:0.000     1st Qu.: -7.000  
-    ##  Median :2.000     Median : -3.000  
-    ##  Mean   :2.338     Mean   : -3.616  
-    ##  3rd Qu.:4.000     3rd Qu.:  7.000  
-    ##  Max.   :6.000     Max.   : 10.000  
-    ##  NA's   :675       NA's   :8195
+    ##      gdppc         population_ClioInfra population_WorldBank infant_mortality
+    ##  Min.   :  0.286   Min.   :     17.9    Min.   :4.170e+04    Min.   :  1.47  
+    ##  1st Qu.:  1.599   1st Qu.:   1021.9    1st Qu.:2.348e+06    1st Qu.: 53.70  
+    ##  Median :  2.774   Median :   3522.3    Median :7.144e+06    Median :200.00  
+    ##  Mean   :  7.194   Mean   :  18688.0    Mean   :3.239e+07    Mean   :217.20  
+    ##  3rd Qu.:  7.606   3rd Qu.:   9718.8    3rd Qu.:2.103e+07    3rd Qu.:380.00  
+    ##  Max.   :156.628   Max.   :1262645.0    Max.   :1.412e+09    Max.   :756.00  
+    ##  NA's   :4571      NA's   :7173         NA's   :13583        NA's   :1232    
+    ##  democracy_binary democracy_lexical democracy_polity5
+    ##  Min.   :0.000    Min.   :0.000     Min.   :-88.000  
+    ##  1st Qu.:0.000    1st Qu.:0.000     1st Qu.: -7.000  
+    ##  Median :0.000    Median :2.000     Median : -3.000  
+    ##  Mean   :0.364    Mean   :2.338     Mean   : -3.616  
+    ##  3rd Qu.:1.000    3rd Qu.:4.000     3rd Qu.:  7.000  
+    ##  Max.   :1.000    Max.   :6.000     Max.   : 10.000  
+    ##  NA's   :7623     NA's   :675       NA's   :8195
 
 ## Region
 
@@ -243,22 +246,22 @@ d <- d |> select(-population_ClioInfra, -population_WorldBank)
 summary(d %>% select(-country_text_id, -year, -region))
 ```
 
-    ##  life_expectancy     gdppc           population        democracy_binary
-    ##  Min.   : 1.50   Min.   :  0.286   Min.   :     17.9   Min.   :0.000   
-    ##  1st Qu.:35.50   1st Qu.:  1.599   1st Qu.:   1246.3   1st Qu.:0.000   
-    ##  Median :50.30   Median :  2.774   Median :   4234.3   Median :0.000   
-    ##  Mean   :51.37   Mean   :  7.194   Mean   :  23083.3   Mean   :0.364   
-    ##  3rd Qu.:67.10   3rd Qu.:  7.606   3rd Qu.:  11914.2   3rd Qu.:1.000   
-    ##  Max.   :85.30   Max.   :156.628   Max.   :1412360.0   Max.   :1.000   
-    ##  NA's   :1232    NA's   :4571      NA's   :2981        NA's   :7623    
-    ##  democracy_lexical democracy_polity5
-    ##  Min.   :0.000     Min.   :-88.000  
-    ##  1st Qu.:0.000     1st Qu.: -7.000  
-    ##  Median :2.000     Median : -3.000  
-    ##  Mean   :2.338     Mean   : -3.616  
-    ##  3rd Qu.:4.000     3rd Qu.:  7.000  
-    ##  Max.   :6.000     Max.   : 10.000  
-    ##  NA's   :675       NA's   :8195
+    ##  life_expectancy     gdppc           population        infant_mortality
+    ##  Min.   : 1.50   Min.   :  0.286   Min.   :     17.9   Min.   :  1.47  
+    ##  1st Qu.:35.50   1st Qu.:  1.599   1st Qu.:   1246.3   1st Qu.: 53.70  
+    ##  Median :50.30   Median :  2.774   Median :   4234.3   Median :200.00  
+    ##  Mean   :51.37   Mean   :  7.194   Mean   :  23083.3   Mean   :217.20  
+    ##  3rd Qu.:67.10   3rd Qu.:  7.606   3rd Qu.:  11914.2   3rd Qu.:380.00  
+    ##  Max.   :85.30   Max.   :156.628   Max.   :1412360.0   Max.   :756.00  
+    ##  NA's   :1232    NA's   :4571      NA's   :2981        NA's   :1232    
+    ##  democracy_binary democracy_lexical democracy_polity5
+    ##  Min.   :0.000    Min.   :0.000     Min.   :-88.000  
+    ##  1st Qu.:0.000    1st Qu.:0.000     1st Qu.: -7.000  
+    ##  Median :0.000    Median :2.000     Median : -3.000  
+    ##  Mean   :0.364    Mean   :2.338     Mean   : -3.616  
+    ##  3rd Qu.:1.000    3rd Qu.:4.000     3rd Qu.:  7.000  
+    ##  Max.   :1.000    Max.   :6.000     Max.   : 10.000  
+    ##  NA's   :7623     NA's   :675       NA's   :8195
 
 *Always watch out for when you see `NA`, especially when the number is
 non-trivial!*
@@ -280,15 +283,15 @@ table(check_data_available$Available, useNA = "always")
 check_data_available |> print(n = 3)
 ```
 
-    ## # A tibble: 23,593 × 10
-    ##   country_text_id  year region life_expectancy gdppc population democracy_binary
+    ## # A tibble: 23,593 × 11
+    ##   country_text_id  year region life_expectancy gdppc population infant_mortality
     ##   <chr>           <dbl>  <dbl>           <dbl> <dbl>      <dbl>            <dbl>
-    ## 1 MEX              1800     17            26.9  1.35      5100                NA
-    ## 2 MEX              1801     17            26.9  1.34      5174.               NA
-    ## 3 MEX              1802     17            26.9  1.32      5249.               NA
+    ## 1 MEX              1800     17            26.9  1.35      5100               487
+    ## 2 MEX              1801     17            26.9  1.34      5174.              487
+    ## 3 MEX              1802     17            26.9  1.32      5249.              487
     ## # ℹ 23,590 more rows
-    ## # ℹ 3 more variables: democracy_lexical <dbl>, democracy_polity5 <dbl>,
-    ## #   Available <lgl>
+    ## # ℹ 4 more variables: democracy_binary <dbl>, democracy_lexical <dbl>,
+    ## #   democracy_polity5 <dbl>, Available <lgl>
 
 ## Check Data Availability (con’d)
 
