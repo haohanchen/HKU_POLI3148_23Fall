@@ -158,7 +158,7 @@ Consistency? Check years that are available in both datasets.
 
 ```{r}
 d_pop_overlap <- d |> select(country_text_id, year, starts_with("population_")) |> 
-  drop_na()
+  drop_na() # Remove any row that has at least one missing value
 print(d_pop_overlap, n = 3)
 unique(d_pop_overlap$year)
 cor(d_pop_overlap$population_ClioInfra, d_pop_overlap$population_WorldBank)
@@ -166,7 +166,7 @@ cor(d_pop_overlap$population_ClioInfra, d_pop_overlap$population_WorldBank)
 
 ## Set a Rule to Merge the Two Population Columns
 
--   Different units: Divide `population_WorldBank` by 1000 (so that the unit of population is "in thousands"
+-   Different units: Divide `population_WorldBank` by 1000 (so that the unit of population is "in thousands")
 
 -   Different coverage but almost perfect correlation
 
@@ -309,6 +309,9 @@ saveRDS(p_all, "Lec_07/1_data_visualization_1/figures/welath_and_health_all.rds"
 # Save plot as a PDF file in your folder
 ggsave(filename = "Lec_07/1_data_visualization_1/figures/welath_and_health_all.pdf", 
        plot = p_all, width = 9, height = 4)
+# Save plot as a PNG file
+ggsave(filename = "Lec_07/1_data_visualization_1/figures/welath_and_health_all.png", 
+       plot = p_all)
 ```
 
 ## Set Themes: `theme_bw`
@@ -344,6 +347,7 @@ p_all + theme_minimal()
 # Take a look at the package's website: https://yutannihilation.github.io/allYourFigureAreBelongToUs/ggthemes/
 library(ggthemes)
 p_all + theme_economist()
+# p_all + theme_economist_white()
 ```
 
 ## Other Fancy Themes: The WSJ

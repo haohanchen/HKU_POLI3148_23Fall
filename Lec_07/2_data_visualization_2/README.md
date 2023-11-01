@@ -540,7 +540,7 @@ d |> ggplot(aes(x = gdppc, y = life_expectancy)) +
 
 ![](README_files/figure-markdown_github/unnamed-chunk-30-1.png)
 
-## 2D "Histogram”
+## 2D “Histogram”
 
 ``` r
 d |> ggplot(aes(x = gdppc, y = life_expectancy)) +

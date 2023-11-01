@@ -476,7 +476,7 @@ d |> ggplot(aes(x = gdppc, y = life_expectancy)) +
   labs(x = "GDP per capita", y = "Life Expectancy", title = "Wealth and Health in the World (1800-2019)")
 ```
 
-## 2D \"Histogram"
+## 2D "Histogram"
 
 \tiny
 
