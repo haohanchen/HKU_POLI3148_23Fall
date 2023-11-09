@@ -52,7 +52,7 @@ download.file(
   "https://ucdp.uu.se/downloads/ucdpprio/ucdp-prio-acd-221-csv.zip",
   destfile = "data/ucdp-prio-acd-221-csv.zip")
 
-unzip("Lec_09/data/ucdp-prio-acd-221-csv.zip", exdir = "data")
+unzip("Lec_09/data/ucdp-prio-acd-221-csv.zip", exdir = "Lec_09/data")
 
 # For more information: https://ucdp.uu.se/downloads/index.html#armedconflict
 ```

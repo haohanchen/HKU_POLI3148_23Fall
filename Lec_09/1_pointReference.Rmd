@@ -30,7 +30,7 @@ In this notebook, we explore the simpliest way to plot a global map visualizing 
 
 ## Download UCDP Data
 
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 # Location: https://ucdp.uu.se/downloads/
 
 download.file(
@@ -38,7 +38,7 @@ download.file(
   destfile = "Lec_09/data/ged221-csv.zip")
 
 # Decompress the downloaded ZIP file
-unzip("Lec_09/data/ged221-csv.zip", exdir = "data")
+unzip("Lec_09/data/ged221-csv.zip", exdir = "Lec_09/data")
 
 # Codebook available on the website
 ```
