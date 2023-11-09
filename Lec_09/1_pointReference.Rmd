@@ -1,0 +1,277 @@
+---
+title: "Spatial Data Analysis (I)"
+author: "Haohan Chen (HKU)"
+date: "`r Sys.Date()`"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(message = FALSE, fig.height=10, fig.width=15)
+```
+
+## Required Package
+
+```{r}
+library(tidyverse)
+library(ggthemes)
+theme_set(theme_map())
+```
+
+## Case: The Spatial Patterns of Conflict Data
+
+Spatial data analysis on conflicts.
+
+-   [UCDP] Upsala Conflict Data Program: <https://ucdp.uu.se/>
+-   [ACLED] Armed Conflict Location & Event Data: <https://acleddata.com/>
+
+In this notebook, we explore the simpliest way to plot a global map visualizing the country-level frequencies of conflict severity.
+
+## Download UCDP Data
+
+```{r, eval=FALSE}
+# Location: https://ucdp.uu.se/downloads/
+
+download.file(
+  "https://ucdp.uu.se/downloads/ged/ged221-csv.zip",
+  destfile = "Lec_09/data/ged221-csv.zip")
+
+# Decompress the downloaded ZIP file
+unzip("Lec_09/data/ged221-csv.zip", exdir = "data")
+
+# Codebook available on the website
+```
+
+## Load the Conflict Data
+
+```{r}
+d = read_csv("Lec_09/data/GEDEvent_v22_1.csv")
+names(d)
+```
+
+## Plot Events on a Map
+
+In our first task of spatial data analysis, we plot individual conflict events on a map
+
+Create a dataframe named `d_event_2021` that contains all events in the year of 2021
+
+```{r}
+d_event_2021 = d |> filter(year == 2021)
+
+```
+
+## Load the World Map
+
+```{r}
+world = map_data("world")
+
+names(world)
+# Summary statistics
+summary(world)
+
+# Problem: Max. longitude > 180! Remove those
+world = world |> filter(long <= 180)
+```
+
+```{r}
+world_china = world |> 
+  filter(region == "China")
+
+world_china |>
+  ggplot() +
+  geom_point(aes(x = long, y = lat))
+
+```
+
+Plot the world map
+
+```{r, fig.width=15, fig.height=12}
+world |>
+  ggplot(aes(x = long, y = lat)) +
+  geom_map(
+    map = world,
+    aes(map_id = region),
+    color = "white", fill = "gray", linewidth = 0.1
+  )
+
+```
+
+**Add map projection**: The earth is not a flat plane. When we draw maps, we "project" the non-flat plane to a 2D flat plane. There are multiple ways through which we can do this projection. For example:
+
+```{r, fig.width=15, fig.height=12}
+world |>
+  ggplot(aes(x = long, y = lat)) +
+  geom_map(
+    map = world,
+    aes(map_id = region),
+    color = "white", fill = "gray", linewidth = 0.1
+  ) +
+  coord_map()
+```
+
+There are a variety of projections available. You may choose what you like (for pragmatic and aethetic purposes.
+
+```{r, fig.width=15, fig.height=12}
+world |>
+  ggplot(aes(x = long, y = lat)) +
+  geom_map(
+    map = world,
+    aes(map_id = region),
+    color = "white", fill = "gray", linewidth = 0.1
+  ) +
+  coord_map("moll")
+
+world |>
+  ggplot(aes(x = long, y = lat)) +
+  geom_map(
+    map = world,
+    aes(map_id = region),
+    color = "white", fill = "gray", linewidth = 0.1
+  ) +
+  coord_map("gilbert")
+
+world |>
+  ggplot(aes(x = long, y = lat)) +
+  geom_map(
+    map = world,
+    aes(map_id = region),
+    color = "white", fill = "gray", linewidth = 0.1
+  ) +
+  coord_map("orth")
+
+
+```
+
+## Plot Conflict Events as Points on the map
+
+Let's plot the events as points on the map.
+
+```{r}
+ggplot() +
+  geom_point(data = d_event_2021, aes(x = longitude, y = latitude))
+```
+
+### Stack the points onto the map
+
+```{r, fig.width=15, fig.height=12}
+world |>
+  ggplot(aes(x = long, y = lat)) +
+  geom_map(
+    map = world,
+    aes(map_id = region),
+    color = "white", fill = "gray", linewidth = 0.1
+  ) +
+  # Below: Stack a layer onto the map
+  geom_point(data = d_event_2021, aes(x = longitude, y = latitude)) +
+  coord_map()
+
+```
+
+### Make the Plot Prettier
+
+```{r, fig.width=15, fig.height=12}
+world |>
+  ggplot(aes(x = long, y = lat)) +
+  geom_map(
+    map = world,
+    aes(map_id = region),
+    color = "white", fill = "gray", linewidth = 0.1
+  ) +
+  geom_point(
+    data = d_event_2021, 
+    aes(x = longitude, y = latitude),
+    alpha = 0.3
+    ) +
+  coord_map()
+
+```
+
+## Plot Conflict Mortality
+
+Use number of deaths as size of points.
+
+First, we need to calculate total number of deaths
+
+```{r}
+d_event_2021 = d_event_2021 |>
+  mutate(Deaths = deaths_a + deaths_b + 
+           deaths_civilians + deaths_unknown)
+
+summary(d_event_2021$Deaths)
+
+d_event_2021 |>
+  ggplot() +
+  geom_density(aes(x = Deaths)) +
+  theme_bw()
+
+```
+
+```{r, fig.width=15, fig.height=12}
+world |>
+  ggplot(aes(x = long, y = lat)) +
+  geom_map(
+    map = world,
+    aes(map_id = region),
+    color = "white", fill = "gray", size = 0.1
+  ) +
+  geom_point(
+    data = d_event_2021, 
+    aes(x = longitude, y = latitude, size = Deaths),
+    alpha = 0.3
+    ) +
+  coord_map() +
+  theme(legend.position = "bottom")
+```
+
+How to make the figure more informative? We start by taking logarithm of the `Death` variable. Apparently, the distribution of mortality is so skewed that we are not seeing meaning variations.
+
+```{r, fig.width=12, fig.height=8}
+world |>
+  ggplot(aes(x = long, y = lat)) +
+  geom_map(
+    map = world,
+    aes(map_id = region),
+    color = "white", fill = "gray", linewidth = 0.1
+  ) +
+  geom_point(
+    data = d_event_2021, 
+    aes(x = longitude, y = latitude, size = log(Deaths+1)),
+    alpha = 0.1
+    ) +
+  coord_map() +
+  theme(legend.position = "bottom")
+
+# Q: Why log(Deaths**+1**) ?
+```
+
+Then, we use a more informative color scheme.
+
+```{r, fig.width=12, fig.height=8}
+world |>
+  ggplot(aes(x = long, y = lat)) +
+  geom_map(
+    map = world,
+    aes(map_id = region),
+    color = "white", fill = "gray", linewidth = 0.1
+  ) +
+  geom_point(
+    data = d_event_2021, 
+    aes(x = longitude, y = latitude, 
+        size = log(Deaths+1), color = log(Deaths+1)),
+    alpha = 0.1
+    ) +
+  scale_color_viridis_c(direction = -1, option = "A") +
+  coord_map() +
+  theme(legend.position = "bottom")
+```
+
+What we have drawn in this notebook are called "bubble maps" --- for obvious reasons.
+
+## Exercise: Conflict in Africa
+
+The current world map gives us an overview of conflicts in the world. What draws our attention is that Africa is an area where lots of conflict happen. As an after-class exercise, write code to plot a map of conflicts in Africa.
+
+```{r}
+# YOUR CODE HERE
+```

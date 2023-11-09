@@ -1,0 +1,268 @@
+---
+title: "Spatial Data Analysis (III)"
+author: "Haohan Chen (HKU)"
+date: "`r Sys.Date()`"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(message = FALSE, fig.height=10, fig.width=15)
+```
+
+## Introduction
+
+This note project folder demonstrate the basics of spatial data analysis with R.
+
+## Required Package
+
+```{r}
+library(tidyverse)
+library(ggthemes)
+theme_set(theme_map())
+
+library(sf)
+sf_use_s2(FALSE)
+library(rnaturalearth)
+library(rnaturalearthdata)
+```
+
+## Load the World Map
+
+Introducing a new format of geo-referenced data.
+
+```{r}
+world = ne_countries(scale = "medium", type = "map_units", returnclass = "sf")
+
+# world_2 = ne_countries(scale = "medium", type = "map_units", returnclass = "sf")
+# View(world_2 |> select(geometry))
+```
+
+```{r}
+world |> ggplot() + geom_sf()
+```
+
+```{r}
+names(world)
+
+```
+
+## Load the Conflict Data
+
+```{r}
+d = read_csv("Lec_09/data/GEDEvent_v22_1.csv")
+```
+
+## Get Point-Referenced Conflict Data in 2021
+
+```{r}
+d_event_2021 = d |> filter(year == 2021)
+```
+
+## Point Point-Referenced Conflict Data
+
+```{r}
+ggplot() + 
+  geom_sf(data = world) +
+  geom_point(data = d_event_2021, 
+             aes(x = longitude, y = latitude),
+             alpha = 0.2) 
+
+```
+
+Look at only conflicts in Africa.
+
+```{r}
+ggplot() + 
+  geom_sf(data = world |> filter(region_un == "Africa")) +
+  geom_point(data = d_event_2021 |> filter(region == "Africa"), 
+             aes(x = longitude, y = latitude),
+             alpha = 0.2) 
+
+```
+
+## Get Areal Conflict Data in 2021
+
+```{r}
+d_country_2021 = d |>
+  filter(year == 2021) |>
+  group_by(country_id, country, region) |>
+  summarise(
+    n_conflict = n()
+  )
+
+d_country_2021 = d_country_2021 |> arrange(-n_conflict)
+
+```
+
+## Merge Map with Data
+
+```{r}
+world_m = world |>
+  left_join(d_country_2021, by = c("sovereignt" = "country"))
+
+world_m |>
+  select(sovereignt, n_conflict)
+
+summary(world_m$n_conflict)
+```
+
+## Plot Country-Level Conflict Data
+
+```{r}
+ggplot() + 
+  geom_sf(data = world_m, aes(fill = n_conflict)) +
+  scale_fill_viridis_c(option = "B", direction = -1, trans = "log")
+
+```
+
+## Extension: Cartogram
+
+Reproject the map to change the sizes regions according to a variable of interest.
+
+Read this Wikipedia page for a detailed introduction of Cartogram: <https://en.wikipedia.org/wiki/Cartogram>
+
+Case: Draw Cartograms of conflicts in Africa
+
+*Personally, this is the most interesting type of map.*
+
+```{r}
+# install.packages("cartogram")
+library(cartogram)
+```
+
+```{r}
+# Cartogram by the number of conflict events in Africa
+world_m_africa = world_m |>
+  filter(region == "Africa") |>
+  mutate(geometry = st_transform(geometry, 3857)) # Specify a projection of the map. Essential
+
+# NEW: Fill in NA n_conflict
+summary(world_m_africa$n_conflict)
+
+# Re-project the map using the cartogram package
+world_m_africa_cart = world_m_africa |>
+  cartogram_cont(weight = "n_conflict")
+
+# Plot a choropleth map
+ggplot(data = world_m_africa) +
+  geom_sf(aes(fill = n_conflict)) +
+  geom_sf_label(aes(label = sovereignt)) +
+  scale_fill_viridis_c(option = "B", direction = -1, trans = "log")
+
+# Plot a cartogram
+ggplot(data = world_m_africa_cart) +
+  geom_sf() +
+  geom_sf_label(aes(label = sovereignt))
+
+```
+
+```{r}
+# Diagrammic (Dorling) catograms -- some further extraction
+world_m_africa_cart_dorling = world_m_africa |>
+  cartogram_dorling(weight = "n_conflict")
+
+ggplot(data = world_m_africa_cart_dorling) +
+  geom_sf() +
+  geom_sf_text(aes(label = sovereignt))
+
+```
+
+Read more: <https://r-charts.com/spatial/cartogram-ggplot2/>
+
+## Matching Countries' Names Smartly
+
+In cross-country analysis, what brings the most trouble is the matching of country identifiers. One thing that goes unnoticed in the above steps is that some contries "fell out" of the study siliently. We have a handy tool to help match countries from different datasets correctly.
+
+```{r}
+# Identify the problem. Which countries fell out of the study because their identifies do not match?
+# Use the anti_join function
+d_country_2021 |>
+  anti_join(world, c("country" = "sovereignt"))
+# Keep the entries that are NOT matched
+
+```
+
+```{r}
+# install.packages("countrycode")
+library(countrycode)
+```
+
+```{r}
+
+d_country_2021_t = d_country_2021 |>
+  mutate(
+    iso3c = countrycode(country, "country.name", "iso3c")
+  )
+
+# Check: There is a warning --> Some country names fail to be parsed.
+d_country_2021_t |>
+  select(country, iso3c) |>
+  filter(is.na(iso3c))
+
+# Remove the (North Yemen) part and redo it
+d_country_2021_t = d_country_2021 |>
+  mutate(
+    country = recode(country, "Yemen (North Yemen)" = "Yemen")
+  ) |>
+  mutate(
+    iso3c = countrycode(country, "country.name", "iso3c")
+  )
+
+```
+
+```{r}
+# Re-do the steps that join the world map and the data. This time, using ISO3C as the country identifier.
+
+world_m = world |>
+  left_join(d_country_2021_t, by = c("iso_a3" = "iso3c"))
+
+# Join continent's names using countrycode
+world_m = world_m |>
+  mutate(
+    continent = countrycode(iso_a3, "iso3c", "continent")
+  )
+
+```
+
+```{r}
+# Cartogram by the number of conflict events in Africa
+world_m_africa = world_m |>
+  filter(continent == "Africa") |>
+  mutate(geometry = st_transform(geometry, 3857))
+
+summary(world_m_africa$n_conflict)
+
+# # Impute ZEROS
+# world_m_africa = world_m_africa |>
+#   mutate(n_conflict = replace_na(n_conflict, 1))
+
+# summary(world_m_africa$n_conflict)
+
+# Re-project the map using the cartogram package
+world_m_africa_cart = world_m_africa |>
+  cartogram_cont(weight = "n_conflict")
+
+# Plot a choropleth map
+ggplot(data = world_m_africa) +
+  geom_sf(aes(fill = n_conflict)) +
+  geom_sf_label(aes(label = sovereignt)) +
+  scale_fill_viridis_c(option = "B", direction = -1, trans = "log")
+
+# Plot a cartogram
+ggplot(data = world_m_africa_cart) +
+  geom_sf() +
+  geom_sf_label(aes(label = iso_a3))
+
+# Diagrammic (Dorling) catograms
+world_m_africa_cart_dorling = world_m_africa |>
+  filter(!is.na(n_conflict)) |> 
+  # Note: The cartogram_dorling function will report error if NA values exist.
+  cartogram_dorling(weight = "n_conflict")
+
+ggplot(data = world_m_africa_cart_dorling) +
+  geom_sf() +
+  geom_sf_text(aes(label = sovereignt))
+
+```

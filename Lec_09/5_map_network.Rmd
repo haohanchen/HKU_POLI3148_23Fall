@@ -1,0 +1,226 @@
+---
+title: "Spatial Data Analysis (V)"
+subtitle: "Network"
+author: "Haohan Chen (HKU)"
+date: "`r Sys.Date()`"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(message = FALSE, fig.height=10, fig.width=15, warning=FALSE)
+```
+
+## Introduction
+
+This note project folder demonstrate the basics of spatial data analysis with R.
+
+## Required Package
+
+```{r}
+library(tidyverse)
+library(ggthemes)
+theme_set(theme_map())
+
+library(sf)
+sf_use_s2(FALSE)
+library(rnaturalearth)
+library(rnaturalearthdata)
+```
+
+## Load the World Map
+
+Introducing a new format of geo-referenced data.
+
+```{r}
+world = ne_countries(scale = "medium", type = "map_units", returnclass = "sf")
+```
+
+```{r}
+world |> ggplot() + geom_sf()
+```
+
+```{r}
+names(world)
+```
+
+## Download Conflict Dataset
+
+```{r, eval=FALSE}
+download.file(
+  "https://ucdp.uu.se/downloads/ucdpprio/ucdp-prio-acd-221-csv.zip",
+  destfile = "data/ucdp-prio-acd-221-csv.zip")
+
+unzip("Lec_09/data/ucdp-prio-acd-221-csv.zip", exdir = "data")
+
+# For more information: https://ucdp.uu.se/downloads/index.html#armedconflict
+```
+
+## Load Conflict Dataset
+
+```{r}
+d = read_csv("Lec_09/data/ucdp-prio-acd-221.csv")
+```
+
+## Extract Entities of Interest
+
+Extract country names and find the ISO3c codes using the package `countrycode`. This is a "lazy" approach. The most robust approach will be a locally customized dataset of country names.
+
+```{r}
+library(countrycode)
+
+# Take a look at the data
+# Variables of interest: side_a, side_b
+
+d |>
+  select(year, side_a, side_b)
+
+d_t = d |>
+  mutate(
+    side_a_country = countrycode(side_a, "country.name", "country.name"),
+    side_a_iso3c = countrycode(side_a, "country.name", "iso3c"),
+    .after = "side_a"
+  ) |>
+  mutate(
+    side_b_country = countrycode(side_b, "country.name", "country.name"),
+    side_b_iso3c = countrycode(side_b, "country.name", "iso3c"),
+    .after = "side_b"
+  )
+
+# Need to check manually if the conversion is successful.
+d_t |>
+  select(year, side_a, side_a_country, side_a_iso3c, side_b, side_b_country, side_b_iso3c)
+
+# It looks already. Then filter only the country-country conflicts
+d_t_s = d_t |>
+  filter(!is.na(side_a_country) & !is.na(side_b_country))
+
+# OK. I don't think this dataset is entirely clean yet. 
+# If this is a real research project, you need to do more manual check.
+# But for demonstration purpose, let's use it as it is.
+
+```
+
+## Get the centroids of each country
+
+To draw the network, we need points representing countries' locations). Using the map we already halv, we find the geographic "centroids" for each country using functions from the `sf` package.
+
+```{r}
+# Calculate the countries' "centroids"
+country_centroid = st_centroid(world$geometry) 
+
+# Convert the centroids to a dataframe
+country_centroid_df = country_centroid |> 
+  st_coordinates() |>
+  as_tibble() |>
+  rename("centroid_xcoord" = "X", "centroid_ycoord" = "Y")
+
+world_t = world |>
+  bind_cols(country_centroid_df)
+
+```
+
+To check whether the geogrphic centroids are correctly specified we plot a world map along with the points of centroids. Check if the maps make sense and what strike you as interesting/ unintuitive.
+
+```{r}
+world_t |>
+  ggplot() +
+  geom_sf() +
+  geom_point(aes(x = centroid_xcoord, y = centroid_ycoord))
+```
+
+## Merge the world map with the network data
+
+Now we have the locations of each country (using their geographic centroids). Merge them with the conflict dataset
+
+```{r}
+# Get a dataset with only countries' identifiers and locations of their centroids
+world_t_centroid = world_t |>
+  as_tibble() |>
+  select(iso_a3, centroid_xcoord, centroid_ycoord) |>
+  filter(!is.na(iso_a3)) # There are few entries with no country identifiers. We do not need them.
+
+
+d_t_s_2 = d_t_s |>
+  left_join(world_t_centroid, by = c("side_a_iso3c" = "iso_a3")) |>
+  rename("centroid_xcoord_a" = "centroid_xcoord", "centroid_ycoord_a" = "centroid_ycoord") |>
+  left_join(world_t_centroid, by = c("side_b_iso3c"= "iso_a3")) |>
+  rename("centroid_xcoord_b" = "centroid_xcoord", "centroid_ycoord_b" = "centroid_ycoord")
+
+
+names(d_t_s_2)
+
+
+```
+
+## Finally, we can plot the map
+
+```{r}
+# ggplot() +
+#   geom_sf(data = world_t) +
+#   geom_point(data = d_t_s_2, aes(x = centroid_xcoord_a, y = centroid_ycoord_a)) +
+#   geom_point(data = d_t_s_2, aes(x = centroid_xcoord_b, y = centroid_ycoord_b)) +
+#   geom_curve(data = d_t_s_2, aes(x = centroid_xcoord_a, y = centroid_ycoord_a,
+#                                  xend = centroid_xcoord_a, yend = centroid_ycoord_b))
+# ERROR above!
+
+# Remove countries to self
+d_t_s_3 = d_t_s_2 |>
+  filter(!(side_a_iso3c == side_b_iso3c))
+
+ggplot() +
+  geom_sf(data = world_t) +
+  geom_point(data = d_t_s_3, aes(x = centroid_xcoord_a, y = centroid_ycoord_a)) +
+  geom_point(data = d_t_s_3, aes(x = centroid_xcoord_b, y = centroid_ycoord_b)) +
+  geom_curve(data = d_t_s_3, aes(x = centroid_xcoord_a, 
+                                 y = centroid_ycoord_a,
+                                 xend = centroid_xcoord_b, 
+                                 yend = centroid_ycoord_b), 
+             curvature = 0.2, color = "red", alpah = 0.5)
+
+ggplot() +
+  geom_sf(data = world_t) +
+  geom_text(data = d_t_s_3, aes(x = centroid_xcoord_a, y = centroid_ycoord_a, label = side_a_iso3c)) +
+  geom_text(data = d_t_s_3, aes(x = centroid_xcoord_b, y = centroid_ycoord_b, label = side_b_iso3c)) +
+  geom_curve(data = d_t_s_3, aes(x = centroid_xcoord_a, 
+                                 y = centroid_ycoord_a,
+                                 xend = centroid_xcoord_b, 
+                                 yend = centroid_ycoord_b), curvature = 0.2, color = "red", alpah = 0.5)
+
+```
+
+## Advanced figure, considering the number of conflicts
+
+```{r}
+d_t_s_4 = d_t_s_3 |>
+  group_by(side_a_iso3c, side_b_iso3c, 
+           centroid_xcoord_a, centroid_ycoord_a, 
+           centroid_xcoord_b, centroid_ycoord_b) |>
+  count()
+
+ggplot() +
+  geom_sf(data = world_t) +
+  geom_point(data = d_t_s_4, aes(x = centroid_xcoord_a, y = centroid_ycoord_a)) +
+  geom_point(data = d_t_s_4, aes(x = centroid_xcoord_b, y = centroid_ycoord_b)) +
+  geom_curve(data = d_t_s_4, aes(x = centroid_xcoord_a, 
+                                 y = centroid_ycoord_a,
+                                 xend = centroid_xcoord_b, 
+                                 yend = centroid_ycoord_b,
+                                 linewidth = n), 
+             curvature = 0.2, color = "red", alpha = 0.5)
+
+ggplot() +
+  geom_sf(data = world_t) +
+  geom_text(data = d_t_s_3, aes(x = centroid_xcoord_a, y = centroid_ycoord_a, label = side_a_iso3c)) +
+  geom_text(data = d_t_s_3, aes(x = centroid_xcoord_b, y = centroid_ycoord_b, label = side_b_iso3c)) +
+  geom_curve(data = d_t_s_4, aes(x = centroid_xcoord_a, 
+                                 y = centroid_ycoord_a,
+                                 xend = centroid_xcoord_b, 
+                                 yend = centroid_ycoord_b,
+                                 linewidth = n), 
+             curvature = 0.2, color = "red", alpha = 0.5)
+
+# Q: Why does the text look weird?
+
+```

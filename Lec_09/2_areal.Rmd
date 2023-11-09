@@ -1,0 +1,235 @@
+---
+title: "Spatial Data Analysis (II)"
+author: "Haohan Chen (HKU)"
+date: "`r Sys.Date()`"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(message = FALSE, fig.height=10, fig.width=15)
+```
+
+## Introduction
+
+This note project folder demonstrate the basics of spatial data analysis with R.
+
+## Required Package
+
+```{r}
+library(tidyverse)
+library(ggthemes)
+theme_set(theme_map())
+```
+
+## Load the Conflict Data
+
+```{r}
+d = read_csv("Lec_09/data/GEDEvent_v22_1.csv")
+names(d)
+```
+
+## Map Inter-Country Variation
+
+Draw a world map featuring the variation of conflicts among countries in the year of 2021.
+
+### Put together your data
+
+Create a dataframe named `d_country_2021` that summarizes the number of conflicts in each country in the year of 2021.
+
+```{r}
+d_country_2021 = d |>
+  filter(year == 2021) |>
+  group_by(country, country_id, region) |>
+  summarise(
+    n_conflict = n()
+  )
+
+d_country_2021 = d_country_2021 |> arrange(-n_conflict)
+
+```
+
+## Load the World Map
+
+```{r}
+world = map_data("world")
+
+names(world)
+
+# Summary statistics
+summary(world)
+
+# Problem: Max. longitude > 180! Remove those
+world = world |> filter(long <= 180)
+```
+
+```{r}
+# Plot the world map
+world |>
+  ggplot(aes(x = long, y = lat)) +
+  geom_map(
+    map = world,
+    aes(map_id = region),
+    color = "white", fill = "gray", size = 0.1
+  ) +
+  coord_map()
+
+```
+
+## Merge Data with the World Map
+
+```{r}
+world_m = world |>
+  left_join(d_country_2021, by = c("region" = "country"))
+
+```
+
+Check what the merged data look like.
+
+## Now, Visualize Conflict Data on a Map
+
+Color the countries with the number of conflicts in 2021.
+
+```{r}
+world_m |>
+  ggplot(aes(x = long, y = lat)) +
+  geom_map(
+    map = world,
+    aes(map_id = region, fill = n_conflict),
+    color = "black", size = 0.1
+  ) +
+  coord_map()
+```
+
+## Make the Map More Informative
+
+Our next step is making the above map more informative
+
+### Change the color scheme
+
+Try the `scale_fill_viridis_c()` function. This should give you the most reliable color scheme.
+
++-----------+------------------------------------------------------------------------------------------------------------------------------------------------+
+| `option`  | A character string indicating the color map option to use. Eight options are available:                                                        |
+|           |                                                                                                                                                |
+|           | -   "magma" (or "A")                                                                                                                           |
+|           |                                                                                                                                                |
+|           | -   "inferno" (or "B")                                                                                                                         |
+|           |                                                                                                                                                |
+|           | -   "plasma" (or "C")                                                                                                                          |
+|           |                                                                                                                                                |
+|           | -   "viridis" (or "D")                                                                                                                         |
+|           |                                                                                                                                                |
+|           | -   "cividis" (or "E")                                                                                                                         |
+|           |                                                                                                                                                |
+|           | -   "rocket" (or "F")                                                                                                                          |
+|           |                                                                                                                                                |
+|           | -   "mako" (or "G")                                                                                                                            |
+|           |                                                                                                                                                |
+|           | -   "turbo" (or "H")                                                                                                                           |
++-----------+------------------------------------------------------------------------------------------------------------------------------------------------+
+| direction | Sets the order of colors in the scale. If 1, the default, colors are ordered from darkest to lightest. If -1, the order of colors is reversed. |
++-----------+------------------------------------------------------------------------------------------------------------------------------------------------+
+
+```{r}
+world_m |>
+  ggplot(aes(x = long, y = lat)) +
+  geom_map(
+    map = world,
+    aes(map_id = region, fill = n_conflict),
+    color = "white", size = 0.1
+  ) +
+  scale_fill_viridis_c(option = "A") +
+  coord_map()
+
+world_m |>
+  ggplot(aes(x = long, y = lat)) +
+  geom_map(
+    map = world,
+    aes(map_id = region, fill = n_conflict),
+    color = "white", size = 0.1
+  ) +
+  scale_fill_viridis_c(option = "B") +
+  coord_map()
+
+world_m |>
+  ggplot(aes(x = long, y = lat)) +
+  geom_map(
+    map = world,
+    aes(map_id = region, fill = n_conflict),
+    color = "white", size = 0.1
+  ) +
+  scale_fill_viridis_c(option = "B", direction = -1) +
+  coord_map()
+
+world_m |>
+  ggplot(aes(x = long, y = lat)) +
+  geom_map(
+    map = world,
+    aes(map_id = region, fill = n_conflict),
+    color = "white", size = 0.1
+  ) +
+  scale_fill_viridis_c(option = "D", direction = -1) +
+  coord_map()
+```
+
+Try the other specifications of color schemes.
+
+### Change the legend's name
+
+The most robust way to change the legend's name is the rename the variable.
+
+Note: When your variable name contains space, you should put "\`" around it.
+
+```{r}
+world_m |>
+  rename("Number of Conflicts" = "n_conflict") |>
+  ggplot(aes(x = long, y = lat)) +
+  geom_map(
+    map = world,
+    aes(map_id = region, fill = `Number of Conflicts`),
+    color = "white", size = 0.1
+  ) +
+  scale_fill_viridis_c(option = "B", direction = -1) +
+  coord_map()
+```
+
+### Transforming the Scale or Data
+
+The distribution of the conflict frequencies is so skewed that makes the differences of low-conflict countries indistinguishable. Transform the data or the scales to take into account the skewed data.
+
+```{r}
+world_m |>
+  rename("Number of Conflicts" = "n_conflict") |>
+  ggplot(aes(x = long, y = lat)) +
+  geom_map(
+    map = world,
+    aes(map_id = region, fill = `Number of Conflicts`),
+    color = "white", size = 0.1
+  ) +
+  scale_fill_viridis_c(option = "B", direction = -1, trans = "log") +
+  coord_map()
+```
+
+Or we can transform the data
+
+```{r}
+world_m |>
+  rename("Number of Conflicts" = "n_conflict") |>
+  ggplot(aes(x = long, y = lat)) +
+  geom_map(
+    map = world,
+    aes(map_id = region, fill = log(`Number of Conflicts`+1)),
+    color = "white", size = 0.1
+  ) +
+  scale_fill_viridis_c(option = "B", direction = -1) +
+  coord_map() +
+  theme(legend.position = "bottom")
+```
+
+## Choropleth Maps
+
+The maps we have drawn in this notebook are named "choropleth maps."
+
+"A choropleth map displays divided geographical areas or regions that are colored in relation to a numeric variable."

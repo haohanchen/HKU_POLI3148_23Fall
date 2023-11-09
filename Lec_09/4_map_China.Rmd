@@ -1,0 +1,115 @@
+---
+title: "Spatial Data Analysis (IV)"
+subtitle: "Mapping China"
+author: "Haohan Chen (HKU)"
+date: "`r Sys.Date()`"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(message = FALSE)
+```
+
+## Required Packages
+
+```{r}
+library(tidyverse)
+library(ggthemes)
+theme_set(theme_map())
+
+library(sf)
+sf_use_s2(FALSE)
+
+# Display Chinese text with ggplot
+library(showtext)
+showtext_auto()
+```
+
+## Load China Map
+
+```{r}
+# https://github.com/xmc811/mapchina
+# install.packages("mapchina")
+library(mapchina)
+chinamap = china
+```
+
+## Plot China Map
+
+```{r}
+ggplot(data = chinamap) +
+  geom_sf()
+```
+
+```{r}
+ggplot(data = chinamap) +
+  geom_sf(aes(fill = Name_Province)) +
+  theme(legend.position = "none")
+```
+
+## Subsample
+
+```{r}
+hkmap = chinamap |> filter(Name_Province == "香港特别行政区")
+
+ggplot(data = hkmap) +
+  geom_sf() +
+  geom_sf_label(aes(label = Name_County))
+
+ggplot(data = hkmap) +
+  geom_sf()
+```
+
+## Merge Geographic Units
+
+```{r}
+# Merge into provincial-level units
+chinamap_province = chinamap |>
+  group_by(Code_Province, Name_Province) |>
+  summarise(
+    geometry = st_union(geometry)
+  ) 
+
+chinamap_province |>
+  ggplot() + geom_sf()
+
+chinamap_province |>
+  ggplot() + geom_sf() +
+  geom_sf_text(aes(label = Name_Province))
+```
+
+```{r}
+chinamap_prefecture = chinamap |>
+  mutate(
+    Code_Prefecture = Code_Perfecture,
+    Name_Prefecture_t = 
+      ifelse(is.na(Name_Perfecture), Name_Province, Name_Perfecture)
+  ) |>
+  group_by(Code_Perfecture, Name_Prefecture_t) |>
+  summarise(
+    geometry = st_union(geometry)
+    ) 
+
+chinamap_prefecture |>
+  ggplot() + geom_sf()
+```
+
+## Let's Have Some Fun
+
+Visualize China's Socioeconomic data with maps.
+
+```{r}
+d_china_province = readxl::read_excel("Lec_09/data/China_province_data.xlsx")
+d_china_prefecture = readxl::read_excel("Lec_09/data/China_prefecture_data.xlsx")
+
+```
+
+### Exercise
+
+-   Merge the provincial-level socioeconomic data with the provincial-level map.
+-   Draw Choropleths of socioeconomic indicators of interest.
+-   Draw Cartograms of socioeconomic indicators of interest.
+
+Does it change your understanding of the political economy of China?
