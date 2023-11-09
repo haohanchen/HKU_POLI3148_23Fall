@@ -26,15 +26,15 @@ knitr::opts_chunk$set(fig.width = 9, fig.height = 3, message = FALSE, warning = 
 
 Master data visualization methods for categorical data with `ggplot`.
 
--   1 categorical variable
+-   1 cat.
+
+-   2 cat.
 
 -   1 cat. + 1 quant.
 
 -   1 cat. + 2 quant.
 
--   2 cat.
-
--   3 cat.
+-   2 cat. + 1 quant.
 
 ## Reading Materials on Data Visualization
 
@@ -102,6 +102,7 @@ d <- d |>
       13 ~ "South-Eastern Asia", 14 ~ "Southern Asia", 15 ~ "Oceania",
       16 ~ "North America", 17 ~ "Central America", 18 ~ "South America", 19 ~ "Caribbean",
       .default = NA))
+table(d$region)
 ```
 
 # Cat. X 1
@@ -136,6 +137,8 @@ is.na(d$region) |> sum() # Number of missing values
 
 ```{r}
 table(d$region, useNA = "always")
+# table(d$region, useNA = "always") |> as.data.frame() |> as_tibble()
+# d |> group_by(region) |> count() # Equivalent tidyverse solution
 ```
 
 ## Summary Statistics (con'd)
@@ -144,6 +147,7 @@ table(d$region, useNA = "always")
 
 ```{r}
 table(d$region, useNA = "always") |> prop.table()
+# d |> group_by(region) |> count() |> ungroup() |> mutate(prop = n / sum(n))
 ```
 
 ## Bar Chart: Default
@@ -172,9 +176,8 @@ d |> ggplot(aes(x = region)) + geom_bar() +
 \tiny
 
 ```{r, fig.height=4}
-d |> ggplot(aes(x = region)) + geom_bar() +
-  coord_flip() +
-  labs(x = "Region", y = "Count", title = "N. Country-Year by Region")
+d |> ggplot(aes(y = region)) + geom_bar() +
+  labs(y = "Region", x = "Count", title = "N. Country-Year by Region")
 ```
 
 ## Bar Chart: Order by Frequency (1)
@@ -214,10 +217,9 @@ region_levels <- c(
   "North America", "Central America", "South America", "Caribbean")
 
 d |>
-  mutate(region = factor(region, levels = region_levels)) |>
-  ggplot(aes(x = region)) + geom_bar() +
-  theme(axis.text.x = element_text(angle = 90, hjust = 0, vjust = 0)) +
-  labs(x = "Region", y = "Count", title = "N. Country-Year by Region")
+  mutate(region = factor(region, levels = rev(region_levels))) |>
+  ggplot(aes(y = region)) + geom_bar() +
+  labs(y = "Region", x = "Count", title = "N. Country-Year by Region")
 ```
 
 ## Calculate Frequencies before Visualizing
@@ -277,7 +279,7 @@ table(d$region_higher)
 ```{r, fig.height=4}
 d |> group_by(region_higher) |> summarise(n_obs = n()) |>
   ggplot(aes(y = reorder(region_higher, n_obs), x = n_obs)) + geom_bar(stat = "identity") +
-  labs(y = "Region", x = "Count", title = "N. Country-Year by Region")  
+  labs(y = "Region", x = "Count", title = "N. Country-Year by Region")
 ```
 
 # Cat. X 2
@@ -287,7 +289,8 @@ d |> group_by(region_higher) |> summarise(n_obs = n()) |>
 \tiny
 
 ```{r, fig.height=4}
-table(d$region_higher)
+table(d$region_higher, useNA = "always")
+table(d$democracy_binary, useNA = "always")
 ```
 
 ## Region and Democracy: Stacked Bar Chart
@@ -298,7 +301,7 @@ table(d$region_higher)
 d |> group_by(region_higher, democracy_binary) |> summarise(n_obs = n()) |>
   ggplot(aes(x = n_obs, y = region_higher, fill = democracy_binary)) +
   geom_bar(stat = "identity", position = "stack") +
-  labs(y = "Region", x = "Count", title = "N. Country-Year by Region and Regime Type", fill = "Democracy")  
+  labs(y = "Region", x = "Count", title = "N. Country-Year by Region and Regime Type", fill = "Democracy")
 ```
 
 THIS IS WRONG. What's wrong? `democracy_binary`, a binary variable, is treated as a quantitative variable.
@@ -460,7 +463,7 @@ d |>
 d |>
   ggplot(aes(x = life_expectancy, color = region_higher)) +
   geom_freqpoly(bins = 50) + 
-  labs(title = "Life Expectancy by Region", fill = "Region", x = "Life Expectancy") +
+  labs(title = "Life Expectancy by Region", color = "Region", x = "Life Expectancy") +
   theme(legend.position = "bottom")
 ```
 
@@ -570,6 +573,7 @@ d |> ggplot(aes(x = gdppc, y = life_expectancy)) +
 ```{r, fig.height=4}
 d |> ggplot(aes(x = gdppc, y = life_expectancy)) +
   geom_point(aes(shape = region_higher, color = region_higher), alpha = 0.3, size = 0.5, stroke = 1) +
+  # scale_color_viridis_d(option = "A") +
   labs(x = "GDP per capita", y = "Life Expectancy", color = "Region", shape = "Region",
        title = "Wealth and Health in the World (1800-2019)")
 ```
@@ -592,7 +596,7 @@ d |> ggplot(aes(x = gdppc, y = life_expectancy)) +
 
 ```{r, fig.height=4}
 d |> ggplot(aes(x = gdppc, y = life_expectancy)) +
-  geom_point(aes(shape = region_higher, color = region_higher), alpha = 0.3, size = 0.5, stroke = 1) +
+  geom_point(aes(shape = region_higher, color = region_higher), alpha = 0.1, size = 0.5, stroke = 1) +
   geom_smooth(aes(color = region_higher)) +
   labs(x = "GDP per capita", y = "Life Expectancy", color = "Region", shape = "Region",
        title = "Wealth and Health in the World (1800-2019)")

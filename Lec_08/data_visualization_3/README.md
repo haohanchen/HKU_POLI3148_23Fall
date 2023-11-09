@@ -2,15 +2,15 @@
 
 Master data visualization methods for categorical data with `ggplot`.
 
--   1 categorical variable
+-   1 cat.
+
+-   2 cat.
 
 -   1 cat. + 1 quant.
 
 -   1 cat. + 2 quant.
 
--   2 cat.
-
--   3 cat.
+-   2 cat. + 1 quant.
 
 ## Reading Materials on Data Visualization
 
@@ -91,7 +91,20 @@ d <- d |>
       13 ~ "South-Eastern Asia", 14 ~ "Southern Asia", 15 ~ "Oceania",
       16 ~ "North America", 17 ~ "Central America", 18 ~ "South America", 19 ~ "Caribbean",
       .default = NA))
+table(d$region)
 ```
+
+    ## 
+    ##          Caribbean    Central America       Central Asia     Eastern Africa 
+    ##                916               1112                247               2364 
+    ##       Eastern Asia     Eastern Europe      Middle Africa      North America 
+    ##                988               1059                993                340 
+    ##    Northern Africa    Northern Europe            Oceania      South America 
+    ##                929               1301                832               1989 
+    ## South-Eastern Asia    Southern Africa      Southern Asia    Southern Europe 
+    ##               1536                615               1233               1498 
+    ##     Western Africa       Western Asia     Western Europe 
+    ##               1912               2088               1641
 
 # Cat. X 1
 
@@ -148,6 +161,11 @@ table(d$region, useNA = "always")
     ##     Western Africa       Western Asia     Western Europe               <NA> 
     ##               1912               2088               1641                  0
 
+``` r
+# table(d$region, useNA = "always") |> as.data.frame() |> as_tibble()
+# d |> group_by(region) |> count() # Equivalent tidyverse solution
+```
+
 ## Summary Statistics (con’d)
 
 ``` r
@@ -165,6 +183,10 @@ table(d$region, useNA = "always") |> prop.table()
     ##         0.06510406         0.02606705         0.05226126         0.06349341 
     ##     Western Africa       Western Asia     Western Europe               <NA> 
     ##         0.08104099         0.08850083         0.06955453         0.00000000
+
+``` r
+# d |> group_by(region) |> count() |> ungroup() |> mutate(prop = n / sum(n))
+```
 
 ## Bar Chart: Default
 
@@ -190,9 +212,8 @@ d |> ggplot(aes(x = region)) + geom_bar() +
 ## Bar Chart: Flip the vertical and horizontal axes
 
 ``` r
-d |> ggplot(aes(x = region)) + geom_bar() +
-  coord_flip() +
-  labs(x = "Region", y = "Count", title = "N. Country-Year by Region")
+d |> ggplot(aes(y = region)) + geom_bar() +
+  labs(y = "Region", x = "Count", title = "N. Country-Year by Region")
 ```
 
 ![](README_files/figure-markdown_github/unnamed-chunk-9-1.png)
@@ -232,10 +253,9 @@ region_levels <- c(
   "North America", "Central America", "South America", "Caribbean")
 
 d |>
-  mutate(region = factor(region, levels = region_levels)) |>
-  ggplot(aes(x = region)) + geom_bar() +
-  theme(axis.text.x = element_text(angle = 90, hjust = 0, vjust = 0)) +
-  labs(x = "Region", y = "Count", title = "N. Country-Year by Region")
+  mutate(region = factor(region, levels = rev(region_levels))) |>
+  ggplot(aes(y = region)) + geom_bar() +
+  labs(y = "Region", x = "Count", title = "N. Country-Year by Region")
 ```
 
 ![](README_files/figure-markdown_github/unnamed-chunk-12-1.png)
@@ -323,7 +343,7 @@ table(d$region_higher)
 ``` r
 d |> group_by(region_higher) |> summarise(n_obs = n()) |>
   ggplot(aes(y = reorder(region_higher, n_obs), x = n_obs)) + geom_bar(stat = "identity") +
-  labs(y = "Region", x = "Count", title = "N. Country-Year by Region")  
+  labs(y = "Region", x = "Count", title = "N. Country-Year by Region")
 ```
 
 ![](README_files/figure-markdown_github/unnamed-chunk-17-1.png)
@@ -333,14 +353,22 @@ d |> group_by(region_higher) |> summarise(n_obs = n()) |>
 ## A Second Variable: Democracy
 
 ``` r
-table(d$region_higher)
+table(d$region_higher, useNA = "always")
 ```
 
     ## 
     ##        Africa          Asia        Europe Latin America North America 
     ##          6813          6092          5499          4017           340 
-    ##       Oceania 
-    ##           832
+    ##       Oceania          <NA> 
+    ##           832             0
+
+``` r
+table(d$democracy_binary, useNA = "always")
+```
+
+    ## 
+    ##     0     1  <NA> 
+    ## 10160  5810  7623
 
 ## Region and Democracy: Stacked Bar Chart
 
@@ -348,7 +376,7 @@ table(d$region_higher)
 d |> group_by(region_higher, democracy_binary) |> summarise(n_obs = n()) |>
   ggplot(aes(x = n_obs, y = region_higher, fill = democracy_binary)) +
   geom_bar(stat = "identity", position = "stack") +
-  labs(y = "Region", x = "Count", title = "N. Country-Year by Region and Regime Type", fill = "Democracy")  
+  labs(y = "Region", x = "Count", title = "N. Country-Year by Region and Regime Type", fill = "Democracy")
 ```
 
 ![](README_files/figure-markdown_github/unnamed-chunk-19-1.png)
@@ -513,7 +541,7 @@ d |>
 d |>
   ggplot(aes(x = life_expectancy, color = region_higher)) +
   geom_freqpoly(bins = 50) + 
-  labs(title = "Life Expectancy by Region", fill = "Region", x = "Life Expectancy") +
+  labs(title = "Life Expectancy by Region", color = "Region", x = "Life Expectancy") +
   theme(legend.position = "bottom")
 ```
 
@@ -624,6 +652,7 @@ d |> ggplot(aes(x = gdppc, y = life_expectancy)) +
 ``` r
 d |> ggplot(aes(x = gdppc, y = life_expectancy)) +
   geom_point(aes(shape = region_higher, color = region_higher), alpha = 0.3, size = 0.5, stroke = 1) +
+  # scale_color_viridis_d(option = "A") +
   labs(x = "GDP per capita", y = "Life Expectancy", color = "Region", shape = "Region",
        title = "Wealth and Health in the World (1800-2019)")
 ```
@@ -646,7 +675,7 @@ d |> ggplot(aes(x = gdppc, y = life_expectancy)) +
 
 ``` r
 d |> ggplot(aes(x = gdppc, y = life_expectancy)) +
-  geom_point(aes(shape = region_higher, color = region_higher), alpha = 0.3, size = 0.5, stroke = 1) +
+  geom_point(aes(shape = region_higher, color = region_higher), alpha = 0.1, size = 0.5, stroke = 1) +
   geom_smooth(aes(color = region_higher)) +
   labs(x = "GDP per capita", y = "Life Expectancy", color = "Region", shape = "Region",
        title = "Wealth and Health in the World (1800-2019)")

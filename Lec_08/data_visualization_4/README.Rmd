@@ -1,0 +1,222 @@
+---
+title: "Data Visualization (4)"
+subtitle: "Advanced: Visualizing Time Series"
+author: "Haohan Chen"
+institute: "POLI3148 Data Science in PPA (The University of Hong Kong)"
+date: "Last update: `r format(Sys.Date(), '%B %d, %Y')`"
+output: 
+  # html_document: default
+  beamer_presentation:
+    theme: "Goettingen"
+    colortheme: "default"
+    fonttheme: "default"
+  md_document: 
+    variant: markdown_github
+classoption: "aspectratio=169"
+knit: (function(inputFile, encoding){rmarkdown::render(inputFile, encoding = encoding, output_format = "all", knit_root_dir = getwd())})
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(fig.width = 9, fig.height = 4, message = FALSE, warning = FALSE)
+```
+
+# Housekeeping
+
+## Objectives
+
+Master data visualization methods for spatial-temporal data with `ggplot`
+
+-   Time series data
+    -   One time series
+    -   Multiple time series
+-   Spatial data
+    -   Color
+    -   Bubble
+    -   Size
+-   Spatial-temporal data
+
+## Reading Materials on Data Visualization
+
+-   [Kabacoff] Kabacoff, Rob. Data Visualization with R. 2020. E-book: [rkabacoff.github.io/datavis](https://rkabacoff.github.io/datavis/)
+
+-   [Healy] Healy, Kieran. Data visualization: a practical introduction. Princeton University Press, 2018. E-book: [socviz.co](https://socviz.co/)
+
+## Load Data
+
+\scriptsize
+
+```{r, message=FALSE}
+library(tidyverse)
+theme_set(theme_bw()) # Set my default theme for the whole document
+
+d <- readRDS("Lec_08/data/wealth_and_health.rds")
+d |> print(n = 3)
+```
+
+## Recode `region` Indicator
+
+\tiny
+
+```{r}
+d <- d |>
+  mutate(
+    region = case_match(
+      region,
+      1 ~ "Western Europe", 2 ~ "Northern Europe", 3 ~ "Southern Europe",
+      4 ~ "Eastern Europe", 5 ~ "Northern Africa", 6 ~ "Western Africa",
+      7 ~ "Middle Africa", 8 ~ "Eastern Africa", 9 ~ "Southern Africa",
+      10 ~ "Western Asia", 11 ~ "Central Asia", 12 ~ "Eastern Asia",
+      13 ~ "South-Eastern Asia", 14 ~ "Southern Asia", 15 ~ "Oceania",
+      16 ~ "North America", 17 ~ "Central America", 18 ~ "South America", 19 ~ "Caribbean",
+      .default = NA))
+table(d$region)
+```
+
+# One Time Series
+
+## Life Expectancy in China: Dots
+
+\tiny
+
+```{r}
+d |> filter(country_text_id == "CHN") |>
+  ggplot(aes(x = year, y = life_expectancy)) + geom_point(alpha = 0.5) +
+  labs(x = "Year", y = "Life Expectancy", title = "Life Expectancy in China")
+```
+
+## Life Expectancy in China: Line
+
+\tiny
+
+```{r}
+d |> filter(country_text_id == "CHN") |>
+  ggplot(aes(x = year, y = life_expectancy)) + geom_line() +
+  labs(x = "Year", y = "Life Expectancy", title = "Life Expectancy in China")
+```
+
+## Life Expectancy in China: Dots + Trend Line
+
+\tiny
+
+```{r}
+d |> filter(country_text_id == "CHN") |>
+  ggplot(aes(x = year, y = life_expectancy)) + geom_point(alpha = 0.5) + geom_smooth() +
+  labs(x = "Year", y = "Life Expectancy", title = "Life Expectancy in China")
+```
+
+# Multiple Time Series (Same Variable)
+
+## Life Expectancy in Eastern Asia (Points)
+
+\tiny
+
+```{r}
+d |> filter(region == "Eastern Asia") |>
+  ggplot(aes(x = year, y = life_expectancy, color = country_text_id)) + geom_point(alpha = 0.5) +
+  labs(x = "Year", y = "Life Expectancy", title = "Life Expectancy in Eastern Asia", color = "Country/Region")
+```
+
+## Life Expectancy in Eastern Asia (Points, Facets)
+
+\tiny
+
+```{r}
+d |> filter(region == "Eastern Asia") |>
+  ggplot(aes(x = year, y = life_expectancy, color = country_text_id)) + geom_point(alpha = 0.5) +
+  facet_wrap(~country_text_id, nrow = 2) +
+  labs(x = "Year", y = "Life Expectancy", title = "Life Expectancy in Eastern Asia", color = "Country/Region") + 
+  theme(legend.position = "none")
+```
+
+## Life Expectancy in Eastern Asia (Points+Trends)
+
+\tiny
+
+```{r}
+d |> filter(region == "Eastern Asia") |>
+  ggplot(aes(x = year, y = life_expectancy, color = country_text_id)) + geom_point(alpha = 0.2) + geom_smooth() +
+  labs(x = "Year", y = "Life Expectancy", title = "Life Expectancy in Eastern Asia", color = "Country/Region")
+```
+
+## Life Expectancy in Eastern Asia (Points+Trends, Facets)
+
+\tiny
+
+```{r}
+d |> filter(region == "Eastern Asia") |>
+  ggplot(aes(x = year, y = life_expectancy, color = country_text_id)) + geom_point(alpha = 0.2) + geom_smooth() +
+  facet_wrap(~country_text_id, nrow = 2) +
+  labs(x = "Year", y = "Life Expectancy", title = "Life Expectancy in Eastern Asia", color = "Country/Region") + 
+  theme(legend.position = "none")
+```
+
+## Life Expectancy in Eastern Asia (Annotate Critical Time Point)
+
+\tiny
+
+```{r}
+d |> filter(region == "Eastern Asia") |>
+  ggplot(aes(x = year, y = life_expectancy, color = country_text_id)) + geom_point(alpha = 0.2) + geom_smooth() +
+  geom_vline(xintercept = 2000, color = "red", linetype = "dashed") + # Add a vertical line at year 2000
+  geom_hline(yintercept = 70, color = "red", linetype = "dashed") +  # Add a vertical line at 70 years old
+  facet_wrap(~country_text_id, nrow = 2) +
+  labs(x = "Year", y = "Life Expectancy", title = "Life Expectancy in Eastern Asia", color = "Country/Region") + 
+  theme(legend.position = "none")
+```
+
+## Life Expectancy in Eastern Asia (Annotate Critical Time Period)
+
+\tiny
+
+```{r}
+d |> filter(region == "Eastern Asia") |>
+  ggplot(aes(x = year, y = life_expectancy, color = country_text_id)) + 
+  annotate("rect", xmin = 1984, xmax = 2020, ymin = -Inf, ymax = Inf, alpha = 0.3, fill = "yellow", color = "red", linetype = "dashed") +
+  geom_point(alpha = 0.2) + geom_smooth() + facet_wrap(~country_text_id, nrow = 2) +
+  labs(x = "Year", y = "Life Expectancy", title = "Life Expectancy in Eastern Asia", color = "Country/Region") + 
+  theme(legend.position = "none")
+```
+
+# Multiple Time Series (Different Variables)
+
+## Evolution of "Health" and "Wealth" in China (Stack --)
+
+\tiny
+
+```{r}
+library(patchwork) # Package that allow you to "stack" multiple ggplot objects
+p_LifeExpectancy <- d |> filter(country_text_id == "CHN") |>
+  ggplot(aes(x = year, y = life_expectancy)) + geom_point(alpha = 0.3) + geom_smooth() +
+  labs(x = "Year", y = "Life Expectancy", title = "Health in China")
+p_gdppc <- d |> filter(country_text_id == "CHN") |>
+  ggplot(aes(x = year, y = gdppc)) + geom_point(alpha = 0.3) + geom_smooth() +
+  labs(x = "Year", y = "GDP per capita", title = "Wealth in China")
+p_LifeExpectancy + p_gdppc # Stack two ggplot objects horizontally with "+"
+```
+
+## Evolution of "Health" and "Wealth" in China (Stack \|)
+
+\tiny
+
+```{r}
+p_LifeExpectancy / p_gdppc # Stack two ggplot objects vertically with "/"
+```
+
+## Evolution of "Health" and "Wealth" in China (Secondary Axis)
+
+**WARNING:** This type of figures can be [**confusing**]{.underline} and [**misleading**]{.underline}. Unadvised!
+
+\tiny
+
+```{r, fig.height = 3}
+coef <- 5
+d |> filter(country_text_id == "CHN") |>
+  ggplot(aes(x = year)) + 
+  geom_line(aes(y = life_expectancy), color = "blue", size = 1) + 
+  geom_line(aes(y = gdppc * coef), color = "red", size = 1) +
+  scale_y_continuous(name = "Life Expectancy", sec.axis = sec_axis(~./coef, name = "GDP per capita")) +
+  theme(axis.title.y.left = element_text(color = "blue"), axis.title.y.right = element_text(color = "red")) +
+  labs(x = "Year", title = "GDP")
+```
