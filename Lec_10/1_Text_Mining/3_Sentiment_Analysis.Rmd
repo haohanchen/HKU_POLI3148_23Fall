@@ -1,0 +1,234 @@
+---
+title: "Sentiment Analysis"
+author: "Haohan Chen (HKU)"
+date: "`r Sys.Date()`"
+output: html_document
+always_allow_html: true
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+```
+
+## Introduction
+
+This notebook demonstrate Sentiment Analsyis
+
+```{r}
+library(tidyverse)
+library(lubridate)
+```
+
+```{r}
+d_fulltext = read_rds("Lec_10/1_Text_Mining/data/data_ce_speech_article.rds")
+# Change the date variable to "date" format
+d_fulltext = d_fulltext %>% mutate(date_of_speech = dmy(date_of_speech))
+```
+
+## Tokenization
+
+```{r}
+if (!require("tidytext")) install.packages("tidytext")
+
+library(tidytext) # Full introduction: http://tidytextmining.com/
+```
+
+```{r}
+d_tokenized = d_fulltext %>%
+  select(uid, date_of_speech, text) %>%
+  unnest_tokens(word, text)
+
+head(d_tokenized, 20)
+
+```
+
+## Wrangling: Remove Stop Words
+
+```{r}
+# Load Stopwords
+data("stop_words")
+
+head(stop_words, 20)
+```
+
+```{r}
+# Remove stopwords
+d_tokenized_s = d_tokenized %>%
+  anti_join(stop_words, by = "word")
+# anti_join: whatever appearing in the stop_words dataframe, we remove it.
+```
+
+## Wrangling [Optional]: Stemming
+
+```{r}
+if (!require(SnowballC)) install.packages("SnowballC")
+library(SnowballC)
+```
+
+```{r}
+d_tokenized_s = d_tokenized_s %>%
+  mutate(stem = wordStem(word))
+
+head(d_tokenized_s, 20)
+```
+
+## Sentiment Analysis
+
+```{r}
+if (!require(textdata)) install.packages("textdata")
+library(textdata)
+```
+
+### Load Sentiment Dictionary
+
+```{r}
+dict_afinn = get_sentiments("afinn")
+dict_bing = get_sentiments("bing")
+dict_nrc = get_sentiments("nrc") 
+
+table(dict_afinn$value)
+table(dict_bing$sentiment)
+table(dict_nrc$sentiment)
+
+# Learn more https://saifmohammad.com/WebPages/NRC-Emotion-Lexicon.htm
+```
+
+Note, if you run this function for the first time, you will get a prompt in the console asking you to confirm that you are willing to download the sentiment dataset. The prompt looks as follows. Type "1" to install the dictionaries.
+
+```         
+Do you want to download:
+
+Name: AFINN-111
+
+URL: http://www2.imm.dtu.dk/pubdb/views/publication_details.php?id=6010
+
+License: Open Database License (ODbL) v1.0
+
+Size: 78 KB (cleaned 59 KB)
+
+Download mechanism: https
+
+1: Yes
+
+2: No
+```
+
+### Calculate the Simplest Sentiment Scores
+
+```{r}
+# Merge your tokenized documents with the sentiment dictionary
+d_tokenized_s_afinn = d_tokenized_s %>%
+  select(uid, date_of_speech, word) %>%
+  inner_join(dict_afinn, by = "word")
+
+# Aggregate the sentiment score for each document
+d_tokenized_s_afinn_agg = d_tokenized_s_afinn %>%
+  group_by(uid, date_of_speech) %>%
+  summarise(sentiment_score = sum(value))
+
+d_tokenized_s_afinn_agg = d_fulltext %>%
+  select(uid) %>%
+  left_join(d_tokenized_s_afinn_agg) %>%
+  mutate(sentiment_score = replace_na(sentiment_score, 0))
+
+# Change of sentiment over time?
+d_tokenized_s_afinn_agg %>%
+  ggplot(aes(x = date_of_speech, y = sentiment_score)) +
+  geom_point(alpha = 0.6) +
+  geom_smooth() +
+  labs(
+    title = "Sentiment Scores of Hong Kong CE's Speeches and Articles"
+  ) +
+  xlab("Date") + ylab("Sentiment Scores")
+
+
+```
+
+```{r}
+# To do it better, we can normalize the sentiment scores by document lengths
+
+# Merge your tokenized documents with the sentiment dictionary
+d_tokenized_s_afinn = d_tokenized_s %>%
+  group_by(uid) %>% mutate(doc_length = n()) %>%
+  ungroup() %>%
+  select(uid, date_of_speech, word, doc_length) %>%
+  inner_join(dict_afinn, by = "word") %>%
+  ungroup()
+
+# Aggregate the sentiment score for each document
+d_tokenized_s_afinn_agg = d_tokenized_s_afinn %>%
+  group_by(uid, date_of_speech) %>%
+  summarise(sentiment_score = sum(value) / mean(doc_length))
+
+d_tokenized_s_afinn_agg = d_fulltext %>%
+  select(uid) %>%
+  left_join(d_tokenized_s_afinn_agg) %>%
+  mutate(sentiment_score = replace_na(sentiment_score, 0))
+
+# Change of sentiment over time?
+d_tokenized_s_afinn_agg %>%
+  ggplot(aes(x = date_of_speech, y = sentiment_score)) +
+  geom_point(alpha = 0.6) +
+  geom_smooth() +
+  labs(
+    title = "Sentiment Scores of Hong Kong CE's Speeches and Articles"
+  ) +
+  xlab("Date") + ylab("Sentiment Scores (Normalized)")
+
+```
+
+## Calculate Scores of Emotions
+
+```{r}
+dict_nrc
+
+d_tokenized_s_nrc = d_tokenized_s %>%
+  inner_join(dict_nrc, by = "word", multiple = "all")
+
+d_tokenized_s_nrc_agg = d_tokenized_s_nrc %>%
+  group_by(uid, date_of_speech, sentiment) %>%
+  count() %>%
+  pivot_wider(names_from = "sentiment", values_from = "n", 
+              names_prefix = "sentiment_score_")
+
+names(d_tokenized_s_nrc_agg)
+
+# Change of sentiment over time?
+d_tokenized_s_nrc_agg %>%
+  ggplot(aes(x = date_of_speech, y = sentiment_score_sadness)) +
+  geom_point(alpha = 0.6) +
+  geom_smooth() +
+  labs(
+    title = "Sentiment Scores of Hong Kong CE's Speeches and Articles"
+  ) +
+  xlab("Date") + ylab("Sadness Scores")
+```
+
+```{r}
+# Normalize the sentiment scores
+d_tokenized_s_nrc = d_tokenized_s %>%
+  group_by(uid) %>%
+  mutate(doc_length = n()) %>%
+  ungroup() %>%
+  inner_join(dict_nrc, by = "word", multiple = "all")
+
+d_tokenized_s_nrc_agg = d_tokenized_s_nrc %>%
+  group_by(uid, date_of_speech, sentiment) %>%
+  summarise(n = n() / mean(doc_length)) %>%
+  pivot_wider(names_from = "sentiment", values_from = "n", 
+              names_prefix = "sentiment_score_")
+
+
+# Change of sentiment over time?
+d_tokenized_s_nrc_agg %>%
+  ggplot(aes(x = date_of_speech, y = sentiment_score_sadness)) +
+  geom_point(alpha = 0.6) +
+  geom_smooth() +
+  labs(
+    title = "Sentiment Scores of Hong Kong CE's Speeches and Articles"
+  ) +
+  xlab("Date") + ylab("Sadness Scores (Normalized)")
+
+```

@@ -1,0 +1,233 @@
+Speech by CE at HKEX 22nd Anniversary Celebrations (English only) (with photos/video)
+	
+	$(function()
+	{	
+		var url = 'select_en.htm?' + Math.random()*Math.random();
+		$("#includedContent").load(url,function(){
+			$('#selectManual option[value="P2022062100598"]').attr("selected", "selected");		
+		}); 
+		$("#rightContent").clone().appendTo(".controlDisplay2");
+	});
+	
+	function handleSelect()
+	{
+		var x = document.getElementById("selectManual").selectedIndex;
+		window.location = document.getElementsByTagName("option")[x].value+".htm";
+	}		
+	
+	Go to main content
+	
+		$(document).ready(function () {
+			resizeStarDivider('E');
+			if ((/iPhone|iPod|iPad|Android|BlackBerry/).test(navigator.userAgent)) {
+				$(".icon_save").css("display","none");
+			};
+		});
+	
+		
+							
+				
+					
+				
+					
+						
+							Brand HK
+						
+					
+				
+					
+				
+			
+			
+				
+					
+					
+						 | Font Size: 
+						
+						
+						 | Sitemap
+						
+					
+					
+					
+						
+						
+						
+					
+				
+			
+			
+		
+	
+
+
+  
+
+
+			
+				
+					
+						
+							
+								
+								
+									
+							
+							
+							
+								
+								
+								
+								
+										
+								
+								
+							
+							
+						
+					
+				
+				
+				 
+				
+					Speech by CE at HKEX 22nd Anniversary Celebrations (English only) (with photos/video)
+					
+						Speech by CE at HKEX 22nd Anniversary Celebrations (English only) (with photos/video)
+					
+					*************************************************************************************
+					
+				
+			
+				
+				     Following is the speech by the Chief Executive, Mrs Carrie Lam, at the Hong Kong Exchanges and Clearing Limited 22nd Anniversary Celebrations today (June 21):
+Commissioner Liu (Commissioner of the Ministry of Foreign Affairs of the People's Republic of China in the Hong Kong Special Administrative Region (HKSAR), Mr Liu Guangyuan), Laura (Chairman of the Hong Kong Exchanges and Clearing Limited (HKEX), Mrs Laura Cha), Nicolas (Chief Executive Officer of HKEX, Mr Nicolas Aguzin), all HKEX Board members, ladies and gentlemen,
+     Good afternoon. It gives me great pleasure to join you today in celebration of HKEX's 22nd anniversary. And a warm welcome to all HKEX partners and friends joining online for this happy occasion.
+     Today's anniversary gathering takes on added significance with the reopening of the HKEX Connect Hall. The newly renovated Connect Hall has been fitted out with the latest technology, as well as a brand-new multi-function venue, the 388 Suite, and standout features like the eye-catching Brand, Media and Gong Walls. To say the least, the smartly refurbished Connect Hall will continue to link global markets and our financial community, while serving as an inspiring symbol of one of the world's largest financial centres. And if I may add, today's gathering also carries a third meaning, that is, you will see a lady Chief Executive and a lady Chairperson of HKEX striking the gong for perhaps the final time, because I doubt very much we will have this happy coincidence of a lady Chief Executive and a lady Chairperson of HKEX for some time to come. And if one takes into account that Laura and I came from the same secondary school, we've served on ExCo (Executive Council) for 10 years and we are good personal friends, this thing will never happen.
+     HKEX plays a pivotal role in fostering the internationalisation of Hong Kong's financial centre and the city per se. To date, Hong Kong is a major listing platform from different jurisdictions. Alongside a vibrant securities market, HKEX's vision to go international is evidenced by its acquisition as early as 2012 of the London Metal Exchange, commonly known as LME, which until now remains a world centre for the trading of industrial metals where the majority of all non-ferrous metal futures business is transacted among participants from the physical industry and the financial community.
+     I very much treasure HKEX's strong partnership with the HKSAR Government during these five years, especially during my previous two trips to Davos in 2019 and 2020 for attending the World Economic Forum (WEF). HKEX not only greatly assisted us in organising the signature Hong Kong Night to introduce to guests from around the world Hong Kong's unique strengths and abounding opportunities, but also actively made use of various occasions like the WEF Annual Meetings and media interviews to promote Hong Kong's cosmopolitan outlook. This year, I was unable to lead a government delegation to Davos for WEF taking place in May, after last year's edition was cancelled due to the epidemic, given the need to ensure a smooth transition to the new-term Government; I felt much encouraged that Laura and Nicolas led an HKEX delegation to physically participate in over 70 meetings, events and media interviews in order to connect with global leaders and champion Hong Kong's vibrant capital markets for us. I was particularly thrilled to have heard from Nicolas during his recent interview from Davos that HKEX is planning to establish two international offices, alongside its footprints in Singapore, Beijing and Shanghai at present, to reach out to more overseas investors and market Hong Kong as a fundraising destination.
+     Despite COVID-19, social unrest and significant economic and geopolitical factors, HKEX, together with the HKSAR Government, has worked assiduously to build on Hong Kong's singular advantages under the "One Country, Two Systems" principle. The revamp of the Hong Kong listing regime in 2018 has realised outsized dividends, attracting new economy companies with weighted voting rights, as well as making Hong Kong Asia's largest, and the world's second-largest, fundraising hub for biotechnology. More recently, the reform relating to special purpose acquisition companies, better known as SPACs, has helped to enhance our competitiveness and forge a more diverse, dynamic and sustainable listing regime.
+     With the unwavering support from the Central Government, our various mutual market access initiatives have thrived. Some of you may recall that I attended the launch ceremony of Bond Connect here on my third day as the Chief Executive. Since then, we have witnessed the launch of the Bond Connect southbound trading, the cross-boundary Wealth Management Connect and A-share index futures, and we are about to welcome exchange-traded funds, or ETFs, to be included under Stock Connect. Each of them has expanded mutual access between the financial markets of Hong Kong and the Mainland, realising fresh investment opportunities for all concerned.
+     When it comes to creating opportunities, I am pleased to have seen HKEX's new strategic plan and its vision to create the "Marketplace of the Future". Among the plan's three pillars is an ambitious, long-term blueprint built on "connecting China and the world". That means expanding Connect programmes, becoming the Mainland's offshore risk-management centre, solidifying HKEX's role as the Mainland's preferred offshore fundraising centre, and increasing its portfolio of Mainland product offerings. In strengthening Hong Kong's unique position as a conduit for capital flow between the Mainland and the world, HKEX's strategy aligns seamlessly with the National 14th Five-Year Plan, which champions the reinforcing of Hong Kong's status as a global financial centre.
+     I am also delighted to learn about HKEX's ever-growing commitment to driving sustainability. In March this year, Hong Kong's first carbon futures ETF was listed on HKEX, extending the coverage of Hong Kong-listed commodity ETFs to carbon credits, an integral asset class in the global drive to achieving carbon neutrality. Looking at the Guangdong-Hong Kong-Macao Greater Bay Area (GBA), HKEX has been forging collaboration with various Mainland partners to press ahead with green and sustainable finance. To name a few, HKEX entered into a memorandum of understanding (MoU) with the Guangzhou Futures Exchange last August to drive a green and low-carbon market in GBA, and another MoU with the Guangzhou-based China Emissions Exchange in March this year to strengthen co-operation in carbon finance, including exploring the development of a voluntary carbon emission reduction programme in GBA. These joint efforts will gainfully add to our country's endeavours to peak carbon emissions and reach carbon neutrality.
+     As the first lady Chief Executive of the HKSAR, I am particularly happy with HKEX's commitment in championing for diversity on the boards of listed companies. Under the amended Corporate Governance Code and Listing Rules of the Stock Exchange of Hong Kong, with effect from January 1 this year, existing listed issuers have a three-year transition period to comply with the diverse board requirement, that is to appoint a director of a different gender no later than December 31, 2024, whereas IPO applicants have to identify at least a director of a different gender from July 1, 2022, onwards.
+     As my five-year plan is drawing to a close, I would like to take this opportunity to remind us all that maintaining Hong Kong's status as an international financial centre is actually a requirement stipulated in Article 109 of the Basic Law. While the Basic Law has also bestowed upon the HKSAR the key factors of success, namely no foreign exchange control policies and the free flow of capital within, into and out of the SAR (Article 112), it is incumbent upon us to enhance our competitiveness through putting due emphasis on a sound regulatory system and market development. That is why a Financial Leaders Forum was created at the beginning of this term of Government to enable the Government to play a more active role on policymaking and matters relating to monetary stability, financial safety and regulation as well as market development. I wish to take this opportunity to thank the Financial Secretary for chairing the Financial Leaders Forum all these years, and stability has been assured with his re-appointment and the re-appointment of Chris Hui (Secretary for Financial Services and the Treasury, Mr Christopher Hui) as the leaders of the financial services in the HKSAR Government.
+     Finally, I would like to express my deepest gratitude to Laura and Gucho (Mr Aguzin), if I may call you that, and to each and every one of you, for the remarkable contributions in achieving an orderly and sustainable growth of Hong Kong's securities market. My gratitude also goes to all members of the Financial Leaders Forum and the Financial Services Development Council for their dedication and support over the past five years. I have every confidence that HKEX will continue to be a pivotal player in taking Hong Kong's financial services sector to new heights, locally and beyond.
+     Thank you very much.
+				
+				
+				
+				
+				 
+				Ends/Tuesday, June 21, 2022
+				
+				 Issued at HKT 20:16
+				
+				
+				 NNNN
+					 
+				
+				
+				
+				
+					
+						
+							Archives  
+							Yesterday's Press Releases  
+						
+						
+							
+								Back to Index Page
+							
+							Back to top
+						
+						
+					
+				
+				
+					Today's Press Releases  
+				
+			
+		
+		
+			
+			  
+				
+				Photo
+				
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+				
+				
+			  Audio / Video
+			  
+					
+					
+						
+						CE attends HKEX 22nd Anniversary Celebrations
+					
+					
+					
+						
+							View
+						
+						
+					 
+					
+			  
+			  
+			  
+
+			
+			
+		
+	
+
+
+	
+		
+			
+				
+				
+			
+			
+	
+
+
+
+$(".fancybox").fancybox({
+	wrapCSS    : 'fancybox-custom',
+	closeClick : false,
+	loop:true,
+	openEffect : 'none',
+
+	helpers : {
+		title : {
+			type : 'inside'
+		},
+		overlay : {closeClick: true}
+	},
+
+	afterLoad : function() {
+		var sp = arguments[0].href;
+		var tmpStr = this.title.replace(new RegExp('\"','gm'),"&quot;")
+        					  .replace(new RegExp('\'','gm'),"&#39")  						      
+							  .replace(new RegExp('>','gm'),'&gt;')
+	                          .replace(new RegExp('<','gm'),'&lt;')
+							  .replace(new RegExp('\r\n','gm'),'<br/>')
+                              .replace(new RegExp('\n','gm'),'<br/>')
+	                          .replace(new RegExp('\r','gm'),'<br/>');
+		
+		this.title = '<table><tr><td>' + tmpStr + '</td></tr></table>';
+	}
+});
+
+
+
