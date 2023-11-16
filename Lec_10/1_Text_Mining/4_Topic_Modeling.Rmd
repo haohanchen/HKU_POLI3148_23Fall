@@ -24,7 +24,7 @@ library(lubridate)
 ```{r}
 d_fulltext = read_rds("Lec_10/1_Text_Mining/data/data_ce_speech_article.rds")
 # Change the date variable to "date" format
-d_fulltext = d_fulltext %>% mutate(date_of_speech = dmy(date_of_speech))
+d_fulltext = d_fulltext |> mutate(date_of_speech = dmy(date_of_speech))
 ```
 
 ## Tokenization
@@ -34,8 +34,8 @@ library(tidytext) # Full introduction: http://tidytextmining.com/
 ```
 
 ```{r}
-d_tokenized = d_fulltext %>%
-  select(uid, date_of_speech, text) %>%
+d_tokenized = d_fulltext |>
+  select(uid, date_of_speech, text) |>
   unnest_tokens(word, text)
 
 head(d_tokenized, 20)
@@ -54,7 +54,7 @@ head(stop_words, 20)
 
 ```{r}
 # Remove stopwords
-d_tokenized_s = d_tokenized %>%
+d_tokenized_s = d_tokenized |>
   anti_join(stop_words, by = "word")
 # anti_join: whatever appearing in the stop_words dataframe, we remove it.
 ```
@@ -67,7 +67,7 @@ library(SnowballC)
 ```
 
 ```{r}
-d_tokenized_s = d_tokenized_s %>%
+d_tokenized_s = d_tokenized_s |>
   mutate(stem = wordStem(word))
 
 head(d_tokenized_s, 20)
@@ -76,8 +76,8 @@ head(d_tokenized_s, 20)
 ## Calculate Document-level Term Frequencies
 
 ```{r}
-d_word_frequencies = d_tokenized_s %>%
-  group_by(uid, stem) %>%
+d_word_frequencies = d_tokenized_s |>
+  group_by(uid, stem) |>
   count()
 
 head(d_word_frequencies)
@@ -86,7 +86,7 @@ head(d_word_frequencies)
 ## Create Document-Term Matrix
 
 ```{r}
-dtm = d_word_frequencies %>% cast_dtm(uid, stem, n)
+dtm = d_word_frequencies |> cast_dtm(uid, stem, n)
 
 # What does a document-term matrix look like?
 ```
@@ -116,37 +116,37 @@ m_tm = LDA(dtm, K, method="Gibbs",
 sum_tm_beta = tidy(m_tm, matrix = "beta")
 
 ## gamma: How documents map on topics
-sum_tm_gamma = tidy(m_tm, matrix = "gamma") %>%
+sum_tm_gamma = tidy(m_tm, matrix = "gamma") |>
   rename("uid" = "document") 
 
-sum_tm_gamma_wide = sum_tm_gamma %>%
+sum_tm_gamma_wide = sum_tm_gamma |>
   pivot_wider(names_from = "topic", values_from = "gamma", names_prefix = "topic_")
 ```
 
 ## Visualize Topic Modeling Results
 
 ```{r}
-sum_tm_gamma %>%
-  group_by(topic) %>%
-  summarise(sum_gamma = sum(gamma)) %>%
+sum_tm_gamma |>
+  group_by(topic) |>
+  summarise(sum_gamma = sum(gamma)) |>
   arrange(desc(sum_gamma))
 ```
 
 ```{r}
 TOP_N_WORD = 10
 
-topic_top_word = sum_tm_beta %>%
-  rename("word" = "term") %>%
-  group_by(topic) %>%
-  slice_max(beta, n = TOP_N_WORD) %>%
+topic_top_word = sum_tm_beta |>
+  rename("word" = "term") |>
+  group_by(topic) |>
+  slice_max(beta, n = TOP_N_WORD) |>
   arrange(topic, desc(beta))
 ```
 
 ```{r, fig.width=10, fig.height=10}
 ### Visualization 1: Topics in bar charts
 
-topic_top_word %>%
-  mutate(word = reorder_within(word, beta, topic)) %>%
+topic_top_word |>
+  mutate(word = reorder_within(word, beta, topic)) |>
   ggplot(aes(y = word, x = beta)) +
   geom_bar(stat = "identity") +
   facet_wrap(~topic, scales = "free_y") +
@@ -161,7 +161,7 @@ topic_top_word %>%
 ### Visualization 2: Topics in word cloud
 library(ggwordcloud)
 
-topic_top_word %>%
+topic_top_word |>
   ggplot(aes(label = word, size = beta)) +
   geom_text_wordcloud() +
   scale_size_area(max_size = 8) + # Tune this number to change the scale

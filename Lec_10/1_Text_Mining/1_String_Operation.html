@@ -1554,7 +1554,7 @@ dim(d) # Get dimension of dataset d</code></pre>
 <p>[1] “uid” “date_of_speech” “title” “url”<br />
 [5] “filename” “text”</p>
 <pre class="r"><code># str(d) # chr 
-# DT::datatable(d %&gt;% slice(1:5))</code></pre>
+# DT::datatable(d |&gt; slice(1:5))</code></pre>
 </div>
 <div id="getting-to-know-strings" class="section level2">
 <h2>Getting to know strings</h2>
@@ -1606,7 +1606,7 @@ c(&#39;String A&#39;, &quot;String B&quot;, &#39;String C&#39;)</code></pre>
 <div id="case-1-when-are-the-speechesarticles-delivered" class="section level2">
 <h2>Case 1: When are the speeches/articles delivered?</h2>
 <p>Take a look at at the <code>date_of_speech</code> variable:</p>
-<pre class="r"><code>d %&gt;% select(date_of_speech)</code></pre>
+<pre class="r"><code>d |&gt; select(date_of_speech)</code></pre>
 <pre><code>## # A tibble: 359 × 1
 ##    date_of_speech
 ##    &lt;chr&gt;         
@@ -1633,8 +1633,8 @@ information of interest from a string based on locations.</p>
 ?str_sub</code></pre>
 <div id="case-getting-year" class="section level4">
 <h4>Case: Getting YEAR</h4>
-<pre class="r"><code>d %&gt;%
-  select(date_of_speech) %&gt;%
+<pre class="r"><code>d |&gt;
+  select(date_of_speech) |&gt;
   # create a new variable called YEAR, that gets the  the last but three to the last characters of the string
   mutate(YEAR = str_sub(date_of_speech, start = -4, end = -1))</code></pre>
 <pre><code>## # A tibble: 359 × 2
@@ -1666,8 +1666,8 @@ our extraction of the “day of month” information</p></li>
 </div>
 <div id="case-getting-day" class="section level4">
 <h4>Case: Getting DAY</h4>
-<pre class="r"><code>d %&gt;%
-  select(date_of_speech) %&gt;%
+<pre class="r"><code>d |&gt;
+  select(date_of_speech) |&gt;
   # DAY (of month): the first two characters of the strings
   mutate(DAY = str_sub(date_of_speech, start = 1, end = 2))</code></pre>
 <pre><code>## # A tibble: 359 × 2
@@ -1691,8 +1691,8 @@ our extraction of the “day of month” information</p></li>
 variables: <code>filename</code> <code>date_of_speech</code>
 <code>YEAR</code> <code>MONTH</code> <code>DAY</code> . Use only
 <code>str_sub</code> for the string operation.</p>
-<pre class="r"><code>d %&gt;%
-  select(date_of_speech) %&gt;%
+<pre class="r"><code>d |&gt;
+  select(date_of_speech) |&gt;
   mutate(DAY = str_sub(date_of_speech, start = 4, end = -5))</code></pre>
 <p>Intended output:</p>
 <table class="table" style="margin-left: auto; margin-right: auto;">
@@ -1842,7 +1842,7 @@ error. The correct way to tell R you want to remove the <code>.</code>
 character is to write `<code>\\.</code> where the <code>\\</code> prefix
 tells R that you mean the character <code>.</code> instead of using it
 as an indicator of any character.</p>
-<pre class="r"><code>d_date %&gt;%
+<pre class="r"><code>d_date |&gt;
   mutate(DAY_t = str_remove(DAY, &quot;\\.&quot;))</code></pre>
 <pre><code>## # A tibble: 359 × 6
 ##    filename date_of_speech YEAR  MONTH DAY   DAY_t
@@ -1864,7 +1864,7 @@ as an indicator of any character.</p>
 <code>str_remove_all</code></h4>
 <p>Now, we want to do the same operation with <code>MONTH</code> . Let’s
 start with the same <code>str_remove</code> variable we used above.</p>
-<pre class="r"><code>d_date %&gt;%
+<pre class="r"><code>d_date |&gt;
   mutate(MONTH_t = str_remove(MONTH, &quot;\\.&quot;))</code></pre>
 <pre><code>## # A tibble: 359 × 6
 ##    filename date_of_speech YEAR  MONTH DAY   MONTH_t
@@ -1885,7 +1885,7 @@ start with the same <code>str_remove</code> variable we used above.</p>
 processed variable. This is because <code>str_remove</code> only removes
 the first match (from left to right). To remove all matches, you need
 <code>str_remove_all</code> .</p>
-<pre class="r"><code>d_date %&gt;%
+<pre class="r"><code>d_date |&gt;
   mutate(MONTH_t = str_remove_all(MONTH, &quot;\\.&quot;))</code></pre>
 <pre><code>## # A tibble: 359 × 6
 ##    filename date_of_speech YEAR  MONTH DAY   MONTH_t
@@ -1913,7 +1913,7 @@ numeric variables (hint: <code>as.numeric()</code>)</p></li>
 <li><p>Optional: Provide summary statistics for <code>YEAR</code>
 <code>MONTH</code> <code>DAY</code> respectively</p></li>
 </ul>
-<pre class="r"><code>d_date %&gt;%
+<pre class="r"><code>d_date |&gt;
   mutate(
     MONTH = str_remove_all(MONTH, &quot;\\.&quot;),
     DAY = str_remove_all(DAY, &quot;\\.&quot;)
@@ -1933,7 +1933,7 @@ numeric variables (hint: <code>as.numeric()</code>)</p></li>
 ## 10 A10.txt  27.9.2021      2021  9     27   
 ## # ℹ 349 more rows</code></pre>
 <pre class="r"><code># Want to make it simpler? Use mutate_at
-d_date %&gt;%
+d_date |&gt;
   mutate_at(vars(MONTH, DAY), ~str_remove_all(., &quot;\\.&quot;))</code></pre>
 <pre><code>## # A tibble: 359 × 5
 ##    filename date_of_speech YEAR  MONTH DAY  
@@ -1958,7 +1958,7 @@ d_date %&gt;%
 <p>For demonstration purpose, let’s do something meaningless first:
 Replace <code>.</code> by <code>-</code> for the <code>MONTH</code>
 variable.</p>
-<pre class="r"><code>d_date %&gt;%
+<pre class="r"><code>d_date |&gt;
   mutate(MONTH = str_replace(MONTH, &quot;\\.&quot;, &quot;-&quot;))</code></pre>
 <pre><code>## # A tibble: 359 × 5
 ##    filename date_of_speech YEAR  MONTH DAY  
@@ -1974,7 +1974,7 @@ variable.</p>
 ##  9 A9.txt   27.10.2021     2021  -10.  27   
 ## 10 A10.txt  27.9.2021      2021  -9.   27   
 ## # ℹ 349 more rows</code></pre>
-<pre class="r"><code>d_date %&gt;%
+<pre class="r"><code>d_date |&gt;
   mutate(MONTH = str_replace_all(MONTH, &quot;\\.&quot;, &quot;-&quot;))</code></pre>
 <pre><code>## # A tibble: 359 × 5
 ##    filename date_of_speech YEAR  MONTH DAY  
@@ -2017,7 +2017,7 @@ Check the cheat sheet.</p></li>
 <code>MONTH</code>?” Check the cheat sheet.</p></li>
 </ul>
 <pre class="r"><code># Example: Removing the ending .
-d_date %&gt;%
+d_date |&gt;
   mutate(MONTH_t = str_remove(MONTH, &quot;\\.$&quot;))</code></pre>
 <pre><code>## # A tibble: 359 × 6
 ##    filename date_of_speech YEAR  MONTH DAY   MONTH_t
@@ -2034,7 +2034,7 @@ d_date %&gt;%
 ## 10 A10.txt  27.9.2021      2021  .9.   27    .9     
 ## # ℹ 349 more rows</code></pre>
 <pre class="r"><code># Example: Removing the starting .
-d_date %&gt;%
+d_date |&gt;
   mutate(MONTH_t = str_remove(MONTH, &quot;^\\.&quot;))</code></pre>
 <pre><code>## # A tibble: 359 × 6
 ##    filename date_of_speech YEAR  MONTH DAY   MONTH_t
@@ -2055,18 +2055,18 @@ d_date %&gt;%
 <pre class="r"><code># Check the matched pattern in the first three entries of MONTH
 # As an aside: &quot;$&quot; following dataframe&#39;s name select the variable; [1:3] selects the first three elements
 str_view_all(d_date$MONTH[1:3], &quot;\\.$&quot;, html = TRUE)</code></pre>
-<div class="str_view html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-994f049d869ba4dcf937" style="width:960px;height:100%;"></div>
-<script type="application/json" data-for="htmlwidget-994f049d869ba4dcf937">{"x":{"html":"<ul>\n  <li><pre>.5<span class='match'>.<\/span><\/pre><\/li>\n  <li><pre>5<span class='match'>.<\/span><\/pre><\/li>\n  <li><pre>.4<span class='match'>.<\/span><\/pre><\/li>\n<\/ul>"},"evals":[],"jsHooks":[]}</script>
+<div class="str_view html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-4ed7ffda5631fbb77eee" style="width:960px;height:100%;"></div>
+<script type="application/json" data-for="htmlwidget-4ed7ffda5631fbb77eee">{"x":{"html":"<ul>\n  <li><pre>.5<span class='match'>.<\/span><\/pre><\/li>\n  <li><pre>5<span class='match'>.<\/span><\/pre><\/li>\n  <li><pre>.4<span class='match'>.<\/span><\/pre><\/li>\n<\/ul>"},"evals":[],"jsHooks":[]}</script>
 <pre class="r"><code># This function will be more handy when your text is more complicated.
 str_view_all(d$title[1:3], &quot;Article by CE:&quot;, html = TRUE)</code></pre>
-<div class="str_view html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-6047c1d7a1ba3d5b6d17" style="width:960px;height:100%;"></div>
-<script type="application/json" data-for="htmlwidget-6047c1d7a1ba3d5b6d17">{"x":{"html":"<ul>\n  <li><pre><span class='match'>Article by CE:<\/span> Moving Steadily Forward Along Path to Normalcy Amid Stabilised COVID-19 Epidemic<\/pre><\/li>\n  <li><pre><span class='match'>Article by CE:<\/span> Celebrate Labour Day together <span class='special'> <\/span> Protect Labour Rights and Promote Hong Kong's Development<\/pre><\/li>\n  <li><pre><span class='match'>Article by CE:<\/span> With Epidemic under Control comes Path towards Normalcy<\/pre><\/li>\n<\/ul>"},"evals":[],"jsHooks":[]}</script>
+<div class="str_view html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-a16803301500f78a41e6" style="width:960px;height:100%;"></div>
+<script type="application/json" data-for="htmlwidget-a16803301500f78a41e6">{"x":{"html":"<ul>\n  <li><pre><span class='match'>Article by CE:<\/span> Moving Steadily Forward Along Path to Normalcy Amid Stabilised COVID-19 Epidemic<\/pre><\/li>\n  <li><pre><span class='match'>Article by CE:<\/span> Celebrate Labour Day together <span class='special'> <\/span> Protect Labour Rights and Promote Hong Kong's Development<\/pre><\/li>\n  <li><pre><span class='match'>Article by CE:<\/span> With Epidemic under Control comes Path towards Normalcy<\/pre><\/li>\n<\/ul>"},"evals":[],"jsHooks":[]}</script>
 <p><strong>Exercise</strong></p>
 <ol style="list-style-type: decimal">
 <li>Replace the leading <code>.</code> of <code>MONTH</code> by 0</li>
 <li>Clean the <code>DAY</code> variable in the same way</li>
 </ol>
-<pre class="r"><code>d_date %&gt;%
+<pre class="r"><code>d_date |&gt;
   mutate(
     MONTH = str_replace(MONTH, &quot;^\\.&quot;, &quot;0&quot;),
     DAY = str_replace(DAY, &quot;^\\.&quot;, &quot;0&quot;)
@@ -2093,8 +2093,8 @@ str_view_all(d$title[1:3], &quot;Article by CE:&quot;, html = TRUE)</code></pre>
 <p>What if we want to extract the numbers from dates? Use
 <code>str_extract</code></p>
 <pre class="r"><code># Extract the first element found
-d_date %&gt;%
-  select(date_of_speech) %&gt;%
+d_date |&gt;
+  select(date_of_speech) |&gt;
   mutate(date_of_speech_extract = 
            str_extract(date_of_speech, &quot;[0-9]+&quot;))</code></pre>
 <pre><code>## # A tibble: 359 × 2
@@ -2112,8 +2112,8 @@ d_date %&gt;%
 ## 10 27.9.2021      27                    
 ## # ℹ 349 more rows</code></pre>
 <pre class="r"><code># Extract all the elements
-d_date %&gt;%
-  select(date_of_speech) %&gt;%
+d_date |&gt;
+  select(date_of_speech) |&gt;
   mutate(date_of_speech_extract = str_extract_all(date_of_speech, &quot;[0-9]+&quot;))</code></pre>
 <pre><code>## # A tibble: 359 × 2
 ##    date_of_speech date_of_speech_extract
@@ -2139,9 +2139,9 @@ that have various number of elements.</p></li>
 </ul>
 <pre class="r"><code># unnest_longer
 # When unsure about the number of elements extracted. 
-d_date %&gt;%
-  select(date_of_speech) %&gt;%
-  mutate(date_of_speech_extract = str_extract_all(date_of_speech, &quot;[0-9]+&quot;)) %&gt;%
+d_date |&gt;
+  select(date_of_speech) |&gt;
+  mutate(date_of_speech_extract = str_extract_all(date_of_speech, &quot;[0-9]+&quot;)) |&gt;
   unnest_longer(date_of_speech_extract)</code></pre>
 <pre><code>## # A tibble: 1,077 × 2
 ##    date_of_speech date_of_speech_extract
@@ -2158,9 +2158,9 @@ d_date %&gt;%
 ## 10 30.3.2022      30                    
 ## # ℹ 1,067 more rows</code></pre>
 <pre class="r"><code># unnest_wider
-d_date %&gt;%
-  select(date_of_speech) %&gt;%
-  mutate(date_of_speech_extract = str_extract_all(date_of_speech, &quot;[0-9]+&quot;)) %&gt;%
+d_date |&gt;
+  select(date_of_speech) |&gt;
+  mutate(date_of_speech_extract = str_extract_all(date_of_speech, &quot;[0-9]+&quot;)) |&gt;
   unnest_wider(date_of_speech_extract, names_sep = &quot;_&quot;)</code></pre>
 <pre><code>## # A tibble: 359 × 4
 ##    date_of_speech date_of_speech_extract_1 date_of_speech_extract_2
@@ -2188,11 +2188,11 @@ d_date %&gt;%
 </ul>
 <pre class="r"><code># Split the date variable using the separator
 # Spearating the string using &quot;.&quot; as spearators
-d_date_result = d_date %&gt;%
-  select(date_of_speech) %&gt;%
+d_date_result = d_date |&gt;
+  select(date_of_speech) |&gt;
   mutate(
     date_of_speech_ex = str_split(date_of_speech, &quot;\\.&quot;)
-  ) %&gt;%
+  ) |&gt;
   unnest_wider(date_of_speech_ex, names_sep = &quot;_&quot;)
 
 a = 2
@@ -2222,7 +2222,7 @@ d_date_result</code></pre>
 
 ?str_c # paste, paste0
 
-d_date_result %&gt;%
+d_date_result |&gt;
   mutate(
     date_merge = str_c(date_of_speech_ex_3, 
                        &quot;-&quot;,
@@ -2246,7 +2246,7 @@ d_date_result %&gt;%
 ## 10 27.9.2021      27                  9                   2021               
 ## # ℹ 349 more rows
 ## # ℹ 1 more variable: date_merge &lt;chr&gt;</code></pre>
-<pre class="r"><code>d_date_result %&gt;%
+<pre class="r"><code>d_date_result |&gt;
   mutate(
     date_merge = str_c(date_of_speech_ex_3, 
                        &quot;-&quot;,
@@ -2284,14 +2284,14 @@ d_date_result %&gt;%
 <pre class="r"><code># Separate articles and speech
 
 # Generate an variable indicating whether a piece is an article or a speech
-d_2 = d %&gt;%
+d_2 = d |&gt;
   mutate(
     article = str_extract(title, &quot;Article by CE&quot;),
     speech = str_extract(title, &quot;Speech by CE&quot;)
   )
 
 # Filter only articles
-d %&gt;%
+d |&gt;
   filter(str_detect(title, &quot;Article by CE&quot;))</code></pre>
 <pre><code>## # A tibble: 32 × 6
 ##    uid   date_of_speech title                               url   filename text 

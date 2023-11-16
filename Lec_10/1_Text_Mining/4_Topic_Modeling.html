@@ -364,13 +364,13 @@ display: none;
 library(lubridate)</code></pre>
 <pre class="r"><code>d_fulltext = read_rds(&quot;Lec_10/1_Text_Mining/data/data_ce_speech_article.rds&quot;)
 # Change the date variable to &quot;date&quot; format
-d_fulltext = d_fulltext %&gt;% mutate(date_of_speech = dmy(date_of_speech))</code></pre>
+d_fulltext = d_fulltext |&gt; mutate(date_of_speech = dmy(date_of_speech))</code></pre>
 </div>
 <div id="tokenization" class="section level2">
 <h2>Tokenization</h2>
 <pre class="r"><code>library(tidytext) # Full introduction: http://tidytextmining.com/</code></pre>
-<pre class="r"><code>d_tokenized = d_fulltext %&gt;%
-  select(uid, date_of_speech, text) %&gt;%
+<pre class="r"><code>d_tokenized = d_fulltext |&gt;
+  select(uid, date_of_speech, text) |&gt;
   unnest_tokens(word, text)
 
 head(d_tokenized, 20)</code></pre>
@@ -429,7 +429,7 @@ head(stop_words, 20)</code></pre>
 ## 19 alone       SMART  
 ## 20 along       SMART</code></pre>
 <pre class="r"><code># Remove stopwords
-d_tokenized_s = d_tokenized %&gt;%
+d_tokenized_s = d_tokenized |&gt;
   anti_join(stop_words, by = &quot;word&quot;)
 # anti_join: whatever appearing in the stop_words dataframe, we remove it.</code></pre>
 </div>
@@ -437,7 +437,7 @@ d_tokenized_s = d_tokenized %&gt;%
 <h2>Wrangling [Optional]: Stemming</h2>
 <pre class="r"><code>if (!require(SnowballC)) install.packages(&quot;SnowballC&quot;)
 library(SnowballC)</code></pre>
-<pre class="r"><code>d_tokenized_s = d_tokenized_s %&gt;%
+<pre class="r"><code>d_tokenized_s = d_tokenized_s |&gt;
   mutate(stem = wordStem(word))
 
 head(d_tokenized_s, 20)</code></pre>
@@ -467,8 +467,8 @@ head(d_tokenized_s, 20)</code></pre>
 </div>
 <div id="calculate-document-level-term-frequencies" class="section level2">
 <h2>Calculate Document-level Term Frequencies</h2>
-<pre class="r"><code>d_word_frequencies = d_tokenized_s %&gt;%
-  group_by(uid, stem) %&gt;%
+<pre class="r"><code>d_word_frequencies = d_tokenized_s |&gt;
+  group_by(uid, stem) |&gt;
   count()
 
 head(d_word_frequencies)</code></pre>
@@ -485,7 +485,7 @@ head(d_word_frequencies)</code></pre>
 </div>
 <div id="create-document-term-matrix" class="section level2">
 <h2>Create Document-Term Matrix</h2>
-<pre class="r"><code>dtm = d_word_frequencies %&gt;% cast_dtm(uid, stem, n)
+<pre class="r"><code>dtm = d_word_frequencies |&gt; cast_dtm(uid, stem, n)
 
 # What does a document-term matrix look like?</code></pre>
 </div>
@@ -534,17 +534,17 @@ m_tm = LDA(dtm, K, method=&quot;Gibbs&quot;,
 sum_tm_beta = tidy(m_tm, matrix = &quot;beta&quot;)
 
 ## gamma: How documents map on topics
-sum_tm_gamma = tidy(m_tm, matrix = &quot;gamma&quot;) %&gt;%
+sum_tm_gamma = tidy(m_tm, matrix = &quot;gamma&quot;) |&gt;
   rename(&quot;uid&quot; = &quot;document&quot;) 
 
-sum_tm_gamma_wide = sum_tm_gamma %&gt;%
+sum_tm_gamma_wide = sum_tm_gamma |&gt;
   pivot_wider(names_from = &quot;topic&quot;, values_from = &quot;gamma&quot;, names_prefix = &quot;topic_&quot;)</code></pre>
 </div>
 <div id="visualize-topic-modeling-results" class="section level2">
 <h2>Visualize Topic Modeling Results</h2>
-<pre class="r"><code>sum_tm_gamma %&gt;%
-  group_by(topic) %&gt;%
-  summarise(sum_gamma = sum(gamma)) %&gt;%
+<pre class="r"><code>sum_tm_gamma |&gt;
+  group_by(topic) |&gt;
+  summarise(sum_gamma = sum(gamma)) |&gt;
   arrange(desc(sum_gamma))</code></pre>
 <pre><code>## # A tibble: 20 × 2
 ##    topic sum_gamma
@@ -571,15 +571,15 @@ sum_tm_gamma_wide = sum_tm_gamma %&gt;%
 ## 20     5      10.9</code></pre>
 <pre class="r"><code>TOP_N_WORD = 10
 
-topic_top_word = sum_tm_beta %&gt;%
-  rename(&quot;word&quot; = &quot;term&quot;) %&gt;%
-  group_by(topic) %&gt;%
-  slice_max(beta, n = TOP_N_WORD) %&gt;%
+topic_top_word = sum_tm_beta |&gt;
+  rename(&quot;word&quot; = &quot;term&quot;) |&gt;
+  group_by(topic) |&gt;
+  slice_max(beta, n = TOP_N_WORD) |&gt;
   arrange(topic, desc(beta))</code></pre>
 <pre class="r"><code>### Visualization 1: Topics in bar charts
 
-topic_top_word %&gt;%
-  mutate(word = reorder_within(word, beta, topic)) %&gt;%
+topic_top_word |&gt;
+  mutate(word = reorder_within(word, beta, topic)) |&gt;
   ggplot(aes(y = word, x = beta)) +
   geom_bar(stat = &quot;identity&quot;) +
   facet_wrap(~topic, scales = &quot;free_y&quot;) +
@@ -592,7 +592,7 @@ topic_top_word %&gt;%
 <pre class="r"><code>### Visualization 2: Topics in word cloud
 library(ggwordcloud)
 
-topic_top_word %&gt;%
+topic_top_word |&gt;
   ggplot(aes(label = word, size = beta)) +
   geom_text_wordcloud() +
   scale_size_area(max_size = 8) + # Tune this number to change the scale

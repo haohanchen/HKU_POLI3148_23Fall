@@ -32,7 +32,7 @@ library(lubridate)
 ```{r}
 d_fulltext = read_rds("Lec_10/1_Text_Mining/data/data_ce_speech_article.rds")
 # Change the date variable to "date" format
-d_fulltext = d_fulltext %>% mutate(date_of_speech = dmy(date_of_speech))
+d_fulltext = d_fulltext |> mutate(date_of_speech = dmy(date_of_speech))
 ```
 
 ## Tokenization
@@ -44,8 +44,8 @@ library(tidytext) # Full introduction: http://tidytextmining.com/
 ```
 
 ```{r}
-d_tokenized = d_fulltext %>%
-  select(uid, date_of_speech, text) %>%
+d_tokenized = d_fulltext |>
+  select(uid, date_of_speech, text) |>
   unnest_tokens(word, text)
 # first arg: output name; second: input name
 
@@ -65,7 +65,7 @@ head(stop_words, 20)
 
 ```{r}
 # Remove stopwords
-d_tokenized_s = d_tokenized %>%
+d_tokenized_s = d_tokenized |>
   anti_join(stop_words, by = "word")
 # anti_join: whatever appearing in the stop_words dataframe, we remove it.
 ```
@@ -78,7 +78,7 @@ library(SnowballC)
 ```
 
 ```{r}
-d_tokenized_s = d_tokenized_s %>%
+d_tokenized_s = d_tokenized_s |>
   mutate(stem = wordStem(word))
 
 head(d_tokenized_s, 20)
@@ -90,14 +90,14 @@ head(d_tokenized_s, 20)
 
 ```{r}
 # Count term frequencies (for raw words)
-word_frequency = d_tokenized_s %>%
+word_frequency = d_tokenized_s |>
   count(word, sort = TRUE)
 
 head(word_frequency, 20)
 
 # Count term frequencies (for Stemmed word -- recommended)
-word_frequency = d_tokenized_s %>%
-  count(stem, sort = TRUE) %>%
+word_frequency = d_tokenized_s |>
+  count(stem, sort = TRUE) |>
   rename("word" = "stem")
 
 head(word_frequency, 20)
@@ -107,17 +107,17 @@ head(word_frequency, 20)
 
 ```{r}
 # Get a subset of most frequent words
-word_frequency_top = word_frequency %>%
-  arrange(desc(n)) %>% # Make sure that it is sorted properly
+word_frequency_top = word_frequency |>
+  arrange(desc(n)) |> # Make sure that it is sorted properly
   slice(1:200) # Take the first 200 rows. 
 ```
 
 ### Plot most popular words
 
 ```{r}
-word_frequency_top %>%
-  slice(1:10) %>%
-  mutate(word = reorder(word, n)) %>%
+word_frequency_top |>
+  slice(1:10) |>
+  mutate(word = reorder(word, n)) |>
   ggplot(aes(x = n, y = word)) +
   geom_col()
 ```
@@ -128,8 +128,8 @@ word_frequency_top %>%
 if (!require(ggwordcloud)) install.packages("ggwordcloud")
 library(ggwordcloud)
 
-word_frequency_top %>%
-  slice(1:100) %>%
+word_frequency_top |>
+  slice(1:100) |>
   ggplot(aes(label = word, size = n)) +
   scale_size_area(max_size = 14) +
   geom_text_wordcloud() +
@@ -154,14 +154,11 @@ wordcloud(
 if (!require(wordcloud2)) install.packages("wordcloud2")
 library(wordcloud2)
 
-word_frequency_top %>%
-  wordcloud2(.)
+wordcloud2(word_frequency_top)
 
-word_frequency_top %>%
-  wordcloud2(., shape = "star")
+wordcloud2(word_frequency_top, shape = "star")
 
-word_frequency_top %>%
-  wordcloud2(., shape = "pentagon")
+wordcloud2(word_frequency_top, shape = "pentagon")
 
 ```
 
@@ -172,15 +169,15 @@ How does the focus differ between 2021 and 2020? Our final set of analysis in th
 ```{r}
 # Calculate term frequencies for 2020 and 2021 respectively
 word_frequency_compare_21_20 = 
-  d_tokenized_s %>%
-  mutate(year = year(date_of_speech), .after = "date_of_speech") %>%
+  d_tokenized_s |>
+  mutate(year = year(date_of_speech), .after = "date_of_speech") |>
   # Extract the year of the speech
-  filter(year == 2020 | year == 2021) %>%
-  group_by(year, stem) %>%
-  count(sort = TRUE) %>%
+  filter(year == 2020 | year == 2021) |>
+  group_by(year, stem) |>
+  count(sort = TRUE) |>
   pivot_wider(names_from = "year", values_from = "n", 
-              names_prefix = "n_", values_fill = 0) %>%
-  ungroup() %>%
+              names_prefix = "n_", values_fill = 0) |>
+  ungroup() |>
   mutate(
     prop_2021 = n_2021 / sum(n_2021),
     prop_2020 = n_2020 / sum(n_2020)
@@ -190,22 +187,22 @@ word_frequency_compare_21_20 =
 
 ```{r}
 # Visualize the word frequencies in the two years
-word_frequency_compare_21_20 %>%
+word_frequency_compare_21_20 |>
   ggplot(aes(x = prop_2020, y = prop_2021)) +
   geom_point()
 
-word_frequency_compare_21_20 %>%
+word_frequency_compare_21_20 |>
   ggplot(aes(x = prop_2020, y = prop_2021)) +
   geom_point() +
   scale_x_sqrt() + scale_y_sqrt()
 
 
-word_frequency_compare_21_20 %>%
+word_frequency_compare_21_20 |>
   ggplot(aes(x = log(prop_2020), y = log(prop_2021))) +
   geom_point()
 
-word_frequency_compare_21_20 %>%
-  filter(n_2020 >= 10) %>%
+word_frequency_compare_21_20 |>
+  filter(n_2020 >= 10) |>
   ggplot(aes(x = log(prop_2020), y = log(prop_2021))) +
   geom_point() +
   geom_smooth()
@@ -216,15 +213,15 @@ word_frequency_compare_21_20 %>%
 # The biggest difference?
 
 ## What are the words that feature 2020 speeches
-tmp_plot_20 = word_frequency_compare_21_20 %>%
-  mutate(diff = prop_2020 - prop_2021) %>%
-  slice_max(diff, n = 30) %>%
+tmp_plot_20 = word_frequency_compare_21_20 |>
+  mutate(diff = prop_2020 - prop_2021) |>
+  slice_max(diff, n = 30) |>
   arrange(desc(diff))
   
 ## What are the words that feature 2021 speeches
-tmp_plot_21 = word_frequency_compare_21_20 %>%
-  mutate(diff = prop_2021 - prop_2020) %>%
-  slice_max(diff, n = 30) %>%
+tmp_plot_21 = word_frequency_compare_21_20 |>
+  mutate(diff = prop_2021 - prop_2020) |>
+  slice_max(diff, n = 30) |>
   arrange(desc(diff))
 
 ```
@@ -232,20 +229,20 @@ tmp_plot_21 = word_frequency_compare_21_20 %>%
 ```{r}
 # Visualize the difference in a nice way?
 set.seed(327)
-tmp_plot_merge = tmp_plot_21 %>% 
-  mutate(Year = "2021") %>%
+tmp_plot_merge = tmp_plot_21 |> 
+  mutate(Year = "2021") |>
   bind_rows(
-    tmp_plot_20 %>% mutate(Year = "2020")
+    tmp_plot_20 |> mutate(Year = "2020")
     ) 
 
-tmp_plot_merge %>%
+tmp_plot_merge |>
   ggplot(aes(label = stem, x = Year, color = Year, size = abs(diff))) +
   geom_text_wordcloud_area() +
   scale_size_area(max_size = 14) +
   theme_minimal() +
   theme(legend.position = "top")
 
-tmp_plot_merge %>%
+tmp_plot_merge |>
   ggplot(aes(label = stem, y = Year, color = Year, size = abs(diff))) +
   geom_text_wordcloud_area() +
   scale_size_area(max_size = 14) +

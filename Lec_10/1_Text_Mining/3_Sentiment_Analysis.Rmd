@@ -24,7 +24,7 @@ library(lubridate)
 ```{r}
 d_fulltext = read_rds("Lec_10/1_Text_Mining/data/data_ce_speech_article.rds")
 # Change the date variable to "date" format
-d_fulltext = d_fulltext %>% mutate(date_of_speech = dmy(date_of_speech))
+d_fulltext = d_fulltext |> mutate(date_of_speech = dmy(date_of_speech))
 ```
 
 ## Tokenization
@@ -36,8 +36,8 @@ library(tidytext) # Full introduction: http://tidytextmining.com/
 ```
 
 ```{r}
-d_tokenized = d_fulltext %>%
-  select(uid, date_of_speech, text) %>%
+d_tokenized = d_fulltext |>
+  select(uid, date_of_speech, text) |>
   unnest_tokens(word, text)
 
 head(d_tokenized, 20)
@@ -55,7 +55,7 @@ head(stop_words, 20)
 
 ```{r}
 # Remove stopwords
-d_tokenized_s = d_tokenized %>%
+d_tokenized_s = d_tokenized |>
   anti_join(stop_words, by = "word")
 # anti_join: whatever appearing in the stop_words dataframe, we remove it.
 ```
@@ -68,7 +68,7 @@ library(SnowballC)
 ```
 
 ```{r}
-d_tokenized_s = d_tokenized_s %>%
+d_tokenized_s = d_tokenized_s |>
   mutate(stem = wordStem(word))
 
 head(d_tokenized_s, 20)
@@ -119,22 +119,22 @@ Download mechanism: https
 
 ```{r}
 # Merge your tokenized documents with the sentiment dictionary
-d_tokenized_s_afinn = d_tokenized_s %>%
-  select(uid, date_of_speech, word) %>%
+d_tokenized_s_afinn = d_tokenized_s |>
+  select(uid, date_of_speech, word) |>
   inner_join(dict_afinn, by = "word")
 
 # Aggregate the sentiment score for each document
-d_tokenized_s_afinn_agg = d_tokenized_s_afinn %>%
-  group_by(uid, date_of_speech) %>%
+d_tokenized_s_afinn_agg = d_tokenized_s_afinn |>
+  group_by(uid, date_of_speech) |>
   summarise(sentiment_score = sum(value))
 
-d_tokenized_s_afinn_agg = d_fulltext %>%
-  select(uid) %>%
-  left_join(d_tokenized_s_afinn_agg) %>%
+d_tokenized_s_afinn_agg = d_fulltext |>
+  select(uid) |>
+  left_join(d_tokenized_s_afinn_agg) |>
   mutate(sentiment_score = replace_na(sentiment_score, 0))
 
 # Change of sentiment over time?
-d_tokenized_s_afinn_agg %>%
+d_tokenized_s_afinn_agg |>
   ggplot(aes(x = date_of_speech, y = sentiment_score)) +
   geom_point(alpha = 0.6) +
   geom_smooth() +
@@ -150,25 +150,25 @@ d_tokenized_s_afinn_agg %>%
 # To do it better, we can normalize the sentiment scores by document lengths
 
 # Merge your tokenized documents with the sentiment dictionary
-d_tokenized_s_afinn = d_tokenized_s %>%
-  group_by(uid) %>% mutate(doc_length = n()) %>%
-  ungroup() %>%
-  select(uid, date_of_speech, word, doc_length) %>%
-  inner_join(dict_afinn, by = "word") %>%
+d_tokenized_s_afinn = d_tokenized_s |>
+  group_by(uid) |> mutate(doc_length = n()) |>
+  ungroup() |>
+  select(uid, date_of_speech, word, doc_length) |>
+  inner_join(dict_afinn, by = "word") |>
   ungroup()
 
 # Aggregate the sentiment score for each document
-d_tokenized_s_afinn_agg = d_tokenized_s_afinn %>%
-  group_by(uid, date_of_speech) %>%
+d_tokenized_s_afinn_agg = d_tokenized_s_afinn |>
+  group_by(uid, date_of_speech) |>
   summarise(sentiment_score = sum(value) / mean(doc_length))
 
-d_tokenized_s_afinn_agg = d_fulltext %>%
-  select(uid) %>%
-  left_join(d_tokenized_s_afinn_agg) %>%
+d_tokenized_s_afinn_agg = d_fulltext |>
+  select(uid) |>
+  left_join(d_tokenized_s_afinn_agg) |>
   mutate(sentiment_score = replace_na(sentiment_score, 0))
 
 # Change of sentiment over time?
-d_tokenized_s_afinn_agg %>%
+d_tokenized_s_afinn_agg |>
   ggplot(aes(x = date_of_speech, y = sentiment_score)) +
   geom_point(alpha = 0.6) +
   geom_smooth() +
@@ -184,19 +184,19 @@ d_tokenized_s_afinn_agg %>%
 ```{r}
 dict_nrc
 
-d_tokenized_s_nrc = d_tokenized_s %>%
+d_tokenized_s_nrc = d_tokenized_s |>
   inner_join(dict_nrc, by = "word", multiple = "all")
 
-d_tokenized_s_nrc_agg = d_tokenized_s_nrc %>%
-  group_by(uid, date_of_speech, sentiment) %>%
-  count() %>%
+d_tokenized_s_nrc_agg = d_tokenized_s_nrc |>
+  group_by(uid, date_of_speech, sentiment) |>
+  count() |>
   pivot_wider(names_from = "sentiment", values_from = "n", 
               names_prefix = "sentiment_score_")
 
 names(d_tokenized_s_nrc_agg)
 
 # Change of sentiment over time?
-d_tokenized_s_nrc_agg %>%
+d_tokenized_s_nrc_agg |>
   ggplot(aes(x = date_of_speech, y = sentiment_score_sadness)) +
   geom_point(alpha = 0.6) +
   geom_smooth() +
@@ -208,21 +208,21 @@ d_tokenized_s_nrc_agg %>%
 
 ```{r}
 # Normalize the sentiment scores
-d_tokenized_s_nrc = d_tokenized_s %>%
-  group_by(uid) %>%
-  mutate(doc_length = n()) %>%
-  ungroup() %>%
+d_tokenized_s_nrc = d_tokenized_s |>
+  group_by(uid) |>
+  mutate(doc_length = n()) |>
+  ungroup() |>
   inner_join(dict_nrc, by = "word", multiple = "all")
 
-d_tokenized_s_nrc_agg = d_tokenized_s_nrc %>%
-  group_by(uid, date_of_speech, sentiment) %>%
-  summarise(n = n() / mean(doc_length)) %>%
+d_tokenized_s_nrc_agg = d_tokenized_s_nrc |>
+  group_by(uid, date_of_speech, sentiment) |>
+  summarise(n = n() / mean(doc_length)) |>
   pivot_wider(names_from = "sentiment", values_from = "n", 
               names_prefix = "sentiment_score_")
 
 
 # Change of sentiment over time?
-d_tokenized_s_nrc_agg %>%
+d_tokenized_s_nrc_agg |>
   ggplot(aes(x = date_of_speech, y = sentiment_score_sadness)) +
   geom_point(alpha = 0.6) +
   geom_smooth() +

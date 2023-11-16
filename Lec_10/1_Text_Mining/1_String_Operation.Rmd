@@ -46,7 +46,7 @@ dim(d) # Get dimension of dataset d
 names(d) # Get column names of dataset d
 
 # str(d) # chr 
-# DT::datatable(d %>% slice(1:5))
+# DT::datatable(d |> slice(1:5))
 ```
 
 ## Getting to know strings
@@ -88,7 +88,7 @@ typeof(d$date_of_speech)
 Take a look at at the `date_of_speech` variable:
 
 ```{r}
-d %>% select(date_of_speech)
+d |> select(date_of_speech)
 ```
 
 The `date_of_speech` variable is currently treated as a string and we are unable to get valuable information from it. Our first task is to use R's string operation to subtract inforamation of interest from this string-type indicator of date.
@@ -105,8 +105,8 @@ With start with the simplest string operation: Subtracting information of intere
 #### Case: Getting YEAR
 
 ```{r}
-d %>%
-  select(date_of_speech) %>%
+d |>
+  select(date_of_speech) |>
   # create a new variable called YEAR, that gets the  the last but three to the last characters of the string
   mutate(YEAR = str_sub(date_of_speech, start = -4, end = -1))
 ```
@@ -124,8 +124,8 @@ Note:
 #### Case: Getting DAY
 
 ```{r}
-d %>%
-  select(date_of_speech) %>%
+d |>
+  select(date_of_speech) |>
   # DAY (of month): the first two characters of the strings
   mutate(DAY = str_sub(date_of_speech, start = 1, end = 2))
 ```
@@ -135,8 +135,8 @@ d %>%
 Create a table named `d_date` containing the following variables: `filename` `date_of_speech` `YEAR` `MONTH` `DAY` . Use only `str_sub` for the string operation.
 
 ```{r, eval=FALSE}
-d %>%
-  select(date_of_speech) %>%
+d |>
+  select(date_of_speech) |>
   mutate(DAY = str_sub(date_of_speech, start = 4, end = -5))
 ```
 
@@ -144,15 +144,15 @@ Intended output:
 
 ```{r, echo=FALSE, results="asis"}
 # Answer
-d_date = d %>%
-  select(filename, date_of_speech) %>%
+d_date = d |>
+  select(filename, date_of_speech) |>
   mutate(
     YEAR = str_sub(date_of_speech, start = -4, end = -1),
     MONTH = str_sub(date_of_speech, start = 3, end = -5),
     DAY = str_sub(date_of_speech, start = 1, end = 2)
     )
 
-head(d_date, 5) %>% kable() %>% kable_styling()
+head(d_date, 5) |> kable() |> kable_styling()
 ```
 
 ### Remove and replace
@@ -167,7 +167,7 @@ Up next, we discuss methods to remove certain patterins from a string or replace
 
 ```{r, echo=FALSE}
 # Try this first
-d_date %>%
+d_date |>
   mutate(DAY_t = str_remove(DAY, "."))
 ```
 
@@ -176,7 +176,7 @@ d_date %>%
 **A:** In R (and many other programming languages, `.` is used as an indicator of "any random character." So the above is interpreted by R as "removing any character. This causes the error. The correct way to tell R you want to remove the `.` character is to write \``\\.` where the `\\` prefix tells R that you mean the character `.` instead of using it as an indicator of any character.
 
 ```{r}
-d_date %>%
+d_date |>
   mutate(DAY_t = str_remove(DAY, "\\."))
 ```
 
@@ -185,7 +185,7 @@ d_date %>%
 Now, we want to do the same operation with `MONTH` . Let's start with the same `str_remove` variable we used above.
 
 ```{r}
-d_date %>%
+d_date |>
   mutate(MONTH_t = str_remove(MONTH, "\\."))
 ```
 
@@ -194,7 +194,7 @@ d_date %>%
 **A:** There are remaining `.` in the processed variable. This is because `str_remove` only removes the first match (from left to right). To remove all matches, you need `str_remove_all` .
 
 ```{r}
-d_date %>%
+d_date |>
   mutate(MONTH_t = str_remove_all(MONTH, "\\."))
 ```
 
@@ -211,14 +211,14 @@ Requirement:
 -   Optional: Provide summary statistics for `YEAR` `MONTH` `DAY` respectively
 
 ```{r}
-d_date %>%
+d_date |>
   mutate(
     MONTH = str_remove_all(MONTH, "\\."),
     DAY = str_remove_all(DAY, "\\.")
   )
 
 # Want to make it simpler? Use mutate_at
-d_date %>%
+d_date |>
   mutate_at(vars(MONTH, DAY), ~str_remove_all(., "\\."))
 
 ```
@@ -230,12 +230,12 @@ d_date %>%
 For demonstration purpose, let's do something meaningless first: Replace `.` by `-` for the `MONTH` variable.
 
 ```{r}
-d_date %>%
+d_date |>
   mutate(MONTH = str_replace(MONTH, "\\.", "-"))
 ```
 
 ```{r}
-d_date %>%
+d_date |>
   mutate(MONTH = str_replace_all(MONTH, "\\.", "-"))
 ```
 
@@ -263,11 +263,11 @@ Regular expression help you specify patterns of interest more effectively in str
 
 ```{r}
 # Example: Removing the ending .
-d_date %>%
+d_date |>
   mutate(MONTH_t = str_remove(MONTH, "\\.$"))
 
 # Example: Removing the starting .
-d_date %>%
+d_date |>
   mutate(MONTH_t = str_remove(MONTH, "^\\."))
 
 ```
@@ -289,7 +289,7 @@ str_view_all(d$title[1:3], "Article by CE:", html = TRUE)
 2.  Clean the `DAY` variable in the same way
 
 ```{r}
-d_date %>%
+d_date |>
   mutate(
     MONTH = str_replace(MONTH, "^\\.", "0"),
     DAY = str_replace(DAY, "^\\.", "0")
@@ -305,14 +305,14 @@ What if we want to extract the numbers from dates? Use `str_extract`
 
 ```{r}
 # Extract the first element found
-d_date %>%
-  select(date_of_speech) %>%
+d_date |>
+  select(date_of_speech) |>
   mutate(date_of_speech_extract = 
            str_extract(date_of_speech, "[0-9]+"))
 
 # Extract all the elements
-d_date %>%
-  select(date_of_speech) %>%
+d_date |>
+  select(date_of_speech) |>
   mutate(date_of_speech_extract = str_extract_all(date_of_speech, "[0-9]+"))
 
 ```
@@ -326,16 +326,16 @@ Frequently seen output of string operation: A list column. We need to "unnest" l
 ```{r}
 # unnest_longer
 # When unsure about the number of elements extracted. 
-d_date %>%
-  select(date_of_speech) %>%
-  mutate(date_of_speech_extract = str_extract_all(date_of_speech, "[0-9]+")) %>%
+d_date |>
+  select(date_of_speech) |>
+  mutate(date_of_speech_extract = str_extract_all(date_of_speech, "[0-9]+")) |>
   unnest_longer(date_of_speech_extract)
 
 
 # unnest_wider
-d_date %>%
-  select(date_of_speech) %>%
-  mutate(date_of_speech_extract = str_extract_all(date_of_speech, "[0-9]+")) %>%
+d_date |>
+  select(date_of_speech) |>
+  mutate(date_of_speech_extract = str_extract_all(date_of_speech, "[0-9]+")) |>
   unnest_wider(date_of_speech_extract, names_sep = "_")
 
 ```
@@ -351,11 +351,11 @@ Using the `str_` functions
 ```{r}
 # Split the date variable using the separator
 # Spearating the string using "." as spearators
-d_date_result = d_date %>%
-  select(date_of_speech) %>%
+d_date_result = d_date |>
+  select(date_of_speech) |>
   mutate(
     date_of_speech_ex = str_split(date_of_speech, "\\.")
-  ) %>%
+  ) |>
   unnest_wider(date_of_speech_ex, names_sep = "_")
 
 a = 2
@@ -376,7 +376,7 @@ d_date_result
 
 ?str_c # paste, paste0
 
-d_date_result %>%
+d_date_result |>
   mutate(
     date_merge = str_c(date_of_speech_ex_3, 
                        "-",
@@ -386,7 +386,7 @@ d_date_result %>%
                        )
   )
 
-d_date_result %>%
+d_date_result |>
   mutate(
     date_merge = str_c(date_of_speech_ex_3, 
                        "-",
@@ -413,14 +413,14 @@ Exercise:
 # Separate articles and speech
 
 # Generate an variable indicating whether a piece is an article or a speech
-d_2 = d %>%
+d_2 = d |>
   mutate(
     article = str_extract(title, "Article by CE"),
     speech = str_extract(title, "Speech by CE")
   )
 
 # Filter only articles
-d %>%
+d |>
   filter(str_detect(title, "Article by CE"))
 
 ```
