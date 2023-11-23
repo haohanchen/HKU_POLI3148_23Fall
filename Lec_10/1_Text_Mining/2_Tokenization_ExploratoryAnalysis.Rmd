@@ -44,6 +44,10 @@ library(tidytext) # Full introduction: http://tidytextmining.com/
 ```
 
 ```{r}
+
+d_fulltext <- d_fulltext |>
+  mutate(text = str_replace_all(text, "Hong Kong", "HongKong"))
+
 d_tokenized = d_fulltext |>
   select(uid, date_of_speech, text) |>
   unnest_tokens(word, text)
@@ -119,7 +123,8 @@ word_frequency_top |>
   slice(1:10) |>
   mutate(word = reorder(word, n)) |>
   ggplot(aes(x = n, y = word)) +
-  geom_col()
+  geom_col() +
+  theme_bw()
 ```
 
 ### Plot a Word Cloud

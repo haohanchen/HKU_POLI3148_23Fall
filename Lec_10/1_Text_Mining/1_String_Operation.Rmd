@@ -108,7 +108,8 @@ With start with the simplest string operation: Subtracting information of intere
 d |>
   select(date_of_speech) |>
   # create a new variable called YEAR, that gets the  the last but three to the last characters of the string
-  mutate(YEAR = str_sub(date_of_speech, start = -4, end = -1))
+  mutate(YEAR = str_sub(date_of_speech, 
+                        start = -4, end = -1))
 ```
 
 Note:
@@ -186,7 +187,7 @@ Now, we want to do the same operation with `MONTH` . Let's start with the same `
 
 ```{r}
 d_date |>
-  mutate(MONTH_t = str_remove(MONTH, "\\."))
+  mutate(MONTH_t = str_remove(MONTH, "\\."), .after = MONTH)
 ```
 
 **Q:** What do you get? What is wrong?
@@ -195,7 +196,7 @@ d_date |>
 
 ```{r}
 d_date |>
-  mutate(MONTH_t = str_remove_all(MONTH, "\\."))
+  mutate(MONTH_t = str_remove_all(MONTH, "\\."), .after = MONTH)
 ```
 
 #### Exercise: Complete the cleaned data
@@ -351,6 +352,13 @@ Using the `str_` functions
 ```{r}
 # Split the date variable using the separator
 # Spearating the string using "." as spearators
+
+# d_date |>
+#   select(date_of_speech) |>
+#   mutate(
+#     date_of_speech_ex = str_split(date_of_speech, "\\.")
+#   ) |> View()
+
 d_date_result = d_date |>
   select(date_of_speech) |>
   mutate(
@@ -358,13 +366,6 @@ d_date_result = d_date |>
   ) |>
   unnest_wider(date_of_speech_ex, names_sep = "_")
 
-a = 2
-# evquivalent to
-a <- 2
-# equivalent to 
-2 -> a
-# Not equilalent to
-# 2 = a # Error
 
 ```
 
@@ -378,6 +379,7 @@ d_date_result
 
 d_date_result |>
   mutate(
+    # paste0
     date_merge = str_c(date_of_speech_ex_3, 
                        "-",
                        date_of_speech_ex_2, 
@@ -416,7 +418,8 @@ Exercise:
 d_2 = d |>
   mutate(
     article = str_extract(title, "Article by CE"),
-    speech = str_extract(title, "Speech by CE")
+    speech = str_extract(title, "Speech by CE"),
+    .after = uid
   )
 
 # Filter only articles

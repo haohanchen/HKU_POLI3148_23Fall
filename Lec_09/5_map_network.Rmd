@@ -127,7 +127,7 @@ To check whether the geogrphic centroids are correctly specified we plot a world
 world_t |>
   ggplot() +
   geom_sf() +
-  geom_point(aes(x = centroid_xcoord, y = centroid_ycoord))
+  geom_point(aes(x = centroid_xcoord, y = centroid_ycoord), size = 0.1)
 ```
 
 ## Merge the world map with the network data
@@ -151,6 +151,7 @@ d_t_s_2 = d_t_s |>
 
 names(d_t_s_2)
 
+# d_t_s_2 |> select(side_a_iso3c, centroid_xcoord_a, centroid_ycoord_a, side_b_iso3c, centroid_xcoord_b, centroid_ycoord_b) |> View()
 
 ```
 
@@ -197,7 +198,7 @@ d_t_s_4 = d_t_s_3 |>
   group_by(side_a_iso3c, side_b_iso3c, 
            centroid_xcoord_a, centroid_ycoord_a, 
            centroid_xcoord_b, centroid_ycoord_b) |>
-  count()
+  count() |> ungroup()
 
 ggplot() +
   geom_sf(data = world_t) +
@@ -210,16 +211,21 @@ ggplot() +
                                  linewidth = n), 
              curvature = 0.2, color = "red", alpha = 0.5)
 
+d_top10_n_conflict <- d_t_s_4 |>
+  slice_max(n, n = 6)
+
 ggplot() +
   geom_sf(data = world_t) +
-  geom_text(data = d_t_s_3, aes(x = centroid_xcoord_a, y = centroid_ycoord_a, label = side_a_iso3c)) +
-  geom_text(data = d_t_s_3, aes(x = centroid_xcoord_b, y = centroid_ycoord_b, label = side_b_iso3c)) +
   geom_curve(data = d_t_s_4, aes(x = centroid_xcoord_a, 
                                  y = centroid_ycoord_a,
                                  xend = centroid_xcoord_b, 
                                  yend = centroid_ycoord_b,
-                                 linewidth = n), 
-             curvature = 0.2, color = "red", alpha = 0.5)
+                                 linewidth = n,
+                                 color = n), 
+             curvature = 0.2, alpha = 0.5) +
+  scale_color_viridis_c(option = "B", trans = "sqrt") +
+  geom_text(data = d_top10_n_conflict, aes(x = centroid_xcoord_a, y = centroid_ycoord_a, label = side_a_iso3c)) +
+  geom_text(data = d_top10_n_conflict, aes(x = centroid_xcoord_b, y = centroid_ycoord_b, label = side_b_iso3c))
 
 # Q: Why does the text look weird?
 
